@@ -1,9 +1,10 @@
 #include <Windows.h>
 #include <cstdint>
 #include "WinApp.h"
+#include "Function.h"
 
 // ウィンドウプロシージャ
-LRESULT WinApp::WindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
+LRESULT WindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
 	// メッセージに応じてゲーム固有の処理を行う
 	switch (msg) {
 		// ウインドウが破棄された
@@ -16,14 +17,12 @@ LRESULT WinApp::WindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
 	return DefWindowProc(hwnd, msg, wparam, lparam);
 }
 
-void WinApp::CreateCG2Window() {
-
-	WNDCLASS wc{};
+WinApp::WinApp(const wchar_t* title) {
 
 	// ウィンドウプロシージャ
 	wc.lpfnWndProc = WindowProc;
 	// ウインドウクラス名
-	wc.lpszClassName = L"CG2WindowClass";
+	wc.lpszClassName = title;
 	// インスタンスハンドル
 	wc.hInstance = GetModuleHandle(nullptr);
 	// カーソル
@@ -41,7 +40,7 @@ void WinApp::CreateCG2Window() {
 	// ウインドウの生成
 	HWND hwnd = CreateWindow(
 		wc.lpszClassName,
-		L"CG2",
+		title,
 		WS_OVERLAPPEDWINDOW,
 		CW_USEDEFAULT,
 		CW_USEDEFAULT,
