@@ -15,7 +15,6 @@
 #pragma comment(lib, "dxguid.lib")
 #pragma comment(lib, "dxcompiler.lib")
 
-
 // string -> wstring
 std::wstring ConvertString(const std::string& str)
 {
