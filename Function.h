@@ -7,7 +7,9 @@
 
 class Convert {
 public:
-	std::wstring ConvertString(const std::string& str);
+	static std::wstring ConvertString(const std::string& str);
 
-	std::string ConvertString(const std::wstring& str);
+	static std::string ConvertString(const std::wstring& str);
+
+	static void Log(const std::string& message);
 };
