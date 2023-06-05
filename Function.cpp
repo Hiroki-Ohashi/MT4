@@ -42,6 +42,6 @@ std::string Convert::ConvertString(const std::wstring& str)
 }
 
 // 出力ウインドウにだす
-void Log(const std::string& message) {
+void Convert::Log(const std::string& message) {
 	OutputDebugStringA(message.c_str());
 }

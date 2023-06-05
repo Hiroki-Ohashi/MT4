@@ -1,5 +1,6 @@
 #include <Windows.h>
 #include <cstdint>
+#include <d3d12.h>
 #include "WinApp.h"
 #include "Function.h"
 
@@ -38,7 +39,7 @@ WinApp::WinApp(const wchar_t* title) {
 	AdjustWindowRect(&wrc, WS_OVERLAPPEDWINDOW, false);
 
 	// ウインドウの生成
-	HWND hwnd = CreateWindow(
+	hwnd = CreateWindow(
 		wc.lpszClassName,
 		title,
 		WS_OVERLAPPEDWINDOW,
@@ -51,6 +52,16 @@ WinApp::WinApp(const wchar_t* title) {
 		wc.hInstance,
 		nullptr
 	);
+
+#ifdef _DEBUG
+	
+	if (SUCCEEDED(D3D12GetDebugInterface(IID_PPV_ARGS(&debugController)))) {
+		// デバッグレイヤーを有効化する
+		debugController->EnableDebugLayer();
+		// さらにGPU側でもチェックを行うようにする
+		debugController->SetEnableGPUBasedValidation(TRUE);
+	}
+#endif
 
 	// ウインドウを表示する
 	ShowWindow(hwnd, SW_SHOW);

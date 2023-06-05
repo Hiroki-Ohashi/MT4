@@ -16,12 +16,14 @@
 #pragma comment(lib, "dxguid.lib")
 #pragma comment(lib, "dxcompiler.lib")
 
-
 // WIndowsアプリでのエントリーポイント(main関数)
 int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 	WinApp* winapp = new WinApp(L"CG2");
 	
+	DirectX::DirectXInitialize();
+	DirectX::DirectXFence();
+
 	MSG msg{};
 
 	// ウインドウの×ボタンが押されるまでループ
@@ -34,7 +36,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		else {
 			// ゲームの処理
 
-			
+			DirectX::DirectXUpdate();
 		}
 	}
 

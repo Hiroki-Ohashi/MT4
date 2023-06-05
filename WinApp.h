@@ -14,6 +14,6 @@ public:
 	static const int32_t kClientHeight = 720;
 
 	static LRESULT WindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
-
-	HWND hwnd = nullptr;
+	static inline HWND hwnd = nullptr;
+	static inline ID3D12Debug1* debugController = nullptr;
 };
