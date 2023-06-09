@@ -7,6 +7,7 @@
 #include <cstdint>
 #include "WinApp.h"
 #include "Function.h"
+#include "Triangle.h"
 
 
 #pragma comment(lib, "d3d12.lib")
@@ -14,11 +15,12 @@
 
 class DirectX {
 public:
-	~DirectX();
-	static void DirectXInitialize();
-	static void DirectXFence();
-	static void DirectXUpdate();
-	static void DirectXRelease();
+	static void Initialize();
+	static void Fence();
+	static void Update();
+	static void Release();
+
+	static inline ID3D12Device* GetDevice() { return device_; }
 
 private:
 	static inline IDXGIFactory7* dxgiFactory_ = nullptr;

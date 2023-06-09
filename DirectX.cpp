@@ -14,7 +14,7 @@
 #pragma comment(lib, "dxgi.lib")
 #pragma comment(lib, "dxguid.lib")
 
-void DirectX::DirectXInitialize() {
+void DirectX::Initialize() {
 
 	// DXGIファクトリーの生成
 
@@ -158,7 +158,7 @@ void DirectX::DirectXInitialize() {
 	device_->CreateRenderTargetView(swapChainResources[1], &rtvDesc, rtvHandles[1]);
 }
 
-void DirectX::DirectXFence(){
+void DirectX::Fence(){
 	// 初期値0でFenceを作る
 
 	hr_ = device_->CreateFence(fenceValue, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&fence));
@@ -169,7 +169,7 @@ void DirectX::DirectXFence(){
 	assert(fenceEvent != nullptr);
 }
 
-void DirectX::DirectXUpdate(){
+void DirectX::Update(){
 	//これから書き込むバックバッファのインデックスを取得 
 	UINT backBufferIndex = swapChain_->GetCurrentBackBufferIndex();
 
@@ -193,6 +193,18 @@ void DirectX::DirectXUpdate(){
 	// 指定した色で画面全体をクリアする
 	float clearColor[] = { 0.1f, 0.25f, 0.5f, 1.0f };
 	commandList_->ClearRenderTargetView(rtvHandles[backBufferIndex], clearColor, 0, nullptr);
+
+	// コマンドを積む
+	commandList_->RSSetViewports(1, &Triangle::viewport);
+	commandList_->RSSetScissorRects(1, &Triangle::scissorRect);
+	// RootSignatureを設定。PSOに設定しているけど別途設定が必要
+	commandList_->SetGraphicsRootSignature(Triangle::GetRootSignature());
+	commandList_->SetPipelineState(Triangle::GetGraphicsPipelineState());
+	commandList_->IASetVertexBuffers(0, 1, &Triangle::vertexBufferView);
+	// 形状を設定。PSOに設定しているものとはまた別。同じものを設定すると考えておけば良い
+	commandList_->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	// 描画(DrawCall/ドローコール)。3頂点で1つのインスタンス。
+	commandList_->DrawInstanced(3, 1, 0, 0);
 
 	// 画面に描く処理はすべて終わり、画面に映すので、状態を遷移
 			// 今回はRenderTargetからPresentにする
@@ -229,7 +241,8 @@ void DirectX::DirectXUpdate(){
 	hr_ = commandList_->Reset(commandAllocator_, nullptr);
 	assert(SUCCEEDED(hr_));
 }
-void DirectX::DirectXRelease(){
+
+void DirectX::Release(){
 
 	CloseHandle(fenceEvent);
 	fence->Release();
@@ -249,6 +262,18 @@ void DirectX::DirectXRelease(){
 #endif
 	CloseWindow(window_->hwnd);
 
+	Triangle::GetVertexResource()->Release();
+	Triangle::GetGraphicsPipelineState()->Release();
+	Triangle::GetSignatureBlob()->Release();
+
+	if (Triangle::GetErrorBlob()) {
+		Triangle::GetErrorBlob()->Release();
+	}
+
+	Triangle::GetRootSignature()->Release();
+	Triangle::GetVertexShaderBlob()->Release();
+	Triangle::GetPixelShaderBlob()->Release();
+
 	// リソースリークチェック
 	IDXGIDebug1* debug;
 	if (SUCCEEDED(DXGIGetDebugInterface1(0, IID_PPV_ARGS(&debug)))) {
@@ -258,4 +283,3 @@ void DirectX::DirectXRelease(){
 		debug->Release();
 	}
 }
-WinApp* DirectX::window_;

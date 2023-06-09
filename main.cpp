@@ -10,6 +10,7 @@
 #include "WinApp.h"
 #include "Function.h"
 #include "DirectX.h"
+#include "Triangle.h"
 
 #pragma comment(lib, "d3d12.lib")
 #pragma comment(lib, "dxgi.lib")
@@ -20,11 +21,22 @@
 int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 	WinApp* winapp = new WinApp(L"CG2");
+	Triangle* triangle = new Triangle;
 	
-	DirectX::DirectXInitialize();
-	DirectX::DirectXFence();
+	DirectX::Initialize();
+	DirectX::Fence();
 
 	MSG msg{};
+	
+	Triangle::DxcInitialize();
+	Triangle::DxcPso();
+
+	for (int i = 0; i < 10; i++) {
+		triangle->DxcVertexDraw();
+	}
+
+	Triangle::DxcViewport();
+	Triangle::DxcScissor();
 
 	// ウインドウの×ボタンが押されるまでループ
 	while (msg.message != WM_QUIT) {
@@ -35,10 +47,11 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		}
 		else {
 			// ゲームの処理
-
-			DirectX::DirectXUpdate();
+			DirectX::Update();
 		}
 	}
+
+	DirectX::Release();
 
 	return 0;
 }
