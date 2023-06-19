@@ -23,16 +23,16 @@
 int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 	// 三角形の数
-	const int Max = 20;
+	const int Max = 30;
 
 	Vector4 pos[Max][3];
 	for (int i = 0; i < Max; i++) {
 		// 左下
-		pos[i][0] = { -0.9f - (i * -0.10f),0.7f,0.0f,1.0f };
+		pos[i][0] = { -0.95f - (i * -0.07f),0.0f,0.0f,1.0f };
 		// 上
-		pos[i][1] = { -0.85f - (i * -0.10f),0.8f,0.0f,1.0f };
+		pos[i][1] = { -0.92f - (i * -0.07f),0.05f,0.0f,1.0f };
 		// 右上
-		pos[i][2] = { -0.8f - (i * -0.10f),0.7f,0.0f,1.0f };
+		pos[i][2] = { -0.89f - (i * -0.07f),0.0f,0.0f,1.0f };
 	}
 
 	WinApp* winapp = new WinApp(L"CG2");
