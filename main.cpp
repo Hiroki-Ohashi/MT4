@@ -17,29 +17,34 @@
 #pragma comment(lib, "dxguid.lib")
 #pragma comment(lib, "dxcompiler.lib")
 
+
+
 // WIndowsアプリでのエントリーポイント(main関数)
 int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
-	Vector4 pos[20][3];
-	for (int i = 0; i < 20; i++) {
-		pos[i][0] = { -0.1f + (i * -0.10f),-0.1f,0.0f,1.0f };
+	// 三角形の数
+	const int Max = 20;
 
-		pos[i][1] = { 0.0f + (i * -0.10f),0.1f,0.0f,1.0f },
-
-		pos[i][2] = { 0.1f + (i * -0.10f),-0.1f,0.0f,1.0f };
+	Vector4 pos[Max][3];
+	for (int i = 0; i < Max; i++) {
+		// 左下
+		pos[i][0] = { -0.9f - (i * -0.10f),0.7f,0.0f,1.0f };
+		// 上
+		pos[i][1] = { -0.85f - (i * -0.10f),0.8f,0.0f,1.0f };
+		// 右上
+		pos[i][2] = { -0.8f - (i * -0.10f),0.7f,0.0f,1.0f };
 	}
-
 
 	WinApp* winapp = new WinApp(L"CG2");
 	DirectX* directX = new DirectX;
-	Triangle* triangle[20];
+	Triangle* triangle[Max];
 	
 	directX->Initialize(winapp);
 	directX->Fence();
 
 	MSG msg{};
 
-	for (int i = 0; i < 20; i++) {
+	for (int i = 0; i < Max; i++) {
 		triangle[i] = new Triangle;
 		triangle[i]->DxcInitialize();
 		triangle[i]->DxcPso(directX);
@@ -60,14 +65,14 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			// ゲームの処理
 			directX->Update();
 
-			for (int i = 0; i < 20; i++) {
+			for (int i = 0; i < Max; i++) {
 				triangle[i]->DxcUpdate(directX);
 			}
 
 			directX->Close();
 		}
 	}
-	for (int i = 0; i < 20; i++) {
+	for (int i = 0; i < Max; i++) {
 		triangle[i]->DxcRelease();
 	}
 
