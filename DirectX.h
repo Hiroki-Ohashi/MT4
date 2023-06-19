@@ -5,39 +5,42 @@
 #include <dxgi1_6.h>
 #include <cassert>
 #include <cstdint>
-#include "WinApp.h"
 #include "Function.h"
-#include "Triangle.h"
 
 
 #pragma comment(lib, "d3d12.lib")
 #pragma comment(lib, "dxgi.lib")
 
+class WinApp;
+class Triangle;
+
 class DirectX {
 public:
-	static void Initialize();
-	static void Fence();
-	static void Update();
-	static void Release();
+	void Initialize(WinApp* winApp_);
+	void Fence();
+	void Update();
+	void Close();
+	void Release(WinApp* winApp_);
 
-	static inline ID3D12Device* GetDevice() { return device_; }
+	inline ID3D12Device* GetDevice() { return device_; }
+	inline ID3D12GraphicsCommandList* GetCommandList() { return commandList_; }
 
 private:
-	static inline IDXGIFactory7* dxgiFactory_ = nullptr;
-	static inline ID3D12Device* device_ = nullptr;
-	static inline IDXGIAdapter4* useAdapter_ = nullptr;
-	static inline ID3D12CommandQueue* commandQueue_ = nullptr;
-	static inline ID3D12CommandAllocator* commandAllocator_ = nullptr;
-	static inline ID3D12GraphicsCommandList* commandList_ = nullptr;
-	static inline IDXGISwapChain4* swapChain_ = nullptr;
-	static inline ID3D12DescriptorHeap* rtvDescriptorHeap_ = nullptr;
-	static inline D3D12_CPU_DESCRIPTOR_HANDLE rtvHandles[2];
-	static inline ID3D12Resource* swapChainResources[2] = { nullptr };
-	static inline ID3D12Fence* fence = nullptr;
-	static inline uint64_t fenceValue = 0;
-	static inline HANDLE fenceEvent = 0;
+	IDXGIFactory7* dxgiFactory_ = nullptr;
+	ID3D12Device* device_ = nullptr;
+	IDXGIAdapter4* useAdapter_ = nullptr;
+	ID3D12CommandQueue* commandQueue_ = nullptr;
+	ID3D12CommandAllocator* commandAllocator_ = nullptr;
+	ID3D12GraphicsCommandList* commandList_ = nullptr;
+	IDXGISwapChain4* swapChain_ = nullptr;
+	D3D12_RESOURCE_BARRIER barrier{};
+	ID3D12DescriptorHeap* rtvDescriptorHeap_ = nullptr;
+	D3D12_CPU_DESCRIPTOR_HANDLE rtvHandles[2];
+	ID3D12Resource* swapChainResources[2] = { nullptr };
+	ID3D12Fence* fence = nullptr;
+	uint64_t fenceValue = 0;
+	HANDLE fenceEvent = 0;
 	static inline HRESULT hr_;
 
 	//static inline HWND hwnd = nullptr;
-	static WinApp* window_;
 };

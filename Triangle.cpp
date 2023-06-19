@@ -17,12 +17,9 @@
 #pragma comment(lib, "dxguid.lib")
 #pragma comment(lib, "dxcompiler.lib")
 
-struct Vector4 final {
-	float x;
-	float y;
-	float z;
-	float w;
-};
+Triangle::Triangle()
+{
+}
 
 void Triangle::DxcInitialize(){
 	// dxcCompilerを初期化
@@ -38,7 +35,7 @@ void Triangle::DxcInitialize(){
 	assert(SUCCEEDED(hr_));
 }
 
-void Triangle::DxcPso(){
+void Triangle::DxcPso(DirectX* dir_){
 	// RootSignature作成
 	D3D12_ROOT_SIGNATURE_DESC descriptionRootSignature{};
 	descriptionRootSignature.Flags = D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
@@ -51,7 +48,7 @@ void Triangle::DxcPso(){
 	}
 	// バイナリを元に生成
 	
-	hr_ = DirectX::GetDevice()->CreateRootSignature(0, signatureBlob->GetBufferPointer(), signatureBlob->GetBufferSize(), IID_PPV_ARGS(&rootSignature));
+	hr_ =dir_->GetDevice()->CreateRootSignature(0, signatureBlob->GetBufferPointer(), signatureBlob->GetBufferSize(), IID_PPV_ARGS(&rootSignature));
 	assert(SUCCEEDED(hr_));
 
 	// InputLayout
@@ -101,11 +98,11 @@ void Triangle::DxcPso(){
 	graphicsPipelineStateDesc.SampleMask = D3D12_DEFAULT_SAMPLE_MASK;
 	// 実際に生成
 	
-	hr_ = DirectX::GetDevice()->CreateGraphicsPipelineState(&graphicsPipelineStateDesc, IID_PPV_ARGS(&graphicsPipelineState));
+	hr_ = dir_->GetDevice()->CreateGraphicsPipelineState(&graphicsPipelineStateDesc, IID_PPV_ARGS(&graphicsPipelineState));
 	assert(SUCCEEDED(hr_));
 }
 
-void Triangle::DxcVertexDraw(){
+void Triangle::DxcVertexDraw(DirectX* dir_, Vector4* pos){
 	// 頂点リソース用のヒープの設定
 	D3D12_HEAP_PROPERTIES uploadHeapProperties{};
 	uploadHeapProperties.Type = D3D12_HEAP_TYPE_UPLOAD;// UploadHeapを使う
@@ -123,7 +120,7 @@ void Triangle::DxcVertexDraw(){
 	vertexResourceDesc.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
 	// 実際に頂点リソースを作る
 	
-	hr_ = DirectX::GetDevice()->CreateCommittedResource(&uploadHeapProperties, D3D12_HEAP_FLAG_NONE, &vertexResourceDesc, D3D12_RESOURCE_STATE_GENERIC_READ, nullptr, IID_PPV_ARGS(&vertexResource));
+	hr_ = dir_->GetDevice()->CreateCommittedResource(&uploadHeapProperties, D3D12_HEAP_FLAG_NONE, &vertexResourceDesc, D3D12_RESOURCE_STATE_GENERIC_READ, nullptr, IID_PPV_ARGS(&vertexResource));
 	assert(SUCCEEDED(hr_));
 
 	// 頂点バッファビューを作成する
@@ -139,12 +136,33 @@ void Triangle::DxcVertexDraw(){
 	
 	// 書き込むためのアドレスを取得
 	vertexResource->Map(0, nullptr, reinterpret_cast<void**>(&vertexData));
+	//// 左下
+	//vertexData[0] = { -0.1f, -0.1f, 0.0f, 1.0f };
+	//// 上
+	//vertexData[1] = { 0.0f, 0.1f, 0.0f, 1.0f };
+	//// 右上
+	//vertexData[2] = { 0.1f, -0.1f, 0.0f, 1.0f };
+
 	// 左下
-	vertexData[0] = { -0.1f, -0.1f, 0.0f, 1.0f };
+	vertexData[0] = pos[0];
 	// 上
-	vertexData[1] = { 0.0f, 0.1f, 0.0f, 1.0f };
+	vertexData[1] = pos[1];
 	// 右上
-	vertexData[2] = { 0.1f, -0.1f, 0.0f, 1.0f };
+	vertexData[2] = pos[2];
+}
+
+void Triangle::DxcUpdate(DirectX* dir_){
+	// コマンドを積む
+	dir_->GetCommandList()->RSSetViewports(1, &viewport);
+	dir_->GetCommandList()->RSSetScissorRects(1, &scissorRect);
+	// RootSignatureを設定。PSOに設定しているけど別途設定が必要
+	dir_->GetCommandList()->SetGraphicsRootSignature(rootSignature);
+	dir_->GetCommandList()->SetPipelineState(graphicsPipelineState);
+	dir_->GetCommandList()->IASetVertexBuffers(0, 1, &vertexBufferView);
+	// 形状を設定。PSOに設定しているものとはまた別。同じものを設定すると考えておけば良い
+	dir_->GetCommandList()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	// 描画(DrawCall/ドローコール)。3頂点で1つのインスタンス。
+	dir_->GetCommandList()->DrawInstanced(3, 1, 0, 0);
 }
 
 void Triangle::DxcViewport(){
@@ -165,5 +183,19 @@ void Triangle::DxcScissor(){
 	scissorRect.right = window_->kClientWidth;
 	scissorRect.top = 0;
 	scissorRect.bottom = window_->kClientHeight;
+}
+
+void Triangle::DxcRelease(){
+	vertexResource->Release();
+	graphicsPipelineState->Release();
+	signatureBlob->Release();
+
+	if (errorBlob) {
+		errorBlob->Release();
+	}
+
+	rootSignature->Release();
+	vertexShaderBlob->Release();
+	pixelShaderBlob->Release();
 }
 

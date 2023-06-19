@@ -9,6 +9,12 @@
 #include <dxgidebug.h>
 #include <dxcapi.h>
 
+struct Vector4 final {
+	float x;
+	float y;
+	float z;
+	float w;
+};
 
 class Convert {
 public:

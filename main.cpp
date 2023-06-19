@@ -20,23 +20,34 @@
 // WIndowsアプリでのエントリーポイント(main関数)
 int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
-	WinApp* winapp = new WinApp(L"CG2");
-	Triangle* triangle = new Triangle;
-	
-	DirectX::Initialize();
-	DirectX::Fence();
+	Vector4 pos[20][3];
+	for (int i = 0; i < 20; i++) {
+		pos[i][0] = { -0.1f + (i * -0.10f),-0.1f,0.0f,1.0f };
 
-	MSG msg{};
-	
-	Triangle::DxcInitialize();
-	Triangle::DxcPso();
+		pos[i][1] = { 0.0f + (i * -0.10f),0.1f,0.0f,1.0f },
 
-	for (int i = 0; i < 10; i++) {
-		triangle->DxcVertexDraw();
+		pos[i][2] = { 0.1f + (i * -0.10f),-0.1f,0.0f,1.0f };
 	}
 
-	Triangle::DxcViewport();
-	Triangle::DxcScissor();
+
+	WinApp* winapp = new WinApp(L"CG2");
+	DirectX* directX = new DirectX;
+	Triangle* triangle[20];
+	
+	directX->Initialize(winapp);
+	directX->Fence();
+
+	MSG msg{};
+
+	for (int i = 0; i < 20; i++) {
+		triangle[i] = new Triangle;
+		triangle[i]->DxcInitialize();
+		triangle[i]->DxcPso(directX);
+		triangle[i]->DxcVertexDraw(directX, pos[i]);
+		triangle[i]->DxcViewport();
+		triangle[i]->DxcScissor();
+	}
+	
 
 	// ウインドウの×ボタンが押されるまでループ
 	while (msg.message != WM_QUIT) {
@@ -47,11 +58,22 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		}
 		else {
 			// ゲームの処理
-			DirectX::Update();
+			directX->Update();
+
+			for (int i = 0; i < 20; i++) {
+				triangle[i]->DxcUpdate(directX);
+			}
+
+			directX->Close();
 		}
 	}
+	for (int i = 0; i < 20; i++) {
+		triangle[i]->DxcRelease();
+	}
 
-	DirectX::Release();
+	directX->Release(winapp);
+
+	
 
 	return 0;
 }

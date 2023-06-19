@@ -9,15 +9,15 @@
 #include "WinApp.h"
 #include "Function.h"
 #include "DirectX.h"
+#include "Triangle.h"
 
 #pragma comment(lib, "d3d12.lib")
 #pragma comment(lib, "dxgi.lib")
 #pragma comment(lib, "dxguid.lib")
 
-void DirectX::Initialize() {
+void DirectX::Initialize(WinApp* winApp_) {
 
 	// DXGIファクトリーの生成
-
 	hr_ = CreateDXGIFactory(IID_PPV_ARGS(&dxgiFactory_));
 	assert(SUCCEEDED(hr_));
 
@@ -122,7 +122,7 @@ void DirectX::Initialize() {
 	swapChainDesc.BufferCount = 2;/// ダブルバッファ
 	swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;// モニタに写したら中身を破棄
 	// コマンドキュー、ウインドウハンドル、設定を渡して生成する
-	hr_ = dxgiFactory_->CreateSwapChainForHwnd(commandQueue_, window_->hwnd , &swapChainDesc, nullptr, nullptr, reinterpret_cast<IDXGISwapChain1**>(&swapChain_));
+	hr_ = dxgiFactory_->CreateSwapChainForHwnd(commandQueue_, winApp_->hwnd , &swapChainDesc, nullptr, nullptr, reinterpret_cast<IDXGISwapChain1**>(&swapChain_));
 	assert(SUCCEEDED(hr_));
 
 
@@ -174,7 +174,6 @@ void DirectX::Update(){
 	UINT backBufferIndex = swapChain_->GetCurrentBackBufferIndex();
 
 	// TransitionBarrierの設定
-	D3D12_RESOURCE_BARRIER barrier{};
 	// 今回のバリアはTransition
 	barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
 	// Noneにしておく
@@ -193,19 +192,9 @@ void DirectX::Update(){
 	// 指定した色で画面全体をクリアする
 	float clearColor[] = { 0.1f, 0.25f, 0.5f, 1.0f };
 	commandList_->ClearRenderTargetView(rtvHandles[backBufferIndex], clearColor, 0, nullptr);
+}
 
-	// コマンドを積む
-	commandList_->RSSetViewports(1, &Triangle::viewport);
-	commandList_->RSSetScissorRects(1, &Triangle::scissorRect);
-	// RootSignatureを設定。PSOに設定しているけど別途設定が必要
-	commandList_->SetGraphicsRootSignature(Triangle::GetRootSignature());
-	commandList_->SetPipelineState(Triangle::GetGraphicsPipelineState());
-	commandList_->IASetVertexBuffers(0, 1, &Triangle::vertexBufferView);
-	// 形状を設定。PSOに設定しているものとはまた別。同じものを設定すると考えておけば良い
-	commandList_->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	// 描画(DrawCall/ドローコール)。3頂点で1つのインスタンス。
-	commandList_->DrawInstanced(3, 1, 0, 0);
-
+void DirectX::Close(){
 	// 画面に描く処理はすべて終わり、画面に映すので、状態を遷移
 			// 今回はRenderTargetからPresentにする
 	barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_RENDER_TARGET;
@@ -242,7 +231,7 @@ void DirectX::Update(){
 	assert(SUCCEEDED(hr_));
 }
 
-void DirectX::Release(){
+void DirectX::Release(WinApp* winApp_){
 
 	CloseHandle(fenceEvent);
 	fence->Release();
@@ -258,21 +247,9 @@ void DirectX::Release(){
 	dxgiFactory_->Release();
 
 #ifdef _DEBUG
-	window_->debugController->Release();
+	winApp_->debugController->Release();
 #endif
-	CloseWindow(window_->hwnd);
-
-	Triangle::GetVertexResource()->Release();
-	Triangle::GetGraphicsPipelineState()->Release();
-	Triangle::GetSignatureBlob()->Release();
-
-	if (Triangle::GetErrorBlob()) {
-		Triangle::GetErrorBlob()->Release();
-	}
-
-	Triangle::GetRootSignature()->Release();
-	Triangle::GetVertexShaderBlob()->Release();
-	Triangle::GetPixelShaderBlob()->Release();
+	CloseWindow(winApp_->hwnd);
 
 	// リソースリークチェック
 	IDXGIDebug1* debug;
