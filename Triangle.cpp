@@ -11,14 +11,15 @@
 #include "WinApp.h"
 #include "Function.h"
 #include "DirectX.h"
+#include "MathFunction.h"
 
 #pragma comment(lib, "d3d12.lib")
 #pragma comment(lib, "dxgi.lib")
 #pragma comment(lib, "dxguid.lib")
 #pragma comment(lib, "dxcompiler.lib")
 
-Triangle::Triangle()
-{
+Triangle::Triangle(){
+
 }
 
 void Triangle::DxcInitialize(){
@@ -39,8 +40,19 @@ void Triangle::DxcPso(DirectX* dir_){
 	// RootSignature作成
 	D3D12_ROOT_SIGNATURE_DESC descriptionRootSignature{};
 	descriptionRootSignature.Flags = D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
-	// シリアライズしてバイナリにする
 	
+	// RootParameter作成。複数設定できるので配列。今回は結果1つだけなので長さ1の配列
+	D3D12_ROOT_PARAMETER rootParameters[2] = {};
+	rootParameters[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV; // CRVを使う
+	rootParameters[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL; // PixelShaderで使う
+	rootParameters[0].Descriptor.ShaderRegister = 0; // レジスタ番号0とバインド
+	rootParameters[1].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV; // CRVを使う
+	rootParameters[1].ShaderVisibility = D3D12_SHADER_VISIBILITY_VERTEX; // VertexShaderで使う
+	rootParameters[1].Descriptor.ShaderRegister = 0;; // レジスタ番号0とバインド
+	descriptionRootSignature.pParameters = rootParameters; // ルートパラメータ配列へのポインタ
+	descriptionRootSignature.NumParameters = _countof(rootParameters); // 配列の長さ
+
+	// シリアライズしてバイナリにする
 	hr_ = D3D12SerializeRootSignature(&descriptionRootSignature, D3D_ROOT_SIGNATURE_VERSION_1, &signatureBlob, &errorBlob);
 	if (FAILED(hr_)) {
 		Convert::Log(reinterpret_cast<char*>(errorBlob->GetBufferPointer()));
@@ -104,27 +116,33 @@ void Triangle::DxcPso(DirectX* dir_){
 
 void Triangle::DxcVertexDraw(DirectX* dir_, Vector4* pos){
 	// 頂点リソース用のヒープの設定
-	D3D12_HEAP_PROPERTIES uploadHeapProperties{};
-	uploadHeapProperties.Type = D3D12_HEAP_TYPE_UPLOAD;// UploadHeapを使う
-	// 頂点リソースの設定
-	D3D12_RESOURCE_DESC vertexResourceDesc{};
-	// バッファリソース。テクスチャの場合はまた別の設定をする
-	vertexResourceDesc.Dimension = D3D12_RESOURCE_DIMENSION_BUFFER;
-	vertexResourceDesc.Width = sizeof(Vector4) * 3;
-	// バッファの場合はこれらは1にする決まり
-	vertexResourceDesc.Height = 1;
-	vertexResourceDesc.DepthOrArraySize = 1;
-	vertexResourceDesc.MipLevels = 1;
-	vertexResourceDesc.SampleDesc.Count = 1;
-	// バッファの場合はこれにする決まり
-	vertexResourceDesc.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
-	// 実際に頂点リソースを作る
 	
-	hr_ = dir_->GetDevice()->CreateCommittedResource(&uploadHeapProperties, D3D12_HEAP_FLAG_NONE, &vertexResourceDesc, D3D12_RESOURCE_STATE_GENERIC_READ, nullptr, IID_PPV_ARGS(&vertexResource));
-	assert(SUCCEEDED(hr_));
+	uploadHeapProperties.Type = D3D12_HEAP_TYPE_UPLOAD;// UploadHeapを使う
+	
+	//// マテリアル用のリソースを作る。今回はcolor1つ分のサイズを用意する
+	materialResource = CreateBufferResource(dir_->GetDevice(), sizeof(Vector4));
 
 	// 頂点バッファビューを作成する
 
+	// リソースの先頭のアドレスから使う
+	materialBufferView.BufferLocation = materialResource->GetGPUVirtualAddress();
+	// 使用するリソースのサイズは頂点3つ分のサイズ
+	materialBufferView.SizeInBytes = sizeof(Vector4);
+	// 1頂点あたりのサイズ
+	materialBufferView.StrideInBytes = sizeof(Vector4);
+	
+	// マテリアルにデータを書き込む
+	
+	// 書き込むためのアドレスを取得
+	materialResource->Map(0, nullptr, reinterpret_cast<void**>(&materialData));
+	// 今回は赤を書き込んでみる
+	*materialData = Vector4(1.0f, 0.0f, 0.0f, 1.0f);
+
+
+	// 頂点用のリソースを作る。今回はcolor1つ分のサイズを用意する
+	vertexResource = CreateBufferResource(dir_->GetDevice(), sizeof(Vector4) * 3);
+	// 頂点バッファビューを作成する
+	
 	// リソースの先頭のアドレスから使う
 	vertexBufferView.BufferLocation = vertexResource->GetGPUVirtualAddress();
 	// 使用するリソースのサイズは頂点3つ分のサイズ
@@ -149,6 +167,15 @@ void Triangle::DxcVertexDraw(DirectX* dir_, Vector4* pos){
 	vertexData[1] = pos[1];
 	// 右上
 	vertexData[2] = pos[2];
+
+	// WVP用のリソースを作る。Matrix4x4 1つ分のサイズを用意する
+	wvpResource = CreateBufferResource(dir_->GetDevice(), sizeof(Matrix4x4));
+	// データを書き込む
+	
+	// 書き込むためのアドレスを取得
+	wvpResource->Map(0, nullptr, reinterpret_cast<void**>(&wvpData));
+	// 単位行列を書き込んでおく
+	*wvpData = MakeIndentity4x4();
 }
 
 void Triangle::DxcUpdate(DirectX* dir_){
@@ -161,6 +188,10 @@ void Triangle::DxcUpdate(DirectX* dir_){
 	dir_->GetCommandList()->IASetVertexBuffers(0, 1, &vertexBufferView);
 	// 形状を設定。PSOに設定しているものとはまた別。同じものを設定すると考えておけば良い
 	dir_->GetCommandList()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	// マテリアルCBufferの場所を設定
+	dir_->GetCommandList()->SetGraphicsRootConstantBufferView(0, materialResource->GetGPUVirtualAddress());
+	// wvp用のCBufferの場所を設定
+	dir_->GetCommandList()->SetGraphicsRootConstantBufferView(1, wvpResource->GetGPUVirtualAddress());
 	// 描画(DrawCall/ドローコール)。3頂点で1つのインスタンス。
 	dir_->GetCommandList()->DrawInstanced(3, 1, 0, 0);
 }
@@ -187,6 +218,8 @@ void Triangle::DxcScissor(){
 
 void Triangle::DxcRelease(){
 	vertexResource->Release();
+	materialResource->Release();
+	wvpResource->Release();
 	graphicsPipelineState->Release();
 	signatureBlob->Release();
 
@@ -197,5 +230,26 @@ void Triangle::DxcRelease(){
 	rootSignature->Release();
 	vertexShaderBlob->Release();
 	pixelShaderBlob->Release();
+}
+
+ID3D12Resource* Triangle::CreateBufferResource(ID3D12Device* device, size_t sizeInbytes){
+	ID3D12Resource* Resource = nullptr;
+	// 頂点リソースの設定
+	D3D12_RESOURCE_DESC ResourceDesc{};
+	// バッファリソース。テクスチャの場合はまた別の設定をする
+	ResourceDesc.Dimension = D3D12_RESOURCE_DIMENSION_BUFFER;
+	ResourceDesc.Width = sizeInbytes;
+	// バッファの場合はこれらは1にする決まり
+	ResourceDesc.Height = 1;
+	ResourceDesc.DepthOrArraySize = 1;
+	ResourceDesc.MipLevels = 1;
+	ResourceDesc.SampleDesc.Count = 1;
+	// バッファの場合はこれにする決まり
+	ResourceDesc.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
+	// 実際に頂点リソースを作る
+	hr_ = device->CreateCommittedResource(&uploadHeapProperties, D3D12_HEAP_FLAG_NONE, &ResourceDesc, D3D12_RESOURCE_STATE_GENERIC_READ, nullptr, IID_PPV_ARGS(&Resource));
+	assert(SUCCEEDED(hr_));
+
+	return Resource;
 }
 

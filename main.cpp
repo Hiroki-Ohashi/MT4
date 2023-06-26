@@ -11,6 +11,8 @@
 #include "Function.h"
 #include "DirectX.h"
 #include "Triangle.h"
+#include "MathFunction.h"
+
 
 #pragma comment(lib, "d3d12.lib")
 #pragma comment(lib, "dxgi.lib")
@@ -31,7 +33,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		pos[i][0] = { -0.95f - (i * -0.07f),0.0f,0.0f,1.0f };
 		// 上
 		pos[i][1] = { -0.92f - (i * -0.07f),0.05f,0.0f,1.0f };
-		// 右上
+		// 右下
 		pos[i][2] = { -0.89f - (i * -0.07f),0.0f,0.0f,1.0f };
 	}
 
@@ -52,7 +54,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		triangle[i]->DxcViewport();
 		triangle[i]->DxcScissor();
 	}
-	
+
+	Transform transform{ {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f} };
+	Transform cameraTransform{ {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, -0.5f} };
 
 	// ウインドウの×ボタンが押されるまでループ
 	while (msg.message != WM_QUIT) {
@@ -65,7 +69,19 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			// ゲームの処理
 			directX->Update();
 
+
+			transform.rotate.y += 0.03f;
+
+			Matrix4x4 worldMatrix = MakeAffineMatrix(transform.scale, transform.rotate, transform.translate);
+			Matrix4x4 cameraMatrix = MakeAffineMatrix(cameraTransform.scale, cameraTransform.rotate, cameraTransform.translate);
+
+			Matrix4x4 viewMatrix = Inverse(cameraMatrix);
+			Matrix4x4 projectionMatrix = MakePerspectiveMatrix(0.45f, float(winapp->kClientWidth) / float(winapp->kClientHeight), 0.1f, 100.0f);
+			Matrix4x4 worldViewProjectionMatrix = Multiply(worldMatrix, Multiply(viewMatrix, projectionMatrix));
+	
+
 			for (int i = 0; i < Max; i++) {
+				*triangle[i]->wvpData = worldViewProjectionMatrix;
 				triangle[i]->DxcUpdate(directX);
 			}
 
