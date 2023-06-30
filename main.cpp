@@ -11,6 +11,7 @@
 #include "Function.h"
 #include "DirectX.h"
 #include "Triangle.h"
+#include "ImGuiManeger.h"
 #include "MathFunction.h"
 
 
@@ -40,6 +41,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	WinApp* winapp = new WinApp(L"CG2");
 	DirectX* directX = new DirectX;
 	Triangle* triangle[Max];
+	ImGuiManeger* imgui = new ImGuiManeger;
 	
 	directX->Initialize(winapp);
 	directX->Fence();
@@ -56,7 +58,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	}
 
 	Transform transform{ {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f} };
-	Transform cameraTransform{ {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, -0.5f} };
+	Transform cameraTransform{ {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, -5.0f} };
+
+	imgui->Initialize(winapp, directX);
 
 	// ウインドウの×ボタンが押されるまでループ
 	while (msg.message != WM_QUIT) {
@@ -67,6 +71,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		}
 		else {
 			// ゲームの処理
+			imgui->Update();
 			directX->Update();
 
 
@@ -79,11 +84,13 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			Matrix4x4 projectionMatrix = MakePerspectiveMatrix(0.45f, float(winapp->kClientWidth) / float(winapp->kClientHeight), 0.1f, 100.0f);
 			Matrix4x4 worldViewProjectionMatrix = Multiply(worldMatrix, Multiply(viewMatrix, projectionMatrix));
 	
+			
 
 			for (int i = 0; i < Max; i++) {
 				*triangle[i]->wvpData = worldViewProjectionMatrix;
 				triangle[i]->DxcUpdate(directX);
 			}
+			imgui->Draw(directX);
 
 			directX->Close();
 		}
@@ -92,8 +99,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		triangle[i]->DxcRelease();
 	}
 
-	directX->Release(winapp);
 
+	imgui->Release();
+	directX->Release(winapp);
+	
 	
 
 	return 0;

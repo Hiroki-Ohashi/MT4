@@ -113,7 +113,7 @@ void DirectX::Initialize(WinApp* winApp_) {
 
 	// スワップチェーンを生成する
 
-	DXGI_SWAP_CHAIN_DESC1 swapChainDesc{};
+	
 	swapChainDesc.Width =1280;// 画面の幅
 	swapChainDesc.Height = 720;// 画面の高さ
 	swapChainDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;// 色の形式
@@ -125,14 +125,12 @@ void DirectX::Initialize(WinApp* winApp_) {
 	hr_ = dxgiFactory_->CreateSwapChainForHwnd(commandQueue_, winApp_->hwnd , &swapChainDesc, nullptr, nullptr, reinterpret_cast<IDXGISwapChain1**>(&swapChain_));
 	assert(SUCCEEDED(hr_));
 
+	// RTV用のヒープでディスクリプタの数は2。RTVはShader内で触るものではないので、ShaderVisibleはfalse
+	rtvDescriptorHeap_ = CreateDescriptorHeap(device_, D3D12_DESCRIPTOR_HEAP_TYPE_RTV, 2, false);
 
-	// ディスクリプタヒープの生成
-	D3D12_DESCRIPTOR_HEAP_DESC rtvDescriptorHeapDesc{};
-	rtvDescriptorHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;//レンダーターゲットビュー用
-	rtvDescriptorHeapDesc.NumDescriptors = 2;// ダブルバッファ用に二つ。多くても可
-	hr_ = device_->CreateDescriptorHeap(&rtvDescriptorHeapDesc, IID_PPV_ARGS(&rtvDescriptorHeap_));
-	// ディスクリプタヒープが作れなかったので起動できない
-	assert(SUCCEEDED(hr_));
+	// SRV用のヒープでディスクリプタの数は128。SRVはShader内で触るものなので、ShaderVisibleはtrue
+	srvDescriptorHeap_ = CreateDescriptorHeap(device_, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, 128, true);
+
 
 	// SwapChainからResourceを引っ張ってくる
 	hr_ = swapChain_->GetBuffer(0, IID_PPV_ARGS(&swapChainResources[0]));
@@ -142,7 +140,6 @@ void DirectX::Initialize(WinApp* winApp_) {
 	assert(SUCCEEDED(hr_));
 
 	// RTVの設定
-	D3D12_RENDER_TARGET_VIEW_DESC rtvDesc{};
 	rtvDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
 	rtvDesc.ViewDimension = D3D12_RTV_DIMENSION_TEXTURE2D;
 	// ディスクリプタの先頭を取得する
@@ -236,6 +233,7 @@ void DirectX::Release(WinApp* winApp_){
 	CloseHandle(fenceEvent);
 	fence->Release();
 	rtvDescriptorHeap_->Release();
+	srvDescriptorHeap_->Release();
 	swapChainResources[0]->Release();
 	swapChainResources[1]->Release();
 	swapChain_->Release();
@@ -259,4 +257,19 @@ void DirectX::Release(WinApp* winApp_){
 		debug->ReportLiveObjects(DXGI_DEBUG_D3D12, DXGI_DEBUG_RLO_ALL);
 		debug->Release();
 	}
+}
+
+// DescriptorHeap関数
+ID3D12DescriptorHeap* DirectX::CreateDescriptorHeap(ID3D12Device* device, D3D12_DESCRIPTOR_HEAP_TYPE heapType, UINT numDescriptors, bool shaderVisible)
+{
+	ID3D12DescriptorHeap* descriptorHeap = nullptr;
+	// ディスクリプタヒープの生成
+	D3D12_DESCRIPTOR_HEAP_DESC descriptorHeapDesc{};
+	descriptorHeapDesc.Type = heapType;
+	descriptorHeapDesc.NumDescriptors = numDescriptors;
+	descriptorHeapDesc.Flags = shaderVisible ? D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE : D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
+	HRESULT hr = device_->CreateDescriptorHeap(&descriptorHeapDesc, IID_PPV_ARGS(&descriptorHeap));
+	// ディスクリプタヒープが作れなかったので起動できない
+	assert(SUCCEEDED(hr));
+	return descriptorHeap;
 }
