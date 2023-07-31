@@ -9,7 +9,7 @@
 #include <dxcapi.h>
 #include "WinApp.h"
 #include "Function.h"
-#include "DirectX.h"
+#include "DirectXManeger.h"
 #include "Triangle.h"
 #include "ImGuiManeger.h"
 #include "MathFunction.h"
@@ -25,6 +25,8 @@
 // WIndowsアプリでのエントリーポイント(main関数)
 int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
+	CoInitializeEx(0, COINIT_MULTITHREADED);
+
 	// 三角形の数
 	const int Max = 30;
 
@@ -39,7 +41,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	}
 
 	WinApp* winapp = new WinApp(L"CG2");
-	DirectX* directX = new DirectX;
+	DirectXManeger* directX = new DirectXManeger();
 	Triangle* triangle[Max];
 	ImGuiManeger* imgui = new ImGuiManeger;
 	
@@ -104,6 +106,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	directX->Release(winapp);
 	
 	
-
+	CoUninitialize();
 	return 0;
 }

@@ -2,6 +2,16 @@
 #include "Function.h"
 #include<cmath>
 #include<cassert>
+struct Vector2 final {
+	float x;
+	float y;
+};
+
+struct VertexData {
+	Vector4 position;
+	Vector2 texcoord;
+};
+
 
 
 struct Vector3 final {

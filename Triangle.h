@@ -5,7 +5,7 @@
 #include "MathFunction.h"
 
 class WinApp;
-class DirectX;
+class DirectXManeger;
 
 class Triangle {
 public:
@@ -14,17 +14,21 @@ public:
 
 	void DxcInitialize();
 
-	void DxcPso(DirectX* dir_);
+	void DxcPso(DirectXManeger* dir_);
 
-	void DxcVertexDraw(DirectX* dir_, Vector4* pos);
-	void DxcUpdate(DirectX* dir_);
+	void DxcVertexDraw(DirectXManeger* dir_, Vector4* pos);
+	void DxcUpdate(DirectXManeger* dir_);
 
 	void DxcViewport();
 	void DxcScissor();
 
+	void UploadTextureData(ID3D12Resource* texture, const DirectX::ScratchImage& mipImages);
+
 	void DxcRelease();
 
+
 	ID3D12Resource* CreateBufferResource(ID3D12Device* device, size_t sizeInbytes);
+	ID3D12Resource* CreateTextureResource(ID3D12Device* device, const DirectX::TexMetadata& metadata);
 
 	IDxcUtils* dxcUtils = nullptr;
 	IDxcCompiler3* dxcCompiler = nullptr;
@@ -42,9 +46,11 @@ public:
 	ID3D12Resource* materialResource;
 	ID3D12Resource* wvpResource;
 
-	Vector4* vertexData;
+	VertexData* vertexData;
 	Vector4* materialData;
 	Matrix4x4* wvpData;
+
+	ID3D12Resource* textureResource;
 
 	IDxcBlob* vertexShaderBlob;
 	IDxcBlob* pixelShaderBlob;
@@ -54,6 +60,8 @@ public:
 
 	D3D12_VIEWPORT viewport{};
 	D3D12_RECT scissorRect{};
+
+	D3D12_GPU_DESCRIPTOR_HANDLE textureSrvHandleGPU;
 
 	static inline HRESULT hr_;
 

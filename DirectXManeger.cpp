@@ -8,14 +8,14 @@
 #include <Windows.h>
 #include "WinApp.h"
 #include "Function.h"
-#include "DirectX.h"
+#include "DirectXManeger.h"
 #include "Triangle.h"
 
 #pragma comment(lib, "d3d12.lib")
 #pragma comment(lib, "dxgi.lib")
 #pragma comment(lib, "dxguid.lib")
 
-void DirectX::Initialize(WinApp* winApp_) {
+void DirectXManeger::Initialize(WinApp* winApp_) {
 
 	// DXGIファクトリーの生成
 	hr_ = CreateDXGIFactory(IID_PPV_ARGS(&dxgiFactory_));
@@ -155,7 +155,7 @@ void DirectX::Initialize(WinApp* winApp_) {
 	device_->CreateRenderTargetView(swapChainResources[1], &rtvDesc, rtvHandles[1]);
 }
 
-void DirectX::Fence(){
+void DirectXManeger::Fence(){
 	// 初期値0でFenceを作る
 
 	hr_ = device_->CreateFence(fenceValue, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&fence));
@@ -166,7 +166,7 @@ void DirectX::Fence(){
 	assert(fenceEvent != nullptr);
 }
 
-void DirectX::Update(){
+void DirectXManeger::Update(){
 	//これから書き込むバックバッファのインデックスを取得 
 	UINT backBufferIndex = swapChain_->GetCurrentBackBufferIndex();
 
@@ -191,7 +191,7 @@ void DirectX::Update(){
 	commandList_->ClearRenderTargetView(rtvHandles[backBufferIndex], clearColor, 0, nullptr);
 }
 
-void DirectX::Close(){
+void DirectXManeger::Close(){
 	// 画面に描く処理はすべて終わり、画面に映すので、状態を遷移
 			// 今回はRenderTargetからPresentにする
 	barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_RENDER_TARGET;
@@ -228,7 +228,7 @@ void DirectX::Close(){
 	assert(SUCCEEDED(hr_));
 }
 
-void DirectX::Release(WinApp* winApp_){
+void DirectXManeger::Release(WinApp* winApp_){
 
 	CloseHandle(fenceEvent);
 	fence->Release();
@@ -260,7 +260,7 @@ void DirectX::Release(WinApp* winApp_){
 }
 
 // DescriptorHeap関数
-ID3D12DescriptorHeap* DirectX::CreateDescriptorHeap(ID3D12Device* device, D3D12_DESCRIPTOR_HEAP_TYPE heapType, UINT numDescriptors, bool shaderVisible)
+ID3D12DescriptorHeap* DirectXManeger::CreateDescriptorHeap(ID3D12Device* device, D3D12_DESCRIPTOR_HEAP_TYPE heapType, UINT numDescriptors, bool shaderVisible)
 {
 	ID3D12DescriptorHeap* descriptorHeap = nullptr;
 	// ディスクリプタヒープの生成

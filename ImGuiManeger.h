@@ -4,13 +4,12 @@
 #include <d3d12.h>
 
 class WinApp;
-class DirectX;
+class DirectXManeger;
 
 class ImGuiManeger {
 public:
-
-	void Initialize(WinApp* winApp_, DirectX* dir_);
+	void Initialize(WinApp* winApp_, DirectXManeger* dir_);
 	void Update();
-	void Draw(DirectX* dir_);
+	void Draw(DirectXManeger* dir_);
 	void Release();
 };

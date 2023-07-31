@@ -8,6 +8,7 @@
 #include <cassert>
 #include <dxgidebug.h>
 #include <dxcapi.h>
+#include "externals/DirectXTex/DirectXTex.h"
 
 struct Vector4 final {
 	float x;
@@ -33,4 +34,7 @@ public:
 		IDxcUtils* dxcUtils,
 		IDxcCompiler3* dxcCompiler,
 		IDxcIncludeHandler* includeHandler);
+
+	static DirectX::ScratchImage LoadTexture(const std::string& filePath);
 };
+

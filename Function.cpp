@@ -9,7 +9,6 @@
 #include <dxgidebug.h>
 #include <dxcapi.h>
 
-
 // string -> wstring
 std::wstring Convert::ConvertString(const std::string& str)
 {
@@ -107,4 +106,20 @@ IDxcBlob* Convert::CompileShader(const std::wstring& filePath, const wchar_t* pr
 	shaderResult->Release();
 	// 実行用のバイナリを返却
 	return shaderBlob;
+}
+
+DirectX::ScratchImage Convert::LoadTexture(const std::string& filePath) {
+
+	// テクスチャファイルを読んでプログラムで扱えるようにする
+	DirectX::ScratchImage image{};
+	std::wstring filePathW = Convert::ConvertString(filePath);;
+	HRESULT hr = DirectX::LoadFromWICFile(filePathW.c_str(), DirectX::WIC_FLAGS_FORCE_SRGB, nullptr, image);
+	assert(SUCCEEDED(hr));
+
+	// ミップマップの作成
+	DirectX::ScratchImage mipImages{};
+	hr = DirectX::GenerateMipMaps(image.GetImages(), image.GetImageCount(), image.GetMetadata(), DirectX::TEX_FILTER_SRGB, 0, mipImages);
+	assert(SUCCEEDED(hr));
+
+	return mipImages;
 }
