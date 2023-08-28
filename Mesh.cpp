@@ -1,4 +1,4 @@
-#include "Triangle.h"
+#include "Mesh.h"
 #include <Windows.h>
 #include <cstdint>
 #include <string>
@@ -10,7 +10,7 @@
 #include <dxcapi.h>
 #include "WinApp.h"
 #include "Function.h"
-#include "DirectXManeger.h"
+#include "DirectXCommon.h"
 #include "MathFunction.h"
 
 #pragma comment(lib, "d3d12.lib")
@@ -53,13 +53,16 @@ void Triangle::DxcPso(DirectXManeger* dir_){
 	rootParameters[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV; // CRVを使う
 	rootParameters[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL; // PixelShaderで使う
 	rootParameters[0].Descriptor.ShaderRegister = 0; // レジスタ番号0とバインド
+
 	rootParameters[1].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV; // CRVを使う
 	rootParameters[1].ShaderVisibility = D3D12_SHADER_VISIBILITY_VERTEX; // VertexShaderで使う
 	rootParameters[1].Descriptor.ShaderRegister = 0;; // レジスタ番号0とバインド
+
 	rootParameters[2].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE; // DescriptorTableを使う
 	rootParameters[2].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL; // PixelShaderで使う
 	rootParameters[2].DescriptorTable.pDescriptorRanges = descriptorRange; // Tableの中身の配列を指定
 	rootParameters[2].DescriptorTable.NumDescriptorRanges = _countof(descriptorRange); // Tableで利用する数
+
 	descriptionRootSignature.pParameters = rootParameters; // ルートパラメータ配列へのポインタ
 	descriptionRootSignature.NumParameters = _countof(rootParameters); // 配列の長さ
 
@@ -179,7 +182,7 @@ void Triangle::DxcVertexDraw(DirectXManeger* dir_, Vector4* pos){
 	vertexBufferView.StrideInBytes = sizeof(VertexData);
 
 	// 頂点リソースにデータを書き込む
-	
+	vertexData = nullptr;
 	// 書き込むためのアドレスを取得
 	vertexResource->Map(0, nullptr, reinterpret_cast<void**>(&vertexData));
 	//// 左下
@@ -194,7 +197,7 @@ void Triangle::DxcVertexDraw(DirectXManeger* dir_, Vector4* pos){
 	vertexData[0].texcoord = { 0.0f, 1.0f };
 	// 上
 	vertexData[1].position = pos[1];
-	vertexData[0].texcoord = { 0.0f, 0.0f };
+	vertexData[0].texcoord = { 0.5f, 0.0f };
 
 	// 右上
 	vertexData[2].position = pos[2];
@@ -216,7 +219,7 @@ void Triangle::DxcVertexDraw(DirectXManeger* dir_, Vector4* pos){
 	textureResource = CreateTextureResource(dir_->GetDevice(), metadata);
 	UploadTextureData(textureResource, mipImages);
 
-	// metaDatawを基にSRVの設定
+	// metaDataを基にSRVの設定
 	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc{};
 	srvDesc.Format = metadata.format;
 	srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;

@@ -1,5 +1,5 @@
 #include "ImGuiManeger.h"
-#include "DirectXManeger.h"
+#include "DirectXCommon.h"
 #include "WinApp.h"
 #include <Windows.h>
 #include <cstdint>

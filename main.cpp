@@ -9,8 +9,8 @@
 #include <dxcapi.h>
 #include "WinApp.h"
 #include "Function.h"
-#include "DirectXManeger.h"
-#include "Triangle.h"
+#include "DirectXCommon.h"
+#include "Mesh.h"
 #include "ImGuiManeger.h"
 #include "MathFunction.h"
 
@@ -95,8 +95,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			imgui->Draw(directX);
 
 			directX->Close();
+			CoUninitialize();
 		}
 	}
+
 	for (int i = 0; i < Max; i++) {
 		triangle[i]->DxcRelease();
 	}
@@ -104,8 +106,5 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 	imgui->Release();
 	directX->Release(winapp);
-	
-	
-	CoUninitialize();
 	return 0;
 }

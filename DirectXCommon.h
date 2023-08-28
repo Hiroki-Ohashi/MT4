@@ -24,8 +24,8 @@ public:
 
 	ID3D12DescriptorHeap* CreateDescriptorHeap(ID3D12Device* device, D3D12_DESCRIPTOR_HEAP_TYPE heapType, UINT numDescriptors, bool shaderVisible);
 
-	inline ID3D12Device* GetDevice() { return device_; }
-	inline ID3D12GraphicsCommandList* GetCommandList() { return commandList_; }
+	ID3D12Device* GetDevice() { return device_; }
+	ID3D12GraphicsCommandList* GetCommandList() { return commandList_; }
 
 	IDXGIFactory7* dxgiFactory_ = nullptr;
 	ID3D12Device* device_ = nullptr;
