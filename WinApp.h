@@ -3,7 +3,7 @@
 #include <cstdint>
 #include <d3d12.h>
 
-class DirectXManeger;
+class DirectXCommon;
 
 class WinApp {
 public:

@@ -41,7 +41,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	}
 
 	WinApp* winapp = new WinApp(L"CG2");
-	DirectXManeger* directX = new DirectXManeger();
+	DirectXCommon* directX = new DirectXCommon();
 	Triangle* triangle[Max];
 	ImGuiManeger* imgui = new ImGuiManeger;
 	
@@ -95,8 +95,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			imgui->Draw(directX);
 
 			directX->Close();
-			CoUninitialize();
 		}
+		CoUninitialize();
 	}
 
 	for (int i = 0; i < Max; i++) {

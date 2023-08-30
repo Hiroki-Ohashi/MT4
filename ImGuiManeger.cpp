@@ -8,7 +8,7 @@
 #include "externals/imgui/imgui_impl_dx12.h"
 #include "externals/imgui/imgui_impl_win32.h"
 
-void ImGuiManeger::Initialize(WinApp* winApp_, DirectXManeger* dir_){
+void ImGuiManeger::Initialize(WinApp* winApp_, DirectXCommon* dir_){
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
 	ImGui::StyleColorsDark();
@@ -31,7 +31,7 @@ void ImGuiManeger::Update(){
 	ImGui::ShowDemoWindow();
 }
 
-void ImGuiManeger::Draw(DirectXManeger* dir_){
+void ImGuiManeger::Draw(DirectXCommon* dir_){
 	// ImGuiの内部コマンドを生成する
 	ImGui::Render();
 

@@ -36,7 +36,7 @@ void Triangle::DxcInitialize(){
 	assert(SUCCEEDED(hr_));
 }
 
-void Triangle::DxcPso(DirectXManeger* dir_){
+void Triangle::DxcPso(DirectXCommon* dir_){
 
 	D3D12_DESCRIPTOR_RANGE descriptorRange[1] = {};
 	descriptorRange[0].BaseShaderRegister = 0; // 0から始まる
@@ -49,7 +49,6 @@ void Triangle::DxcPso(DirectXManeger* dir_){
 	descriptionRootSignature.Flags = D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
 	
 	// RootParameter作成。複数設定できるので配列。今回は結果1つだけなので長さ1の配列
-	D3D12_ROOT_PARAMETER rootParameters[3] = {};
 	rootParameters[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV; // CRVを使う
 	rootParameters[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL; // PixelShaderで使う
 	rootParameters[0].Descriptor.ShaderRegister = 0; // レジスタ番号0とバインド
@@ -145,7 +144,7 @@ void Triangle::DxcPso(DirectXManeger* dir_){
 	assert(SUCCEEDED(hr_));
 }
 
-void Triangle::DxcVertexDraw(DirectXManeger* dir_, Vector4* pos){
+void Triangle::DxcVertexDraw(DirectXCommon* dir_, Vector4* pos){
 	// 頂点リソース用のヒープの設定
 	
 	uploadHeapProperties.Type = D3D12_HEAP_TYPE_UPLOAD;// UploadHeapを使う
@@ -238,7 +237,7 @@ void Triangle::DxcVertexDraw(DirectXManeger* dir_, Vector4* pos){
 	dir_->GetDevice()->CreateShaderResourceView(textureResource, &srvDesc, textureSrvHandleCPU);
 }
 
-void Triangle::DxcUpdate(DirectXManeger* dir_){
+void Triangle::DxcUpdate(DirectXCommon* dir_){
 	// コマンドを積む
 	dir_->GetCommandList()->RSSetViewports(1, &viewport);
 	dir_->GetCommandList()->RSSetScissorRects(1, &scissorRect);

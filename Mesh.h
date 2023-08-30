@@ -5,7 +5,7 @@
 #include "MathFunction.h"
 
 class WinApp;
-class DirectXManeger;
+class DirectXCommon;
 
 class Triangle {
 public:
@@ -14,10 +14,10 @@ public:
 
 	void DxcInitialize();
 
-	void DxcPso(DirectXManeger* dir_);
+	void DxcPso(DirectXCommon* dir_);
 
-	void DxcVertexDraw(DirectXManeger* dir_, Vector4* pos);
-	void DxcUpdate(DirectXManeger* dir_);
+	void DxcVertexDraw(DirectXCommon* dir_, Vector4* pos);
+	void DxcUpdate(DirectXCommon* dir_);
 
 	void DxcViewport();
 	void DxcScissor();
@@ -62,6 +62,8 @@ public:
 	D3D12_RECT scissorRect{};
 
 	D3D12_GPU_DESCRIPTOR_HANDLE textureSrvHandleGPU;
+
+	D3D12_ROOT_PARAMETER rootParameters[3] = {};
 
 	static inline HRESULT hr_;
 

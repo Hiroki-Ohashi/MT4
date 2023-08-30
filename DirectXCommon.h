@@ -14,7 +14,7 @@
 class WinApp;
 class Triangle;
 
-class DirectXManeger {
+class DirectXCommon {
 public:
 	void Initialize(WinApp* winApp_);
 	void Fence();
