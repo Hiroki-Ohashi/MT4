@@ -92,6 +92,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 				*triangle[i]->wvpData = worldViewProjectionMatrix;
 				triangle[i]->DxcUpdate(directX);
 			}
+
 			imgui->Draw(directX);
 
 			directX->Close();

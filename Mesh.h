@@ -63,8 +63,6 @@ public:
 
 	D3D12_GPU_DESCRIPTOR_HANDLE textureSrvHandleGPU;
 
-	D3D12_ROOT_PARAMETER rootParameters[3] = {};
-
 	static inline HRESULT hr_;
 
 	static WinApp* window_;
