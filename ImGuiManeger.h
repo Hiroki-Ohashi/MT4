@@ -9,7 +9,10 @@ class DirectXCommon;
 class ImGuiManeger {
 public:
 	void Initialize(WinApp* winApp_, DirectXCommon* dir_);
+
 	void Update();
+
 	void Draw(DirectXCommon* dir_);
+
 	void Release();
 };

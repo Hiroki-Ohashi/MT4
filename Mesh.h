@@ -7,29 +7,29 @@
 class WinApp;
 class DirectXCommon;
 
-class Triangle {
+class Mesh {
 public:
-	Triangle();
-	~Triangle();
+	Mesh();
+	~Mesh();
 
-	void DxcInitialize();
+	void Initialize(DirectXCommon* dir_);
 
-	void DxcPso(DirectXCommon* dir_);
+	void Pso(DirectXCommon* dir_);
 
-	void DxcVertexDraw(DirectXCommon* dir_, Vector4* pos);
-	void DxcUpdate(DirectXCommon* dir_);
+	void VertexDraw(DirectXCommon* dir_, Vector4* pos);
 
-	void DxcViewport();
-	void DxcScissor();
+	void Update(DirectXCommon* dir_);
+
+	void Viewport();
+	void Scissor();
 
 	void UploadTextureData(ID3D12Resource* texture, const DirectX::ScratchImage& mipImages);
 
-	void DxcRelease();
+	void Release();
 
-
-	ID3D12Resource* CreateBufferResource(ID3D12Device* device, size_t sizeInbytes);
 	ID3D12Resource* CreateTextureResource(ID3D12Device* device, const DirectX::TexMetadata& metadata);
 
+public:
 	IDxcUtils* dxcUtils = nullptr;
 	IDxcCompiler3* dxcCompiler = nullptr;
 	IDxcIncludeHandler* includeHandler = nullptr;
@@ -40,16 +40,6 @@ public:
 	ID3D12RootSignature* rootSignature = nullptr;
 	ID3D12PipelineState* graphicsPipelineState = nullptr;
 
-	D3D12_HEAP_PROPERTIES uploadHeapProperties{};
-
-	ID3D12Resource* vertexResource;
-	ID3D12Resource* materialResource;
-	ID3D12Resource* wvpResource;
-
-	VertexData* vertexData;
-	Vector4* materialData;
-	Matrix4x4* wvpData;
-
 	ID3D12Resource* textureResource;
 
 	IDxcBlob* vertexShaderBlob;
@@ -58,9 +48,12 @@ public:
 	D3D12_VERTEX_BUFFER_VIEW vertexBufferView{};
 	D3D12_VERTEX_BUFFER_VIEW materialBufferView{};
 
+	D3D12_ROOT_PARAMETER rootParameters[3] = {};
+
 	D3D12_VIEWPORT viewport{};
 	D3D12_RECT scissorRect{};
 
+	D3D12_CPU_DESCRIPTOR_HANDLE textureSrvHandleCPU;
 	D3D12_GPU_DESCRIPTOR_HANDLE textureSrvHandleGPU;
 
 	static inline HRESULT hr_;

@@ -2,15 +2,12 @@
 #include <cstdint>
 #include <string>
 #include <format>
-#include <d3d12.h>
-#include <dxgi1_6.h>
-#include <cassert>
-#include <dxgidebug.h>
-#include <dxcapi.h>
+
 #include "WinApp.h"
 #include "Function.h"
 #include "DirectXCommon.h"
 #include "Mesh.h"
+#include "Triangle.h"
 #include "ImGuiManeger.h"
 #include "MathFunction.h"
 
@@ -31,7 +28,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	const int Max = 30;
 
 	Vector4 pos[Max][3];
-	for (int i = 0; i < Max; i++) {
+	for (int i = 1; i < Max; i++) {
 		// 左下
 		pos[i][0] = { -0.95f - (i * -0.07f),0.0f,0.0f,1.0f };
 		// 上
@@ -40,23 +37,26 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		pos[i][2] = { -0.89f - (i * -0.07f),0.0f,0.0f,1.0f };
 	}
 
+	// 左下
+	pos[0][0] = { -0.1f, 0.5f, 0.0f, 1.0f };
+	// 上
+	pos[0][1] = { 0.0f, 0.7f, 0.0f, 1.0f };
+	// 右下
+	pos[0][2] = { 0.1f, 0.5f, 0.0f, 1.0f };
+
 	WinApp* winapp = new WinApp(L"CG2");
 	DirectXCommon* directX = new DirectXCommon();
+	Mesh* mesh = new Mesh();
 	Triangle* triangle[Max];
 	ImGuiManeger* imgui = new ImGuiManeger;
 	
 	directX->Initialize(winapp);
-	directX->Fence();
+	mesh->Initialize(directX);
 
 	MSG msg{};
 
 	for (int i = 0; i < Max; i++) {
-		triangle[i] = new Triangle;
-		triangle[i]->DxcInitialize();
-		triangle[i]->DxcPso(directX);
-		triangle[i]->DxcVertexDraw(directX, pos[i]);
-		triangle[i]->DxcViewport();
-		triangle[i]->DxcScissor();
+		triangle[i]->Initialize(directX, pos[i]);
 	}
 
 	Transform transform{ {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f} };
@@ -75,6 +75,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			// ゲームの処理
 			imgui->Update();
 			directX->Update();
+			mesh->Update(directX);
 
 
 			transform.rotate.y += 0.03f;
@@ -88,20 +89,20 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	
 			
 
-			for (int i = 0; i < Max; i++) {
-				*triangle[i]->wvpData = worldViewProjectionMatrix;
-				triangle[i]->DxcUpdate(directX);
+			for (int i = 1; i < Max; i++) {
+				triangle[i]->Draw(directX);
 			}
 
-			imgui->Draw(directX);
+			
 
+			imgui->Draw(directX);
 			directX->Close();
 		}
 		CoUninitialize();
 	}
 
 	for (int i = 0; i < Max; i++) {
-		triangle[i]->DxcRelease();
+		triangle[i]->Release();
 	}
 
 

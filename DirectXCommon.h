@@ -12,7 +12,7 @@
 #pragma comment(lib, "dxgi.lib")
 
 class WinApp;
-class Triangle;
+class Mesh;
 
 class DirectXCommon {
 public:
@@ -27,6 +27,7 @@ public:
 	ID3D12Device* GetDevice() { return device_; }
 	ID3D12GraphicsCommandList* GetCommandList() { return commandList_; }
 
+public:
 	IDXGIFactory7* dxgiFactory_ = nullptr;
 	ID3D12Device* device_ = nullptr;
 	IDXGIAdapter4* useAdapter_ = nullptr;

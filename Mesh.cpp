@@ -18,11 +18,11 @@
 #pragma comment(lib, "dxguid.lib")
 #pragma comment(lib, "dxcompiler.lib")
 
-Triangle::Triangle(){
+Mesh::Mesh(){
 
 }
 
-void Triangle::DxcInitialize(){
+void Mesh::Initialize(DirectXCommon* dir_) {
 	// dxcCompilerを初期化
 
 	hr_ = DxcCreateInstance(CLSID_DxcUtils, IID_PPV_ARGS(&dxcUtils));
@@ -34,22 +34,19 @@ void Triangle::DxcInitialize(){
 
 	hr_ = dxcUtils->CreateDefaultIncludeHandler(&includeHandler);
 	assert(SUCCEEDED(hr_));
+
+	Mesh::Pso(dir_);
+	Mesh::Viewport();
+	Mesh::Scissor();
 }
 
-void Triangle::DxcPso(DirectXCommon* dir_){
-
-	D3D12_DESCRIPTOR_RANGE descriptorRange[1] = {};
-	descriptorRange[0].BaseShaderRegister = 0; // 0から始まる
-	descriptorRange[0].NumDescriptors = 1; // 数は1つ
-	descriptorRange[0].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV; // SRVを使う
-	descriptorRange[0].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND; // offsetを自動計算
+void Mesh::Pso(DirectXCommon* dir_){
 
 	// RootSignature作成
 	D3D12_ROOT_SIGNATURE_DESC descriptionRootSignature{};
 	descriptionRootSignature.Flags = D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
 
 	// RootParameter作成。複数設定できるので配列。今回は結果1つだけなので長さ1の配列
-	D3D12_ROOT_PARAMETER rootParameters[3] = {};
 
 	rootParameters[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV; // CRVを使う
 	rootParameters[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL; // PixelShaderで使う
@@ -59,7 +56,14 @@ void Triangle::DxcPso(DirectXCommon* dir_){
 	rootParameters[1].ShaderVisibility = D3D12_SHADER_VISIBILITY_VERTEX; // VertexShaderで使う
 	rootParameters[1].Descriptor.ShaderRegister = 0;; // レジスタ番号0とバインド
 
-	rootParameters[2].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE; // DescriptorTableを使う
+	//DescriptorRange
+	D3D12_DESCRIPTOR_RANGE descriptorRange[1] = {};
+	descriptorRange[0].BaseShaderRegister = 0;//0から始まる
+	descriptorRange[0].NumDescriptors = 1;//数は1つ
+	descriptorRange[0].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;//SRVを使う
+	descriptorRange[0].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;//Offsetを自動計算
+
+	rootParameters[2].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE; // Descriptortableを使う
 	rootParameters[2].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL; // PixelShaderで使う
 	rootParameters[2].DescriptorTable.pDescriptorRanges = descriptorRange; // Tableの中身の配列を指定
 	rootParameters[2].DescriptorTable.NumDescriptorRanges = _countof(descriptorRange); // Tableで利用する数
@@ -77,6 +81,7 @@ void Triangle::DxcPso(DirectXCommon* dir_){
 	staticSamplers[0].MaxLOD = D3D12_FLOAT32_MAX; // ありったけのMipmapを使う
 	staticSamplers[0].ShaderRegister = 0; // レジスタ番号0を使う
 	staticSamplers[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL; // PixelShaderで使う
+
 	descriptionRootSignature.pStaticSamplers = staticSamplers;
 	descriptionRootSignature.NumStaticSamplers = _countof(staticSamplers);
 
@@ -146,74 +151,8 @@ void Triangle::DxcPso(DirectXCommon* dir_){
 	assert(SUCCEEDED(hr_));
 }
 
-void Triangle::DxcVertexDraw(DirectXCommon* dir_, Vector4* pos){
-	// 頂点リソース用のヒープの設定
+void Mesh::VertexDraw(DirectXCommon* dir_, Vector4* pos){
 	
-	uploadHeapProperties.Type = D3D12_HEAP_TYPE_UPLOAD;// UploadHeapを使う
-	
-	//// マテリアル用のリソースを作る。今回はcolor1つ分のサイズを用意する
-	materialResource = CreateBufferResource(dir_->GetDevice(), sizeof(Vector4));
-
-	// 頂点バッファビューを作成する
-
-	// リソースの先頭のアドレスから使う
-	materialBufferView.BufferLocation = materialResource->GetGPUVirtualAddress();
-	// 使用するリソースのサイズは頂点3つ分のサイズ
-	materialBufferView.SizeInBytes = sizeof(Vector4);
-	// 1頂点あたりのサイズ
-	materialBufferView.StrideInBytes = sizeof(Vector4);
-	
-	// マテリアルにデータを書き込む
-	
-	// 書き込むためのアドレスを取得
-	materialResource->Map(0, nullptr, reinterpret_cast<void**>(&materialData));
-	// 今回は赤を書き込んでみる
-	*materialData = Vector4(1.0f, 0.0f, 0.0f, 1.0f);
-
-
-	// 頂点用のリソースを作る。今回はcolor1つ分のサイズを用意する
-	vertexResource = CreateBufferResource(dir_->GetDevice(), sizeof(VertexData) * 3);
-	// 頂点バッファビューを作成する
-	
-	// リソースの先頭のアドレスから使う
-	vertexBufferView.BufferLocation = vertexResource->GetGPUVirtualAddress();
-	// 使用するリソースのサイズは頂点3つ分のサイズ
-	vertexBufferView.SizeInBytes = sizeof(VertexData) * 3;
-	// 1頂点あたりのサイズ
-	vertexBufferView.StrideInBytes = sizeof(VertexData);
-
-	// 頂点リソースにデータを書き込む
-	vertexData = nullptr;
-	// 書き込むためのアドレスを取得
-	vertexResource->Map(0, nullptr, reinterpret_cast<void**>(&vertexData));
-	//// 左下
-	//vertexData[0] = { -0.1f, -0.1f, 0.0f, 1.0f };
-	//// 上
-	//vertexData[1] = { 0.0f, 0.1f, 0.0f, 1.0f };
-	//// 右上
-	//vertexData[2] = { 0.1f, -0.1f, 0.0f, 1.0f };
-
-	// 左下
-	vertexData[0].position = pos[0];
-	vertexData[0].texcoord = { 0.0f, 1.0f };
-	// 上
-	vertexData[1].position = pos[1];
-	vertexData[0].texcoord = { 0.5f, 0.0f };
-
-	// 右上
-	vertexData[2].position = pos[2];
-	vertexData[0].texcoord = { 1.0f, 1.0f };
-
-
-	// WVP用のリソースを作る。Matrix4x4 1つ分のサイズを用意する
-	wvpResource = CreateBufferResource(dir_->GetDevice(), sizeof(Matrix4x4));
-	// データを書き込む
-	
-	// 書き込むためのアドレスを取得
-	wvpResource->Map(0, nullptr, reinterpret_cast<void**>(&wvpData));
-	// 単位行列を書き込んでおく
-	*wvpData = MakeIndentity4x4();
-
 	// Textureを読んで転送する
 	DirectX::ScratchImage mipImages = Convert::LoadTexture("resources/uvChecker.png");
 	const DirectX::TexMetadata& metadata = mipImages.GetMetadata();
@@ -224,11 +163,11 @@ void Triangle::DxcVertexDraw(DirectXCommon* dir_, Vector4* pos){
 	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc{};
 	srvDesc.Format = metadata.format;
 	srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
-	srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;// 2Dテクスチャ
+	srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D; // 2Dテクスチャ
 	srvDesc.Texture2D.MipLevels = UINT(metadata.mipLevels);
 
 	// SRVを作成するDescriptorHeapの場所を決める
-	D3D12_CPU_DESCRIPTOR_HANDLE textureSrvHandleCPU = dir_->srvDescriptorHeap_->GetCPUDescriptorHandleForHeapStart();
+	textureSrvHandleCPU = dir_->srvDescriptorHeap_->GetCPUDescriptorHandleForHeapStart();
 	textureSrvHandleGPU = dir_->srvDescriptorHeap_->GetGPUDescriptorHandleForHeapStart();
 
 	// 先頭はImGuiが使っているのでその次を使う
@@ -239,27 +178,18 @@ void Triangle::DxcVertexDraw(DirectXCommon* dir_, Vector4* pos){
 	dir_->GetDevice()->CreateShaderResourceView(textureResource, &srvDesc, textureSrvHandleCPU);
 }
 
-void Triangle::DxcUpdate(DirectXCommon* dir_){
+void Mesh::Update(DirectXCommon* dir_){
 	// コマンドを積む
 	dir_->GetCommandList()->RSSetViewports(1, &viewport);
 	dir_->GetCommandList()->RSSetScissorRects(1, &scissorRect);
 	// RootSignatureを設定。PSOに設定しているけど別途設定が必要
 	dir_->GetCommandList()->SetGraphicsRootSignature(rootSignature);
 	dir_->GetCommandList()->SetPipelineState(graphicsPipelineState);
-	dir_->GetCommandList()->IASetVertexBuffers(0, 1, &vertexBufferView);
-	// 形状を設定。PSOに設定しているものとはまた別。同じものを設定すると考えておけば良い
-	dir_->GetCommandList()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	// マテリアルCBufferの場所を設定
-	dir_->GetCommandList()->SetGraphicsRootConstantBufferView(0, materialResource->GetGPUVirtualAddress());
-	// wvp用のCBufferの場所を設定
-	dir_->GetCommandList()->SetGraphicsRootConstantBufferView(1, wvpResource->GetGPUVirtualAddress());
 	// SRVのDescriptorTableの先頭を設定。2はrootParameter[2]である。
 	dir_->GetCommandList()->SetGraphicsRootDescriptorTable(2, textureSrvHandleGPU);
-	// 描画(DrawCall/ドローコール)。3頂点で1つのインスタンス。
-	dir_->GetCommandList()->DrawInstanced(3, 1, 0, 0);
 }
 
-void Triangle::DxcViewport(){
+void Mesh::Viewport(){
 	// ビューポート
 	// クライアント領域のサイズと一緒にして画面全体に表示
 	viewport.Width = window_->kClientWidth;
@@ -270,7 +200,7 @@ void Triangle::DxcViewport(){
 	viewport.MaxDepth = 1.0f;
 }
 
-void Triangle::DxcScissor(){
+void Mesh::Scissor(){
 	// シザー矩形
 	// 基本的にビューポートと同じ矩形が構成されるようにする
 	scissorRect.left = 0;
@@ -279,7 +209,7 @@ void Triangle::DxcScissor(){
 	scissorRect.bottom = window_->kClientHeight;
 }
 
-void Triangle::UploadTextureData(ID3D12Resource* texture, const DirectX::ScratchImage& mipImages)
+void Mesh::UploadTextureData(ID3D12Resource* texture, const DirectX::ScratchImage& mipImages)
 {
 	// meta情報を取得
 	const DirectX::TexMetadata& metadata = mipImages.GetMetadata();
@@ -300,10 +230,7 @@ void Triangle::UploadTextureData(ID3D12Resource* texture, const DirectX::Scratch
 	}
 }
 
-void Triangle::DxcRelease(){
-	vertexResource->Release();
-	materialResource->Release();
-	wvpResource->Release();
+void Mesh::Release(){
 	textureResource->Release();
 	graphicsPipelineState->Release();
 	signatureBlob->Release();
@@ -317,36 +244,8 @@ void Triangle::DxcRelease(){
 	pixelShaderBlob->Release();
 }
 
-ID3D12Resource* Triangle::CreateBufferResource(ID3D12Device* device, size_t sizeInbytes){
-	ID3D12Resource* Resource = nullptr;
-	// 頂点リソースの設定
-	D3D12_RESOURCE_DESC ResourceDesc{};
-	// バッファリソース。テクスチャの場合はまた別の設定をする
-	ResourceDesc.Dimension = D3D12_RESOURCE_DIMENSION_BUFFER;
-	ResourceDesc.Width = sizeInbytes;
-	// バッファの場合はこれらは1にする決まり
-	ResourceDesc.Height = 1;
-	ResourceDesc.DepthOrArraySize = 1;
-	ResourceDesc.MipLevels = 1;
-	ResourceDesc.SampleDesc.Count = 1;
-	// バッファの場合はこれにする決まり
-	ResourceDesc.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
-	// 実際に頂点リソースを作る
-	hr_ = device->CreateCommittedResource(
-		&uploadHeapProperties, 
-		D3D12_HEAP_FLAG_NONE, 
-		&ResourceDesc, 
-		D3D12_RESOURCE_STATE_GENERIC_READ, 
-		nullptr, 
-		IID_PPV_ARGS(&Resource));
-
-	assert(SUCCEEDED(hr_));
-
-	return Resource;
-}
-
 // textureResource
-ID3D12Resource* Triangle::CreateTextureResource(ID3D12Device* device, const DirectX::TexMetadata& metadata)
+ID3D12Resource* Mesh::CreateTextureResource(ID3D12Device* device, const DirectX::TexMetadata& metadata)
 {
 	// metadataを基にResourceの設定
 	D3D12_RESOURCE_DESC resourceDesc{};

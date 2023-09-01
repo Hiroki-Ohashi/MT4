@@ -153,6 +153,8 @@ void DirectXCommon::Initialize(WinApp* winApp_) {
 	rtvHandles[1].ptr = rtvHandles[0].ptr + device_->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
 	// 2つ目を作る
 	device_->CreateRenderTargetView(swapChainResources[1], &rtvDesc, rtvHandles[1]);
+
+	DirectXCommon::Fence();
 }
 
 void DirectXCommon::Fence(){
