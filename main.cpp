@@ -28,7 +28,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	const int Max = 30;
 
 	Vector4 pos[Max][3];
-	for (int i = 1; i < Max; i++) {
+	for (int i = 0; i < Max; i++) {
 		// 左下
 		pos[i][0] = { -0.95f - (i * -0.07f),0.0f,0.0f,1.0f };
 		// 上
@@ -56,6 +56,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	MSG msg{};
 
 	for (int i = 0; i < Max; i++) {
+		triangle[i] = new Triangle();
 		triangle[i]->Initialize(directX, pos[i]);
 	}
 
@@ -89,7 +90,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	
 			
 
-			for (int i = 1; i < Max; i++) {
+			for (int i = 0; i < Max; i++) {
 				triangle[i]->Draw(directX);
 			}
 
@@ -103,10 +104,16 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 	for (int i = 0; i < Max; i++) {
 		triangle[i]->Release();
+		delete triangle[i];
 	}
 
-
+	mesh->Release();
+	delete mesh;
 	imgui->Release();
 	directX->Release(winapp);
+
+	delete imgui;
+	delete directX;
+
 	return 0;
 }

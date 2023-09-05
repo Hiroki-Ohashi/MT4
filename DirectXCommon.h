@@ -16,16 +16,23 @@ class Mesh;
 
 class DirectXCommon {
 public:
+	// Default Methods
 	void Initialize(WinApp* winApp_);
-	void Fence();
 	void Update();
-	void Close();
+	// void Draw(); //not use
 	void Release(WinApp* winApp_);
+	
+
+	// User Methods
+	void Fence();
+	void Close();
 
 	ID3D12DescriptorHeap* CreateDescriptorHeap(ID3D12Device* device, D3D12_DESCRIPTOR_HEAP_TYPE heapType, UINT numDescriptors, bool shaderVisible);
 
-	ID3D12Device* GetDevice() { return device_; }
+
+	// Accessor
 	ID3D12GraphicsCommandList* GetCommandList() { return commandList_; }
+	ID3D12Device* GetDevice() { return device_; }
 
 public:
 	IDXGIFactory7* dxgiFactory_ = nullptr;

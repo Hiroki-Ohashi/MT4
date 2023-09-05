@@ -12,17 +12,10 @@
 #pragma comment(lib, "dxgi.lib")
 
 class DirectXCommon;
+class Mesh;
 
 class Triangle {
 public:
-
-	ID3D12Resource* CreateBufferResource(ID3D12Device* device, size_t sizeInbytes);
-
-	void CreateVertexResource(DirectXCommon* dir_, Vector4* pos);
-
-	void CreateMaterialResource(DirectXCommon* dir_);
-
-	void CreateWVPResource(DirectXCommon* dir_);
 
 	// 初期化
 	void Initialize(DirectXCommon* dir_, Vector4* pos);
@@ -32,6 +25,15 @@ public:
 	void Draw(DirectXCommon* dir_);
 	// 解放
 	void Release();
+
+	void CreateVertexResource(DirectXCommon* dir_, Vector4* pos);
+	void CreateMaterialResource(DirectXCommon* dir_);
+	void CreateWVPResource(DirectXCommon* dir_);
+
+	void UploadTextureData(ID3D12Resource* texture, const DirectX::ScratchImage& mipImages);
+
+	ID3D12Resource* CreateTextureResource(ID3D12Device* device, const DirectX::TexMetadata& metadata);
+	ID3D12Resource* CreateBufferResource(ID3D12Device* device, size_t sizeInbytes);
 
 public:
 
@@ -45,6 +47,11 @@ public:
 	VertexData* vertexData;
 	Vector4* materialData;
 	Matrix4x4* wvpData;
+
+	ID3D12Resource* textureResource;
+
+	D3D12_CPU_DESCRIPTOR_HANDLE textureSrvHandleCPU;
+	D3D12_GPU_DESCRIPTOR_HANDLE textureSrvHandleGPU;
 
 	static inline HRESULT hr_;
 };
