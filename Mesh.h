@@ -11,7 +11,7 @@ class Mesh {
 public:
 	void Initialize(DirectXCommon* dir_);
 
-	void Pso(DirectXCommon* dir_);
+	void CreatePso(DirectXCommon* dir_);
 
 	void Update(DirectXCommon* dir_);
 
@@ -30,6 +30,7 @@ public:
 	ID3DBlob* errorBlob = nullptr;
 	ID3D12RootSignature* rootSignature = nullptr;
 	ID3D12PipelineState* graphicsPipelineState = nullptr;
+	D3D12_GRAPHICS_PIPELINE_STATE_DESC graphicsPipelineStateDesc{};
 
 	IDxcBlob* vertexShaderBlob;
 	IDxcBlob* pixelShaderBlob;
@@ -38,6 +39,11 @@ public:
 	D3D12_VERTEX_BUFFER_VIEW materialBufferView{};
 
 	D3D12_ROOT_PARAMETER rootParameters[3] = {};
+
+	D3D12_DESCRIPTOR_RANGE descriptorRange[1] = {};
+
+	D3D12_STATIC_SAMPLER_DESC staticSamplers[1] = {};
+	D3D12_INPUT_ELEMENT_DESC inputElementDescs[2] = {};
 
 	D3D12_VIEWPORT viewport{};
 	D3D12_RECT scissorRect{};
