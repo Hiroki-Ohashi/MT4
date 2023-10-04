@@ -59,11 +59,11 @@ void Triangle::CreateVertexResource(DirectXCommon* dir_, Vector4* pos){
 	vertexData[0].texcoord = { 0.0f, 1.0f };
 	// 上
 	vertexData[1].position = pos[1];
-	vertexData[0].texcoord = { 0.5f, 0.0f };
+	vertexData[1].texcoord = { 0.5f, 0.0f };
 
 	// 右上
 	vertexData[2].position = pos[2];
-	vertexData[0].texcoord = { 1.0f, 1.0f };
+	vertexData[2].texcoord = { 1.0f, 1.0f };
 
 	// Textureを読んで転送する
 	DirectX::ScratchImage mipImages = LoadTexture("resources/uvChecker.png");
@@ -108,7 +108,7 @@ void Triangle::CreateMaterialResource(DirectXCommon* dir_){
 	// 書き込むためのアドレスを取得
 	materialResource->Map(0, nullptr, reinterpret_cast<void**>(&materialData));
 	// 今回は赤を書き込んでみる
-	*materialData = Vector4(1.0f, 0.0f, 0.0f, 1.0f);
+	*materialData = Vector4(1.0f, 1.0f, 1.0f, 1.0f);
 }
 
 void Triangle::CreateWVPResource(DirectXCommon* dir_){

@@ -10,6 +10,7 @@
 #include "Triangle.h"
 #include "ImGuiManeger.h"
 #include "MathFunction.h"
+#include "externals/imgui/imgui.h"
 
 
 #pragma comment(lib, "d3d12.lib")
@@ -28,7 +29,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	const int Max = 30;
 
 	Vector4 pos[Max][3];
-	for (int i = 0; i < Max; i++) {
+	for (int i = 1; i < Max; i++) {
 		// 左下
 		pos[i][0] = { -0.95f - (i * -0.07f),0.0f,0.0f,1.0f };
 		// 上
@@ -87,16 +88,17 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			Matrix4x4 viewMatrix = Inverse(cameraMatrix);
 			Matrix4x4 projectionMatrix = MakePerspectiveMatrix(0.45f, float(winapp->kClientWidth) / float(winapp->kClientHeight), 0.1f, 100.0f);
 			Matrix4x4 worldViewProjectionMatrix = Multiply(worldMatrix, Multiply(viewMatrix, projectionMatrix));
-	
-			
 
-			for (int i = 0; i < Max; i++) {
+			for (int i = 1; i < Max; i++) {
+				*triangle[i]->wvpData = worldViewProjectionMatrix;
 				triangle[i]->Draw(directX);
 			}
 
-			
+			triangle[0]->Draw(directX);
+
 
 			imgui->Draw(directX);
+
 			directX->Close();
 		}
 		CoUninitialize();
