@@ -26,13 +26,13 @@ void ImGuiManeger::Update(){
 	ImGui_ImplDX12_NewFrame();
 	ImGui_ImplWin32_NewFrame();
 	ImGui::NewFrame();
-	// 開発用UIの処理。実際に開発用のUIを出す場合はココをゲーム固有の処理に置き換える
-	ImGui::ShowDemoWindow();
-	// ImGuiの内部コマンドを生成する
-	ImGui::Render();
 }
 
 void ImGuiManeger::Draw(DirectXCommon* dir_){
+	// 開発用UIの処理。実際に開発用のUIを出す場合はココをゲーム固有の処理に置き換える
+	//ImGui::ShowDemoWindow();
+	// ImGuiの内部コマンドを生成する
+	ImGui::Render();
 	// 実際にcommandListのImGuiの描画コマンドを積む
 	ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), dir_->commandList_);
 }

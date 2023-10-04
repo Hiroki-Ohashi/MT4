@@ -96,6 +96,20 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 			triangle[0]->Draw(directX);
 
+			ImGui::Begin("Mesh Color");
+			ImGui::ColorEdit3("Mesh Color", &triangle[0]->materialData->x);
+			ImGui::End();
+
+			ImGui::Begin("Mesh Position");
+			ImGui::SliderFloat3("Mesh Pos", &transform.translate.x, -1.0f, 1.0f);
+			ImGui::End();
+
+			ImGui::Begin("Camera Position");
+			ImGui::SliderFloat3("Camera Pos", &cameraTransform.translate.x, -1.0f, 1.0f);
+			ImGui::SliderFloat3("Camera scale", &cameraTransform.scale.x, -1.0f, 1.0f);
+			ImGui::SliderFloat3("Camera rotate", &cameraTransform.rotate.x, -1.0f, 1.0f);
+			ImGui::End();
+
 
 			imgui->Draw(directX);
 
