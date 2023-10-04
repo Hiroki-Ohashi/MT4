@@ -6,13 +6,11 @@
 #include <cstdint>
 #include "Function.h"
 #include "MathFunction.h"
-
+#include "DirectXCommon.h"
+#include "Mesh.h"
 
 #pragma comment(lib, "d3d12.lib")
 #pragma comment(lib, "dxgi.lib")
-
-class DirectXCommon;
-class Mesh;
 
 class Triangle {
 public:
@@ -34,6 +32,7 @@ public:
 
 	ID3D12Resource* CreateTextureResource(ID3D12Device* device, const DirectX::TexMetadata& metadata);
 	ID3D12Resource* CreateBufferResource(ID3D12Device* device, size_t sizeInbytes);
+	DirectX::ScratchImage LoadTexture(const std::string& filePath);
 
 public:
 

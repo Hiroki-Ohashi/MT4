@@ -34,7 +34,5 @@ public:
 		IDxcUtils* dxcUtils,
 		IDxcCompiler3* dxcCompiler,
 		IDxcIncludeHandler* includeHandler);
-
-	static DirectX::ScratchImage LoadTexture(const std::string& filePath);
 };
 

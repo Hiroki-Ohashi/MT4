@@ -1,6 +1,4 @@
 #include "Triangle.h"
-#include "DirectXCommon.h"
-#include "Mesh.h"
 
 void Triangle::Initialize(DirectXCommon* dir_, Vector4* pos){
 
@@ -68,7 +66,7 @@ void Triangle::CreateVertexResource(DirectXCommon* dir_, Vector4* pos){
 	vertexData[0].texcoord = { 1.0f, 1.0f };
 
 	// Textureを読んで転送する
-	DirectX::ScratchImage mipImages = Convert::LoadTexture("resources/uvChecker.png");
+	DirectX::ScratchImage mipImages = LoadTexture("resources/uvChecker.png");
 	const DirectX::TexMetadata& metadata = mipImages.GetMetadata();
 	textureResource = CreateTextureResource(dir_->GetDevice(), metadata);
 	UploadTextureData(textureResource, mipImages);
@@ -124,6 +122,27 @@ void Triangle::CreateWVPResource(DirectXCommon* dir_){
 	*wvpData = MakeIndentity4x4();
 }
 
+void Triangle::UploadTextureData(ID3D12Resource* texture, const DirectX::ScratchImage& mipImages)
+{
+	// meta情報を取得
+	const DirectX::TexMetadata& metadata = mipImages.GetMetadata();
+	// Mipmapについて
+	for (size_t mipLevel = 0; mipLevel < metadata.mipLevels; ++mipLevel) {
+		// MipMapLevelを指示して各Imageを取得
+		const DirectX::Image* img = mipImages.GetImage(mipLevel, 0, 0);
+		// Textureに転送
+		HRESULT hr = texture->WriteToSubresource(
+			UINT(mipLevel),
+			nullptr,
+			img->pixels,
+			UINT(img->rowPitch),
+			UINT(img->slicePitch)
+		);
+
+		assert(SUCCEEDED(hr));
+	}
+}
+
 ID3D12Resource* Triangle::CreateBufferResource(ID3D12Device* device, size_t sizeInbytes) {
 	ID3D12Resource* Resource = nullptr;
 
@@ -155,27 +174,6 @@ ID3D12Resource* Triangle::CreateBufferResource(ID3D12Device* device, size_t size
 	assert(SUCCEEDED(hr_));
 
 	return Resource;
-}
-
-void Triangle::UploadTextureData(ID3D12Resource* texture, const DirectX::ScratchImage& mipImages)
-{
-	// meta情報を取得
-	const DirectX::TexMetadata& metadata = mipImages.GetMetadata();
-	// Mipmapについて
-	for (size_t mipLevel = 0; mipLevel < metadata.mipLevels; ++mipLevel) {
-		// MipMapLevelを指示して各Imageを取得
-		const DirectX::Image* img = mipImages.GetImage(mipLevel, 0, 0);
-		// Textureに転送
-		HRESULT hr = texture->WriteToSubresource(
-			UINT(mipLevel),
-			nullptr,
-			img->pixels,
-			UINT(img->rowPitch),
-			UINT(img->slicePitch)
-		);
-
-		assert(SUCCEEDED(hr));
-	}
 }
 
 // textureResource
@@ -211,4 +209,20 @@ ID3D12Resource* Triangle::CreateTextureResource(ID3D12Device* device, const Dire
 	assert(SUCCEEDED(hr_));
 
 	return resource;
+}
+
+DirectX::ScratchImage Triangle::LoadTexture(const std::string& filePath) {
+
+	// テクスチャファイルを読んでプログラムで扱えるようにする
+	DirectX::ScratchImage image{};
+	std::wstring filePathW = Convert::ConvertString(filePath);;
+	HRESULT hr = DirectX::LoadFromWICFile(filePathW.c_str(), DirectX::WIC_FLAGS_FORCE_SRGB, nullptr, image);
+	assert(SUCCEEDED(hr));
+
+	// ミップマップの作成
+	DirectX::ScratchImage mipImages{};
+	hr = DirectX::GenerateMipMaps(image.GetImages(), image.GetImageCount(), image.GetMetadata(), DirectX::TEX_FILTER_SRGB, 0, mipImages);
+	assert(SUCCEEDED(hr));
+
+	return mipImages;
 }

@@ -1,19 +1,4 @@
-#include <d3d12.h>
-#include <dxgi1_6.h>
-#include <dxgidebug.h>
-#include <cassert>
-#include <string>
-#include <format>
-#include <cstdint>
-#include <Windows.h>
-#include "WinApp.h"
-#include "Function.h"
 #include "DirectXCommon.h"
-#include "Mesh.h"
-
-#pragma comment(lib, "d3d12.lib")
-#pragma comment(lib, "dxgi.lib")
-#pragma comment(lib, "dxguid.lib")
 
 void DirectXCommon::Initialize(WinApp* winApp_) {
 
