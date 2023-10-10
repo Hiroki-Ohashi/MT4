@@ -4,6 +4,7 @@
 #include <dxgi1_6.h>
 #include <cassert>
 #include <cstdint>
+#include "WinApp.h"
 #include "Function.h"
 #include "MathFunction.h"
 #include "DirectXCommon.h"
@@ -24,7 +25,7 @@ public:
 	// 解放
 	void Release();
 
-	void CreateVertexResource(DirectXCommon* dir_, Vector4* pos);
+	void CreateVertexResource(DirectXCommon* dir_,Vector4* pos);
 	void CreateMaterialResource(DirectXCommon* dir_);
 	void CreateWVPResource(DirectXCommon* dir_);
 

@@ -26,30 +26,37 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	CoInitializeEx(0, COINIT_MULTITHREADED);
 
 	// 三角形の数
-	const int Max = 30;
+	const int Max = 26;
 
 	Vector4 pos[Max][3];
-	for (int i = 1; i < Max; i++) {
+	for (int i = 2; i < Max; i++) {
 		// 左下
-		pos[i][0] = { -0.95f - (i * -0.07f),0.0f,0.0f,1.0f };
+		pos[i][0] = { -0.95f - (i * -0.07f), -0.75f, 0.0f, 1.0f };
 		// 上
-		pos[i][1] = { -0.92f - (i * -0.07f),0.05f,0.0f,1.0f };
+		pos[i][1] = { -0.92f - (i * -0.07f), -0.5f, 0.0f, 1.0f };
 		// 右下
-		pos[i][2] = { -0.89f - (i * -0.07f),0.0f,0.0f,1.0f };
+		pos[i][2] = { -0.89f - (i * -0.07f), -0.75f, 0.0f, 1.0f };
 	}
 
 	// 左下
-	pos[0][0] = { -0.1f, 0.5f, 0.0f, 1.0f };
+	pos[0][0] = { -0.5f, 0.25f, 0.0f, 1.0f };
 	// 上
-	pos[0][1] = { 0.0f, 0.7f, 0.0f, 1.0f };
+	pos[0][1] = { 0.0f, 0.75f, 0.0f, 1.0f };
 	// 右下
-	pos[0][2] = { 0.1f, 0.5f, 0.0f, 1.0f };
+	pos[0][2] = { 0.5f, 0.25f, 0.0f, 1.0f };
+
+	// 左下2
+	pos[1][0] = { -0.5f, 0.25f, 0.5f, 1.0f };
+	// 上2
+	pos[1][1] = { 0.0f, 0.5f, 0.0f, 1.0f };
+	// 右下2
+	pos[1][2] = { 0.5f, 0.25f, -0.5f, 1.0f };
 
 	WinApp* winapp = new WinApp(L"CG2");
 	DirectXCommon* directX = new DirectXCommon();
 	Mesh* mesh = new Mesh();
 	Triangle* triangle[Max];
-	ImGuiManeger* imgui = new ImGuiManeger;
+	ImGuiManeger* imgui = new ImGuiManeger();
 	
 	directX->Initialize(winapp);
 	mesh->Initialize(directX);
@@ -89,19 +96,19 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			Matrix4x4 projectionMatrix = MakePerspectiveMatrix(0.45f, float(winapp->kClientWidth) / float(winapp->kClientHeight), 0.1f, 100.0f);
 			Matrix4x4 worldViewProjectionMatrix = Multiply(worldMatrix, Multiply(viewMatrix, projectionMatrix));
 
-			for (int i = 1; i < Max; i++) {
-				*triangle[i]->wvpData = worldViewProjectionMatrix;
+			for (int i = 2; i < Max; i++) {
+				//*triangle[i]->wvpData = worldViewProjectionMatrix;
 				triangle[i]->Draw(directX);
 			}
 
+			*triangle[0]->wvpData = worldViewProjectionMatrix;
 			triangle[0]->Draw(directX);
+
+			*triangle[1]->wvpData = worldViewProjectionMatrix;
+			triangle[1]->Draw(directX);
 
 			ImGui::Begin("Mesh Color");
 			ImGui::ColorEdit3("Mesh Color", &triangle[0]->materialData->x);
-			ImGui::End();
-
-			ImGui::Begin("Mesh Position");
-			ImGui::SliderFloat3("Mesh Pos", &transform.translate.x, -1.0f, 1.0f);
 			ImGui::End();
 
 			ImGui::Begin("Camera Position");

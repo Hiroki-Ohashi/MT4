@@ -21,7 +21,7 @@ void Triangle::Draw(DirectXCommon* dir_){
 	// SRVのDescriptorTableの先頭を設定。2はrootParameter[2]である。
 	dir_->GetCommandList()->SetGraphicsRootDescriptorTable(2, textureSrvHandleGPU);
 	// 描画(DrawCall/ドローコール)。3頂点で1つのインスタンス。
-	dir_->GetCommandList()->DrawInstanced(3, 1, 0, 0);
+	dir_->GetCommandList()->DrawInstanced(6, 1, 0, 0);
 }
 
 void Triangle::Release(){
@@ -33,13 +33,13 @@ void Triangle::Release(){
 
 void Triangle::CreateVertexResource(DirectXCommon* dir_, Vector4* pos){
 	// 頂点用のリソースを作る。今回はcolor1つ分のサイズを用意する
-	vertexResource = CreateBufferResource(dir_->GetDevice(), sizeof(VertexData) * 3);
+	vertexResource = CreateBufferResource(dir_->GetDevice(), sizeof(VertexData) * 6);
 	// 頂点バッファビューを作成する
 
 	// リソースの先頭のアドレスから使う
 	vertexBufferView.BufferLocation = vertexResource->GetGPUVirtualAddress();
 	// 使用するリソースのサイズは頂点3つ分のサイズ
-	vertexBufferView.SizeInBytes = sizeof(VertexData) * 3;
+	vertexBufferView.SizeInBytes = sizeof(VertexData) * 6;
 	// 1頂点あたりのサイズ
 	vertexBufferView.StrideInBytes = sizeof(VertexData);
 
@@ -64,6 +64,17 @@ void Triangle::CreateVertexResource(DirectXCommon* dir_, Vector4* pos){
 	// 右上
 	vertexData[2].position = pos[2];
 	vertexData[2].texcoord = { 1.0f, 1.0f };
+
+	// 左下2
+	vertexData[3].position = pos[0];
+	vertexData[3].texcoord = { 0.0f, 1.0f };
+	// 上2
+	vertexData[4].position = pos[1];
+	vertexData[4].texcoord = { 0.5f, 0.0f };
+
+	// 右上2
+	vertexData[5].position = pos[2];
+	vertexData[5].texcoord = { 1.0f, 1.0f };
 
 	// Textureを読んで転送する
 	DirectX::ScratchImage mipImages = LoadTexture("resources/uvChecker.png");

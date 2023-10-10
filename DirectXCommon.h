@@ -11,6 +11,7 @@
 #include "WinApp.h"
 #include "Function.h"
 #include "Mesh.h"
+#include "Triangle.h"
 
 #pragma comment(lib, "d3d12.lib")
 #pragma comment(lib, "dxgi.lib")
@@ -30,7 +31,7 @@ public:
 	void Close();
 
 	ID3D12DescriptorHeap* CreateDescriptorHeap(ID3D12Device* device, D3D12_DESCRIPTOR_HEAP_TYPE heapType, UINT numDescriptors, bool shaderVisible);
-
+	ID3D12Resource* CreateDepthStencilTextureResource(ID3D12Device* device, int32_t width, int32_t height);
 
 	// Accessor
 	ID3D12GraphicsCommandList* GetCommandList() { return commandList_; }
@@ -47,7 +48,10 @@ public:
 	DXGI_SWAP_CHAIN_DESC1 swapChainDesc{};
 	D3D12_RESOURCE_BARRIER barrier{};
 	ID3D12DescriptorHeap* rtvDescriptorHeap_ = nullptr;
+	ID3D12DescriptorHeap* dsvDescriptorHeap_ = nullptr;
+	ID3D12Resource* depthStencilResource;
 	D3D12_CPU_DESCRIPTOR_HANDLE rtvHandles[2];
+	D3D12_CPU_DESCRIPTOR_HANDLE dsvHandle;
 	D3D12_RENDER_TARGET_VIEW_DESC rtvDesc{};
 	ID3D12DescriptorHeap* srvDescriptorHeap_ = nullptr;
 	ID3D12Resource* swapChainResources[2] = { nullptr };
