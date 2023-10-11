@@ -8,32 +8,24 @@
 #include "Function.h"
 #include "MathFunction.h"
 #include "DirectXCommon.h"
-#include "Mesh.h"
 
-#pragma comment(lib, "d3d12.lib")
-#pragma comment(lib, "dxgi.lib")
+class Mesh;
 
 class Triangle {
 public:
 
 	// 初期化
-	void Initialize(DirectXCommon* dir_, Vector4* pos);
+	void Initialize(DirectXCommon* dir_, Mesh* mesh_, Vector4* pos);
 	// 読み込み
-	void Update();
+	void Update(WinApp* win_);
 	// 描画
-	void Draw(DirectXCommon* dir_);
+	void Draw(DirectXCommon* dir_, Mesh* mesh_);
 	// 解放
 	void Release();
 
-	void CreateVertexResource(DirectXCommon* dir_,Vector4* pos);
-	void CreateMaterialResource(DirectXCommon* dir_);
-	void CreateWVPResource(DirectXCommon* dir_);
-
-	void UploadTextureData(ID3D12Resource* texture, const DirectX::ScratchImage& mipImages);
-
-	ID3D12Resource* CreateTextureResource(ID3D12Device* device, const DirectX::TexMetadata& metadata);
-	ID3D12Resource* CreateBufferResource(ID3D12Device* device, size_t sizeInbytes);
-	DirectX::ScratchImage LoadTexture(const std::string& filePath);
+	void CreateVertexResource(DirectXCommon* dir_, Mesh* mesh_, Vector4* pos);
+	void CreateMaterialResource(DirectXCommon* dir_, Mesh* mesh_);
+	void CreateWVPResource(DirectXCommon* dir_, Mesh* mesh_);
 
 public:
 
@@ -48,10 +40,10 @@ public:
 	Vector4* materialData;
 	Matrix4x4* wvpData;
 
-	ID3D12Resource* textureResource;
+	Transform transform;
+	Transform cameraTransform;
 
-	D3D12_CPU_DESCRIPTOR_HANDLE textureSrvHandleCPU;
-	D3D12_GPU_DESCRIPTOR_HANDLE textureSrvHandleGPU;
+	Matrix4x4 worldViewProjectionMatrix;
 
 	static inline HRESULT hr_;
 };

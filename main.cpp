@@ -8,6 +8,7 @@
 #include "DirectXCommon.h"
 #include "Mesh.h"
 #include "Triangle.h"
+#include "Sprite.h"
 #include "ImGuiManeger.h"
 #include "MathFunction.h"
 #include "externals/imgui/imgui.h"
@@ -56,22 +57,22 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	DirectXCommon* directX = new DirectXCommon();
 	Mesh* mesh = new Mesh();
 	Triangle* triangle[Max];
+	Sprite* sprite = new Sprite();
 	ImGuiManeger* imgui = new ImGuiManeger();
 	
 	directX->Initialize(winapp);
 	mesh->Initialize(directX);
 
-	MSG msg{};
-
 	for (int i = 0; i < Max; i++) {
 		triangle[i] = new Triangle();
-		triangle[i]->Initialize(directX, pos[i]);
+		triangle[i]->Initialize(directX, mesh, pos[i]);
 	}
 
-	Transform transform{ {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f} };
-	Transform cameraTransform{ {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, -5.0f} };
+	sprite->Initialize(directX, mesh);
 
 	imgui->Initialize(winapp, directX);
+
+	MSG msg{};
 
 	// ウインドウの×ボタンが押されるまでループ
 	while (msg.message != WM_QUIT) {
@@ -82,40 +83,40 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		}
 		else {
 			// ゲームの処理
+
+
+
 			imgui->Update();
 			directX->Update();
 			mesh->Update(directX);
+			sprite->Update(winapp);
 
-
-			transform.rotate.y += 0.03f;
-
-			Matrix4x4 worldMatrix = MakeAffineMatrix(transform.scale, transform.rotate, transform.translate);
-			Matrix4x4 cameraMatrix = MakeAffineMatrix(cameraTransform.scale, cameraTransform.rotate, cameraTransform.translate);
-
-			Matrix4x4 viewMatrix = Inverse(cameraMatrix);
-			Matrix4x4 projectionMatrix = MakePerspectiveMatrix(0.45f, float(winapp->kClientWidth) / float(winapp->kClientHeight), 0.1f, 100.0f);
-			Matrix4x4 worldViewProjectionMatrix = Multiply(worldMatrix, Multiply(viewMatrix, projectionMatrix));
+			for (int i = 0; i < 2; i++) {
+				triangle[i]->Update(winapp);
+			}
 
 			for (int i = 2; i < Max; i++) {
 				//*triangle[i]->wvpData = worldViewProjectionMatrix;
-				triangle[i]->Draw(directX);
+				triangle[i]->Draw(directX, mesh);
 			}
 
-			*triangle[0]->wvpData = worldViewProjectionMatrix;
-			triangle[0]->Draw(directX);
+			*triangle[0]->wvpData = triangle[0]->worldViewProjectionMatrix;
+			triangle[0]->Draw(directX, mesh);
 
-			*triangle[1]->wvpData = worldViewProjectionMatrix;
-			triangle[1]->Draw(directX);
+			*triangle[1]->wvpData = triangle[1]->worldViewProjectionMatrix;
+			triangle[1]->Draw(directX, mesh);
+
+			sprite->Draw(directX, mesh);
 
 			ImGui::Begin("Mesh Color");
 			ImGui::ColorEdit3("Mesh Color", &triangle[0]->materialData->x);
 			ImGui::End();
 
-			ImGui::Begin("Camera Position");
+			/*ImGui::Begin("Camera Position");
 			ImGui::SliderFloat3("Camera Pos", &cameraTransform.translate.x, -1.0f, 1.0f);
 			ImGui::SliderFloat3("Camera scale", &cameraTransform.scale.x, -1.0f, 1.0f);
 			ImGui::SliderFloat3("Camera rotate", &cameraTransform.rotate.x, -1.0f, 1.0f);
-			ImGui::End();
+			ImGui::End();*/
 
 
 			imgui->Draw(directX);
@@ -130,6 +131,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		delete triangle[i];
 	}
 
+	sprite->Release();
+	delete sprite;
 	mesh->Release();
 	delete mesh;
 	imgui->Release();

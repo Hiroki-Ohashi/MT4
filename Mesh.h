@@ -26,6 +26,12 @@ public:
 
 	void Release();
 
+	ID3D12Resource* CreateTextureResource(ID3D12Device* device, const DirectX::TexMetadata& metadata);
+	ID3D12Resource* CreateBufferResource(ID3D12Device* device, size_t sizeInbytes);
+	DirectX::ScratchImage LoadTexture(const std::string& filePath);
+
+	void UploadTextureData(ID3D12Resource* texture, const DirectX::ScratchImage& mipImages);
+
 public:
 	IDxcUtils* dxcUtils = nullptr;
 	IDxcCompiler3* dxcCompiler = nullptr;
@@ -57,4 +63,10 @@ public:
 	static inline HRESULT hr_;
 
 	static WinApp* window_;
+
+	ID3D12Resource* textureResource;
+
+	D3D12_CPU_DESCRIPTOR_HANDLE textureSrvHandleCPU;
+	D3D12_GPU_DESCRIPTOR_HANDLE textureSrvHandleGPU;
+
 };
