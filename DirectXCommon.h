@@ -60,5 +60,4 @@ public:
 	HANDLE fenceEvent = 0;
 	static inline HRESULT hr_;
 
-	//static inline HWND hwnd = nullptr;
 };

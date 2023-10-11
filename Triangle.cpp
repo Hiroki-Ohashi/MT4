@@ -44,7 +44,6 @@ void Triangle::Release(){
 void Triangle::CreateVertexResource(DirectXCommon* dir_, Mesh* mesh_, Vector4* pos){
 	// 頂点用のリソースを作る。今回はcolor1つ分のサイズを用意する
 	vertexResource = mesh_->CreateBufferResource(dir_->GetDevice(), sizeof(VertexData) * 6);
-	// 頂点バッファビューを作成する
 
 	// リソースの先頭のアドレスから使う
 	vertexBufferView.BufferLocation = vertexResource->GetGPUVirtualAddress();
@@ -90,18 +89,13 @@ void Triangle::CreateVertexResource(DirectXCommon* dir_, Mesh* mesh_, Vector4* p
 void Triangle::CreateMaterialResource(DirectXCommon* dir_, Mesh* mesh_){
 	//// マテリアル用のリソースを作る。今回はcolor1つ分のサイズを用意する
 	materialResource = mesh_->Mesh::CreateBufferResource(dir_->GetDevice(), sizeof(Vector4));
-
-	// 頂点バッファビューを作成する
-
+	
 	// リソースの先頭のアドレスから使う
 	materialBufferView.BufferLocation = materialResource->GetGPUVirtualAddress();
 	// 使用するリソースのサイズは頂点3つ分のサイズ
 	materialBufferView.SizeInBytes = sizeof(Vector4);
 	// 1頂点あたりのサイズ
 	materialBufferView.StrideInBytes = sizeof(Vector4);
-
-	// マテリアルにデータを書き込む
-
 	// 書き込むためのアドレスを取得
 	materialResource->Map(0, nullptr, reinterpret_cast<void**>(&materialData));
 	// 今回は赤を書き込んでみる
@@ -111,8 +105,6 @@ void Triangle::CreateMaterialResource(DirectXCommon* dir_, Mesh* mesh_){
 void Triangle::CreateWVPResource(DirectXCommon* dir_, Mesh* mesh_){
 	// WVP用のリソースを作る。Matrix4x4 1つ分のサイズを用意する
 	wvpResource = mesh_->CreateBufferResource(dir_->GetDevice(), sizeof(Matrix4x4));
-	// データを書き込む
-
 	// 書き込むためのアドレスを取得
 	wvpResource->Map(0, nullptr, reinterpret_cast<void**>(&wvpData));
 	// 単位行列を書き込んでおく

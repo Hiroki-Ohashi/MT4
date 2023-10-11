@@ -62,15 +62,13 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	
 	directX->Initialize(winapp);
 	mesh->Initialize(directX);
+	sprite->Initialize(directX, mesh);
+	imgui->Initialize(winapp, directX);
 
 	for (int i = 0; i < Max; i++) {
 		triangle[i] = new Triangle();
 		triangle[i]->Initialize(directX, mesh, pos[i]);
 	}
-
-	sprite->Initialize(directX, mesh);
-
-	imgui->Initialize(winapp, directX);
 
 	MSG msg{};
 
@@ -96,7 +94,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			}
 
 			for (int i = 2; i < Max; i++) {
-				//*triangle[i]->wvpData = worldViewProjectionMatrix;
 				triangle[i]->Draw(directX, mesh);
 			}
 
