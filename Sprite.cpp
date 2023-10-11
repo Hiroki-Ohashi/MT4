@@ -11,7 +11,7 @@ void Sprite::Initialize(DirectXCommon* dir_, Mesh* mesh_){
 void Sprite::Update(WinApp* winapp_){
 	Matrix4x4 worldMatrixSprite = MakeAffineMatrix(transformSprite.scale, transformSprite.rotate, transformSprite.translate);
 	Matrix4x4 viewMatrixSprite = MakeIndentity4x4();
-	Matrix4x4 projectionMatrixSprite = MakOrthographicMatrix(0.0f, 0.0f, float(winapp_->kClientWidth), float(winapp_->kClientHeight), 0.0f, 100.0f);
+	Matrix4x4 projectionMatrixSprite = MakeOrthographicMatrix(0.0f, 0.0f, float(winapp_->kClientWidth), float(winapp_->kClientHeight), 0.0f, 100.0f);
 	Matrix4x4 worldViewProjectionMatrixSprite = Multiply(worldMatrixSprite, Multiply(viewMatrixSprite, projectionMatrixSprite));
 	*transformationMatrixDataSprite = worldViewProjectionMatrixSprite;
 }
@@ -33,6 +33,7 @@ void Sprite::Release(){
 void Sprite::CreateVertexResourceSprite(DirectXCommon* dir_, Mesh* mesh_){
 	// Sprite用の頂点リソースを作る
 	vertexResourceSprite = mesh_->CreateBufferResource(dir_->GetDevice(), sizeof(VertexData) * 6);
+
 	// リソースの先頭のアドレスから使う
 	vertexBufferViewSprite.BufferLocation = vertexResourceSprite->GetGPUVirtualAddress();
 	// 使用するリソースのサイズは頂点6つ分のサイズ

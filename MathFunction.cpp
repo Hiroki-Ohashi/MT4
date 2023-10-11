@@ -250,27 +250,28 @@ Matrix4x4 Inverse(const Matrix4x4& m) {
 
 }
 
-Matrix4x4 MakOrthographicMatrix(float left, float right, float top, float bottom, float nearClip, float farClip) {
-	Matrix4x4 MakOrthographicMatrix;
-	MakOrthographicMatrix.m[0][0] = 2 / (right - left);
-	MakOrthographicMatrix.m[0][1] = 0;
-	MakOrthographicMatrix.m[0][2] = 0;
-	MakOrthographicMatrix.m[0][3] = 0;
+Matrix4x4 MakeOrthographicMatrix(float left, float top, float right, float bottom, float nearClip, float farClip) {
+	Matrix4x4 result;
+	result.m[0][0] = 2.0f / (right - left);
+	result.m[0][1] = 0;
+	result.m[0][2] = 0;
+	result.m[0][3] = 0;
 
-	MakOrthographicMatrix.m[1][0] = 0;
-	MakOrthographicMatrix.m[1][1] = 2 / (top - bottom);
-	MakOrthographicMatrix.m[1][2] = 0;
-	MakOrthographicMatrix.m[1][3] = 0;
+	result.m[1][0] = 0;
+	result.m[1][1] = 2.0f / (top - bottom);
+	result.m[1][2] = 0;
+	result.m[1][3] = 0;
 
-	MakOrthographicMatrix.m[2][0] = 0;
-	MakOrthographicMatrix.m[2][1] = 0;
-	MakOrthographicMatrix.m[2][2] = 1 / (farClip - nearClip);
-	MakOrthographicMatrix.m[2][3] = 0;
+	result.m[2][0] = 0;
+	result.m[2][1] = 0;
+	result.m[2][2] = 1.0f / (farClip - nearClip);
+	result.m[2][3] = 0;
 
-	MakOrthographicMatrix.m[3][0] = (left - right) / (left - right);
-	MakOrthographicMatrix.m[3][1] = (top + bottom) / (bottom - top);
-	MakOrthographicMatrix.m[3][2] = farClip / (nearClip - farClip);
-	MakOrthographicMatrix.m[3][3] = 1;
+	result.m[3][0] = (left + right) / (left - right);
+	result.m[3][1] = (top + bottom) / (bottom - top);
+	result.m[3][2] = nearClip / (nearClip - farClip);
+	result.m[3][3] = 1;
 
-	return MakOrthographicMatrix;
+	return result;
 }
+

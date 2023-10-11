@@ -23,19 +23,15 @@ public:
 	void Release();
 
 	void CreateVertexResourceSprite(DirectXCommon* dir_, Mesh* mesh_);
-	void CreateMaterialResource(DirectXCommon* dir_, Mesh* mesh_);
 	void CreateTransformationMatrixResourceSprite(DirectXCommon* dir_, Mesh* mesh_);
 
 private:
 	ID3D12Resource* vertexResourceSprite;
-	ID3D12Resource* materialResource;
 	ID3D12Resource* transformationMatrixResourceSprite;
 
 	D3D12_VERTEX_BUFFER_VIEW vertexBufferViewSprite{};
-	D3D12_VERTEX_BUFFER_VIEW materialBufferView{};
 
 	VertexData* vertexDataSprite;
-	Vector4* materialData;
 	Matrix4x4* transformationMatrixDataSprite;
 
 	Transform transformSprite;
