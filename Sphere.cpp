@@ -37,21 +37,24 @@ void Sphere::CreateVertexResourceSphere(DirectXCommon* dir_, Mesh* mesh_){
 	// リソースの先頭のアドレスから使う
 	vertexBufferViewSphere.BufferLocation = vertexResourceSphere->GetGPUVirtualAddress();
 	// 使用するリソースのサイズは頂点6つ分のサイズ
-	vertexBufferViewSphere.SizeInBytes = sizeof(VertexData) * 6;
+	vertexBufferViewSphere.SizeInBytes = sizeof(VertexData) * startIndex;
 	// 1頂点あたりのサイズ
 	vertexBufferViewSphere.StrideInBytes = sizeof(VertexData);
 
 	vertexResourceSphere->Map(0, nullptr, reinterpret_cast<void**>(&vertexDataSphere));
 
 	// 経度1つ分の角度
-	const float kLonEvery = 2.0f * float(M_PI) / float(kSubdivision);
+	const float kLonEvery = 2.0f * PI / float(kSubdivision);
+
 	// 緯度1つ分の角度
-	const float kLatEvery = float(M_PI) / float(kSubdivision);
+	const float kLatEvery = PI / float(kSubdivision);
+
 	// 緯度の方向に分割
-	for (uint32_t latIndex = 0; latIndex < kSubdivision; ++latIndex) {
-		float lat = float(-M_PI) / 2.0f + kLatEvery * latIndex; // 0
+	for (latIndex = 0; latIndex < kSubdivision; ++latIndex) {
+		float lat = -PI / 2.0f + kLatEvery * latIndex;
+
 		// 経度の方向に分割しながら線を書く
-		for (uint32_t lonIndex = 0; lonIndex < kSubdivision; ++lonIndex) {
+		for (lonIndex = 0; lonIndex < kSubdivision; ++lonIndex) {
 			int32_t start = (latIndex * kSubdivision + lonIndex) * 6;
 			float lon = lonIndex * kLonEvery;
 			float u = float(lonIndex) / float(kSubdivision);
