@@ -17,7 +17,7 @@ public:
 	// 初期化
 	void Initialize(DirectXCommon* dir_, Mesh* mesh_, Vector4* pos);
 	// 読み込み
-	void Update(WinApp* win_);
+	void Update(const Matrix4x4& transformationMatrixData);
 	// 描画
 	void Draw(DirectXCommon* dir_, Mesh* mesh_);
 	// 解放
@@ -41,9 +41,8 @@ public:
 	Matrix4x4* wvpData;
 
 	Transform transform;
-	Transform cameraTransform;
 
-	Matrix4x4 worldViewProjectionMatrix;
+	Matrix4x4 worldMatrix;
 
 	static inline HRESULT hr_;
 };

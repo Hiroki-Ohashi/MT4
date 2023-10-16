@@ -7,18 +7,14 @@ void Triangle::Initialize(DirectXCommon* dir_, Mesh* mesh_, Vector4* pos){
 	Triangle::CreateWVPResource(dir_, mesh_);
 
 	transform = { {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f} };
-	cameraTransform = { {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, -5.0f} };
 }
 
-void Triangle::Update(WinApp* win_){
+void Triangle::Update(const Matrix4x4& transformationMatrixData){
 	transform.rotate.y += 0.03f;
 
-	Matrix4x4 worldMatrix = MakeAffineMatrix(transform.scale, transform.rotate, transform.translate);
-	Matrix4x4 cameraMatrix = MakeAffineMatrix(cameraTransform.scale, cameraTransform.rotate, cameraTransform.translate);
-
-	Matrix4x4 viewMatrix = Inverse(cameraMatrix);
-	Matrix4x4 projectionMatrix = MakePerspectiveMatrix(0.45f, float(win_->kClientWidth) / float(win_->kClientHeight), 0.1f, 100.0f);
-	worldViewProjectionMatrix = Multiply(worldMatrix, Multiply(viewMatrix, projectionMatrix));
+	worldMatrix = MakeAffineMatrix(transform.scale, transform.rotate, transform.translate);
+	worldMatrix = Multiply(worldMatrix, transformationMatrixData);
+	*wvpData = worldMatrix;
 }
 
 void Triangle::Draw(DirectXCommon* dir_, Mesh* mesh_){

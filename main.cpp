@@ -11,6 +11,8 @@
 #include "Sprite.h"
 #include "ImGuiManeger.h"
 #include "MathFunction.h"
+#include "Camera.h"
+#include "Sphere.h"
 #include "externals/imgui/imgui.h"
 
 
@@ -40,29 +42,33 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	}
 
 	// 左下
-	pos[0][0] = { -0.5f, 0.25f, 0.0f, 1.0f };
+	pos[0][0] = { -0.5f, -0.25f, 0.0f, 1.0f };
 	// 上
-	pos[0][1] = { 0.0f, 0.75f, 0.0f, 1.0f };
+	pos[0][1] = { 0.0f, 0.5f, 0.0f, 1.0f };
 	// 右下
-	pos[0][2] = { 0.5f, 0.25f, 0.0f, 1.0f };
+	pos[0][2] = { 0.5f, -0.25f, 0.0f, 1.0f };
 
 	// 左下2
-	pos[1][0] = { -0.5f, 0.25f, 0.5f, 1.0f };
+	pos[1][0] = { -0.5f, -0.25f, 0.5f, 1.0f };
 	// 上2
-	pos[1][1] = { 0.0f, 0.5f, 0.0f, 1.0f };
+	pos[1][1] = { 0.0f, 0.0f, 0.0f, 1.0f };
 	// 右下2
-	pos[1][2] = { 0.5f, 0.25f, -0.5f, 1.0f };
+	pos[1][2] = { 0.5f, -0.25f, -0.5f, 1.0f };
 
 	WinApp* winapp = new WinApp(L"CG2");
 	DirectXCommon* directX = new DirectXCommon();
 	Mesh* mesh = new Mesh();
 	Triangle* triangle[Max];
 	Sprite* sprite = new Sprite();
+	Sphere* sphere = new Sphere();
 	ImGuiManeger* imgui = new ImGuiManeger();
+	Camera* camera = new Camera();
 	
 	directX->Initialize(winapp);
 	mesh->Initialize(directX);
 	sprite->Initialize(directX, mesh);
+	sphere->Initialize(directX, mesh);
+	camera->Initialize();
 	imgui->Initialize(winapp, directX);
 
 	for (int i = 0; i < Max; i++) {
@@ -88,21 +94,21 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			directX->Update();
 			mesh->Update(directX);
 			sprite->Update(winapp);
+			sphere->Update(winapp, *camera->transformationMatrixData);
+			camera->Update(winapp);
 
 			for (int i = 0; i < 2; i++) {
-				triangle[i]->Update(winapp);
+				triangle[i]->Update(*camera->transformationMatrixData);
 			}
 
 			for (int i = 2; i < Max; i++) {
 				triangle[i]->Draw(directX, mesh);
 			}
 
-			*triangle[0]->wvpData = triangle[0]->worldViewProjectionMatrix;
 			triangle[0]->Draw(directX, mesh);
-
-			*triangle[1]->wvpData = triangle[1]->worldViewProjectionMatrix;
 			triangle[1]->Draw(directX, mesh);
 
+			sphere->Draw(directX, mesh);
 			sprite->Draw(directX, mesh);
 
 			ImGui::Begin("Mesh Color");
@@ -130,10 +136,13 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 	sprite->Release();
 	delete sprite;
+	sphere->Release();
+	delete sphere;
 	mesh->Release();
 	delete mesh;
 	imgui->Release();
 	directX->Release(winapp);
+	delete camera;
 
 	delete imgui;
 	delete directX;

@@ -1,0 +1,16 @@
+#include "Camera.h"
+
+void Camera::Initialize(){
+	cameraTransform = { {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, -10.0f} };
+}
+
+void Camera::Update(WinApp* winapp_){
+	worldMatrix = MakeAffineMatrix({ 1.0f, 1.0f, 1.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, -5.0f });
+	cameraMatrix = MakeAffineMatrix(cameraTransform.scale, cameraTransform.rotate, cameraTransform.translate);
+	viewMatrix = Inverse(cameraMatrix);
+	projectionMatrix = MakePerspectiveMatrix(0.45f, float(winapp_->kClientWidth) / float(winapp_->kClientHeight), 0.1f, 100.0f);
+	worldViewProjectionMatrix = Multiply(worldMatrix, Multiply(viewMatrix, projectionMatrix));
+	transformationMatrixData = &worldViewProjectionMatrix;
+}
+
+void Camera::Draw(){}
