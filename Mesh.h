@@ -32,6 +32,9 @@ public:
 
 	void UploadTextureData(ID3D12Resource* texture, const DirectX::ScratchImage& mipImages);
 
+	D3D12_CPU_DESCRIPTOR_HANDLE GetCPUDescriptorHandle(ID3D12DescriptorHeap* descriptorHeap, uint32_t descriptorSize, uint32_t index);
+	D3D12_GPU_DESCRIPTOR_HANDLE GetGPUDescriptorHandle(ID3D12DescriptorHeap* descriptorHeap, uint32_t descriptorSize, uint32_t index);
+
 public:
 	IDxcUtils* dxcUtils = nullptr;
 	IDxcCompiler3* dxcCompiler = nullptr;
@@ -65,8 +68,12 @@ public:
 	static WinApp* window_;
 
 	ID3D12Resource* textureResource;
+	ID3D12Resource* textureResource2;
 
 	D3D12_CPU_DESCRIPTOR_HANDLE textureSrvHandleCPU;
 	D3D12_GPU_DESCRIPTOR_HANDLE textureSrvHandleGPU;
+
+	D3D12_CPU_DESCRIPTOR_HANDLE textureSrvHandleCPU2;
+	D3D12_GPU_DESCRIPTOR_HANDLE textureSrvHandleGPU2;
 
 };

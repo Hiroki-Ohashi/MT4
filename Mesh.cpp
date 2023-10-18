@@ -3,7 +3,6 @@
 
 void Mesh::Initialize(DirectXCommon* dir_) {
 	// dxcCompilerを初期化
-
 	hr_ = DxcCreateInstance(CLSID_DxcUtils, IID_PPV_ARGS(&dxcUtils));
 	assert(SUCCEEDED(hr_));
 	hr_ = DxcCreateInstance(CLSID_DxcCompiler, IID_PPV_ARGS(&dxcCompiler));
@@ -13,11 +12,22 @@ void Mesh::Initialize(DirectXCommon* dir_) {
 	hr_ = dxcUtils->CreateDefaultIncludeHandler(&includeHandler);
 	assert(SUCCEEDED(hr_));
 
+	// DescriptorSizeを取得しておく
+	const uint32_t descriptorSizeSRV = dir_->GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+	const uint32_t descriptorSizeRTV = dir_->GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
+	const uint32_t descriptorSizeDSV = dir_->GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_DSV);
+
 	// Textureを読んで転送する
 	DirectX::ScratchImage mipImages = LoadTexture("resources/uvChecker.png");
 	const DirectX::TexMetadata& metadata = mipImages.GetMetadata();
 	textureResource = CreateTextureResource(dir_->GetDevice(), metadata);
 	UploadTextureData(textureResource, mipImages);
+
+	// 2枚目のTextureを読んで転送する
+	DirectX::ScratchImage mipImages2 = LoadTexture("resources/monsterBall.png");
+	const DirectX::TexMetadata& metadata2 = mipImages2.GetMetadata();
+	textureResource2 = CreateTextureResource(dir_->GetDevice(), metadata2);
+	UploadTextureData(textureResource2, mipImages2);
 
 	// metaDataを基にSRVの設定
 	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc{};
@@ -25,6 +35,12 @@ void Mesh::Initialize(DirectXCommon* dir_) {
 	srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
 	srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D; // 2Dテクスチャ
 	srvDesc.Texture2D.MipLevels = UINT(metadata.mipLevels);
+
+	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc2{};
+	srvDesc2.Format = metadata2.format;
+	srvDesc2.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+	srvDesc2.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D; // 2Dテクスチャ
+	srvDesc2.Texture2D.MipLevels = UINT(metadata2.mipLevels);
 
 	// SRVを作成するDescriptorHeapの場所を決める
 	textureSrvHandleCPU = dir_->srvDescriptorHeap_->GetCPUDescriptorHandleForHeapStart();
@@ -34,8 +50,13 @@ void Mesh::Initialize(DirectXCommon* dir_) {
 	textureSrvHandleCPU.ptr += dir_->GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 	textureSrvHandleGPU.ptr += dir_->GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 
+	// 二枚目のSRVを作成するDescriptorHeapの場所を決める
+	textureSrvHandleCPU2 = GetCPUDescriptorHandle(dir_->srvDescriptorHeap_, descriptorSizeSRV, 2);
+	textureSrvHandleGPU2 = GetGPUDescriptorHandle(dir_->srvDescriptorHeap_, descriptorSizeSRV, 2);
+
 	// SRVの生成
 	dir_->GetDevice()->CreateShaderResourceView(textureResource, &srvDesc, textureSrvHandleCPU);
+	dir_->GetDevice()->CreateShaderResourceView(textureResource2, &srvDesc2, textureSrvHandleCPU2);
 
 	Mesh::CreatePso(dir_);
 	Mesh::Viewport();
@@ -207,6 +228,7 @@ void Mesh::Release(){
 	pixelShaderBlob->Release();
 
 	textureResource->Release();
+	textureResource2->Release();
 }
 
 ID3D12Resource* Mesh::CreateBufferResource(ID3D12Device* device, size_t sizeInbytes) {
@@ -312,4 +334,16 @@ void Mesh::UploadTextureData(ID3D12Resource* texture, const DirectX::ScratchImag
 
 		assert(SUCCEEDED(hr));
 	}
+}
+
+D3D12_CPU_DESCRIPTOR_HANDLE Mesh::GetCPUDescriptorHandle(ID3D12DescriptorHeap* descriptorHeap, uint32_t descriptorSize, uint32_t index) {
+	D3D12_CPU_DESCRIPTOR_HANDLE handleCPU = descriptorHeap->GetCPUDescriptorHandleForHeapStart();
+	handleCPU.ptr += (descriptorSize * index);
+	return handleCPU;
+}
+
+D3D12_GPU_DESCRIPTOR_HANDLE Mesh::GetGPUDescriptorHandle(ID3D12DescriptorHeap* descriptorHeap, uint32_t descriptorSize, uint32_t index) {
+	D3D12_GPU_DESCRIPTOR_HANDLE handleGPU = descriptorHeap->GetGPUDescriptorHandleForHeapStart();
+	handleGPU.ptr += (descriptorSize * index);
+	return handleGPU;
 }

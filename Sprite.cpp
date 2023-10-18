@@ -21,6 +21,8 @@ void Sprite::Draw(DirectXCommon* dir_, Mesh* mesh_){
 	dir_->GetCommandList()->IASetVertexBuffers(0, 1, &vertexBufferViewSprite); // VBVを設定
 	// TransformationMatrixCBufferの場所を設定
 	dir_->GetCommandList()->SetGraphicsRootConstantBufferView(1, transformationMatrixResourceSprite->GetGPUVirtualAddress());
+	// SRVのDescriptorTableの先頭を設定。2はrootParameter[2]である。
+	dir_->GetCommandList()->SetGraphicsRootDescriptorTable(2, mesh_->textureSrvHandleGPU);
 	// 描画(DrawCall/ドローコール)
 	dir_->GetCommandList()->DrawInstanced(6, 1, 0, 0);
 }

@@ -6,13 +6,19 @@ void Sphere::Initialize(DirectXCommon* dir_, Mesh* mesh_){
 	Sphere::CreateVertexResourceSphere(dir_, mesh_);
 	Sphere::CreateTransformationMatrixResourceSphere(dir_, mesh_);
 
-	transformSphere = { {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
+	useMonsterBoll_ = false;
+
+	transformSphere = { {0.5f,0.5f,0.5f},{0.0f,0.0f,0.0f},{1.0f,0.0f,0.0f} };
 }
 
-void Sphere::Update(WinApp* winapp_, const Matrix4x4& transformationMatrixData){
-	Matrix4x4 worldMatrixSphere = MakeAffineMatrix(transformSphere.scale, transformSphere.rotate, transformSphere.translate);
+void Sphere::Update(const Matrix4x4& transformationMatrixData, bool useMonsterBoll){
+	transformSphere.rotate.y += 0.01f;
+	worldMatrixSphere = MakeAffineMatrix(transformSphere.scale, transformSphere.rotate, transformSphere.translate);
 	worldMatrixSphere = Multiply(worldMatrixSphere, transformationMatrixData);
 	*transformationMatrixDataSphere = worldMatrixSphere;
+
+	useMonsterBoll_ = useMonsterBoll;
+
 }
 
 void Sphere::Draw(DirectXCommon* dir_, Mesh* mesh_){
@@ -20,6 +26,8 @@ void Sphere::Draw(DirectXCommon* dir_, Mesh* mesh_){
 	dir_->GetCommandList()->IASetVertexBuffers(0, 1, &vertexBufferViewSphere); // VBVを設定
 	// TransformationMatrixCBufferの場所を設定
 	dir_->GetCommandList()->SetGraphicsRootConstantBufferView(1, transformationMatrixResourceSphere->GetGPUVirtualAddress());
+	// SRVのDescriptorTableの先頭を設定。2はrootParameter[2]である。
+	dir_->GetCommandList()->SetGraphicsRootDescriptorTable(2, useMonsterBoll_ ? mesh_->textureSrvHandleGPU2 : mesh_->textureSrvHandleGPU);
 	// 描画(DrawCall/ドローコール)
 	dir_->GetCommandList()->DrawInstanced(startIndex, 1, 0, 0);
 }

@@ -16,7 +16,7 @@ class Sphere {
 public:
 	void Initialize(DirectXCommon* dir_, Mesh* mesh_);
 
-	void Update(WinApp* winapp_, const Matrix4x4& transformationMatrixData);
+	void Update(const Matrix4x4& transformationMatrixData, bool useMonsterBoll);
 
 	void Draw(DirectXCommon* dir_, Mesh* mesh_);
 
@@ -24,6 +24,7 @@ public:
 
 	void CreateVertexResourceSphere(DirectXCommon* dir_, Mesh* mesh_);
 	void CreateTransformationMatrixResourceSphere(DirectXCommon* dir_, Mesh* mesh_);
+
 private:
 	ID3D12Resource* vertexResourceSphere;
 	ID3D12Resource* transformationMatrixResourceSphere;
@@ -42,4 +43,6 @@ private:
 	uint32_t kSubdivision = 16;
 	
 	int32_t startIndex = (latIndex * kSubdivision + lonIndex) * 6;
+
+	bool useMonsterBoll_;
 };

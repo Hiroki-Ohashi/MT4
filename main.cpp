@@ -76,6 +76,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		triangle[i]->Initialize(directX, mesh, pos[i]);
 	}
 
+	bool useMonsterBoll = false;
+
 	MSG msg{};
 
 	// ウインドウの×ボタンが押されるまでループ
@@ -96,6 +98,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			sprite->Update(winapp);
 			sphere->Update(winapp, *camera->transformationMatrixData);
 			camera->Update(winapp);
+			sphere->Update(*camera->transformationMatrixData, useMonsterBoll);
 
 			for (int i = 0; i < 2; i++) {
 				triangle[i]->Update(*camera->transformationMatrixData);
@@ -114,6 +117,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			ImGui::Begin("Mesh Color");
 			ImGui::ColorEdit3("Mesh Color", &triangle[0]->materialData->x);
 			ImGui::End();
+
+			ImGui::Checkbox("useMonsterBall", &useMonsterBoll);
 
 			/*ImGui::Begin("Camera Position");
 			ImGui::SliderFloat3("Camera Pos", &cameraTransform.translate.x, -1.0f, 1.0f);
