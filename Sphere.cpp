@@ -4,6 +4,7 @@
 
 void Sphere::Initialize(DirectXCommon* dir_, Mesh* mesh_){
 	Sphere::CreateVertexResourceSphere(dir_, mesh_);
+	Sphere::CreateMaterialResourceSphere(dir_, mesh_);
 	Sphere::CreateTransformationMatrixResourceSphere(dir_, mesh_);
 
 	useMonsterBoll_ = true;
@@ -24,6 +25,8 @@ void Sphere::Update(const Matrix4x4& transformationMatrixData, bool useMonsterBo
 void Sphere::Draw(DirectXCommon* dir_, Mesh* mesh_){
 	// Spriteの描画。変更が必要なものだけ変更する
 	dir_->GetCommandList()->IASetVertexBuffers(0, 1, &vertexBufferViewSphere); // VBVを設定
+	// マテリアルCBufferの場所を設定
+	dir_->GetCommandList()->SetGraphicsRootConstantBufferView(0, materialResourceSphere->GetGPUVirtualAddress());
 	// TransformationMatrixCBufferの場所を設定
 	dir_->GetCommandList()->SetGraphicsRootConstantBufferView(1, transformationMatrixResourceSphere->GetGPUVirtualAddress());
 	// SRVのDescriptorTableの先頭を設定。2はrootParameter[2]である。
@@ -34,6 +37,7 @@ void Sphere::Draw(DirectXCommon* dir_, Mesh* mesh_){
 
 void Sphere::Release() {
 	vertexResourceSphere->Release();
+	materialResourceSphere->Release();
 	transformationMatrixResourceSphere->Release();
 }
 
@@ -74,39 +78,88 @@ void Sphere::CreateVertexResourceSphere(DirectXCommon* dir_, Mesh* mesh_){
 			vertexDataSphere[start].position.y = sin(lat);
 			vertexDataSphere[start].position.z = cos(lat) * sin(lon);
 			vertexDataSphere[start].position.w = 1.0f;
+
 			vertexDataSphere[start].texcoord = { u,v + (1.0f / kSubdivision) };
+
+			vertexDataSphere[start].normal.x = vertexDataSphere[start].position.x;
+			vertexDataSphere[start].normal.y = vertexDataSphere[start].position.y;
+			vertexDataSphere[start].normal.z = vertexDataSphere[start].position.z;
+
 			// 基準点b
 			vertexDataSphere[start + 1].position.x = cos(lat + kLatEvery) * cos(lon);
 			vertexDataSphere[start + 1].position.y = sin(lat + kLatEvery);
 			vertexDataSphere[start + 1].position.z = cos(lat + kLatEvery) * sin(lon);
 			vertexDataSphere[start + 1].position.w = 1.0f;
+
 			vertexDataSphere[start + 1].texcoord = { u,v };
+
+			vertexDataSphere[start + 1].normal.x = vertexDataSphere[start + 1].position.x;
+			vertexDataSphere[start + 1].normal.y = vertexDataSphere[start + 1].position.y;
+			vertexDataSphere[start + 1].normal.z = vertexDataSphere[start + 1].position.z;
+
 			// 基準点c
 			vertexDataSphere[start + 2].position.x = cos(lat) * cos(lon + kLonEvery);
 			vertexDataSphere[start + 2].position.y = sin(lat);
 			vertexDataSphere[start + 2].position.z = cos(lat) * sin(lon + kLonEvery);
 			vertexDataSphere[start + 2].position.w = 1.0f;
+
 			vertexDataSphere[start + 2].texcoord = { u + (1.0f / kSubdivision),v + (1.0f / kSubdivision) };
+			
+			vertexDataSphere[start + 2].normal.x = vertexDataSphere[start + 2].position.x;
+			vertexDataSphere[start + 2].normal.y = vertexDataSphere[start + 2].position.y;
+			vertexDataSphere[start + 2].normal.z = vertexDataSphere[start + 2].position.z;
+
 			// 基準点b
 			vertexDataSphere[start + 3].position.x = cos(lat + kLatEvery) * cos(lon);
 			vertexDataSphere[start + 3].position.y = sin(lat + kLatEvery);
 			vertexDataSphere[start + 3].position.z = cos(lat + kLatEvery) * sin(lon);
 			vertexDataSphere[start + 3].position.w = 1.0f;
+			
 			vertexDataSphere[start + 3].texcoord = { u,v };
+
+			vertexDataSphere[start + 3].normal.x = vertexDataSphere[start + 3].position.x;
+			vertexDataSphere[start + 3].normal.y = vertexDataSphere[start + 3].position.y;
+			vertexDataSphere[start + 3].normal.z = vertexDataSphere[start + 3].position.z;
+
 			// 基準点d
 			vertexDataSphere[start + 4].position.x = cos(lat + kLatEvery) * cos(lon + kLonEvery);
 			vertexDataSphere[start + 4].position.y = sin(lat + kLatEvery);
 			vertexDataSphere[start + 4].position.z = cos(lat + kLatEvery) * sin(lon + kLonEvery);
 			vertexDataSphere[start + 4].position.w = 1.0f;
+			
 			vertexDataSphere[start + 4].texcoord = { u + (1.0f / kSubdivision),v };
+
+			vertexDataSphere[start + 4].normal.x = vertexDataSphere[start + 4].position.x;
+			vertexDataSphere[start + 4].normal.y = vertexDataSphere[start + 4].position.y;
+			vertexDataSphere[start + 4].normal.z = vertexDataSphere[start + 4].position.z;
+
 			// 基準点c
 			vertexDataSphere[start + 5].position.x = cos(lat) * cos(lon + kLonEvery);
 			vertexDataSphere[start + 5].position.y = sin(lat);
 			vertexDataSphere[start + 5].position.z = cos(lat) * sin(lon + kLonEvery);
 			vertexDataSphere[start + 5].position.w = 1.0f;
+			
 			vertexDataSphere[start + 5].texcoord = { u + (1.0f / kSubdivision),v + (1.0f / kSubdivision) };
+
+			vertexDataSphere[start + 5].normal.x = vertexDataSphere[start + 5].position.x;
+			vertexDataSphere[start + 5].normal.y = vertexDataSphere[start + 5].position.y;
+			vertexDataSphere[start + 5].normal.z = vertexDataSphere[start + 5].position.z;
+
 		}
 	}
+}
+
+void Sphere::CreateMaterialResourceSphere(DirectXCommon* dir_, Mesh* mesh_){
+	// マテリアル用のリソースを作る。今回はcolor1つ分のサイズを用意する
+	materialResourceSphere = mesh_->Mesh::CreateBufferResource(dir_->GetDevice(), sizeof(Material));
+	// マテリアルにデータを書き込む
+	materialDataSphere = nullptr;
+	// 書き込むためのアドレスを取得
+	materialResourceSphere->Map(0, nullptr, reinterpret_cast<void**>(&materialDataSphere));
+	// 白を設定
+	materialDataSphere->color = { 1.0f, 1.0f, 1.0f, 1.0f };
+	// SphereはLightingするのでtrueを設定
+	materialDataSphere->enableLighting = true;
 }
 
 void Sphere::CreateTransformationMatrixResourceSphere(DirectXCommon* dir_, Mesh* mesh_){

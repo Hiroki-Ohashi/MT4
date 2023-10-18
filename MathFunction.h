@@ -14,6 +14,13 @@ struct Vector3 final {
 	float z;
 };
 
+struct Vector4 final {
+	float x;
+	float y;
+	float z;
+	float w;
+};
+
 struct Matrix4x4 {
 	float m[4][4];
 };
@@ -27,6 +34,23 @@ struct Transform {
 struct VertexData {
 	Vector4 position;
 	Vector2 texcoord;
+	Vector3 normal;
+};
+
+struct Material {
+	Vector4 color;
+	int32_t enableLighting;
+};
+
+struct TransformationMatrix {
+	Matrix4x4 WVP;
+	Matrix4x4 World;
+};
+
+struct DirectionalLight {
+	Vector4 color;
+	Vector4 direction;
+	float intensity;
 };
 
 // 単位行列の作成

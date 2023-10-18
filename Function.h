@@ -10,13 +10,6 @@
 #include <dxcapi.h>
 #include "externals/DirectXTex/DirectXTex.h"
 
-struct Vector4 final {
-	float x;
-	float y;
-	float z;
-	float w;
-};
-
 class Convert {
 public:
 	static std::wstring ConvertString(const std::string& str);

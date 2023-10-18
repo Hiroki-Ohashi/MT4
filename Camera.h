@@ -7,10 +7,13 @@ class Camera {
 public:
 	void Initialize();
 
-	void Update(WinApp* winapp_);
+	void Update();
 
 	void Draw();
 public:
+
+	static WinApp* winapp_;
+
 	Transform cameraTransform;
 	Matrix4x4 worldMatrix;
 	Matrix4x4 cameraMatrix;

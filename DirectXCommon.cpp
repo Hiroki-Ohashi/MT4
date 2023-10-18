@@ -1,6 +1,6 @@
 #include "DirectXCommon.h"
 
-void DirectXCommon::Initialize(WinApp* winApp_) {
+void DirectXCommon::Initialize() {
 
 	// DXGIファクトリーの生成
 	hr_ = CreateDXGIFactory(IID_PPV_ARGS(&dxgiFactory_));
@@ -107,7 +107,7 @@ void DirectXCommon::Initialize(WinApp* winApp_) {
 	swapChainDesc.BufferCount = 2;/// ダブルバッファ
 	swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;// モニタに写したら中身を破棄
 	// コマンドキュー、ウインドウハンドル、設定を渡して生成する
-	hr_ = dxgiFactory_->CreateSwapChainForHwnd(commandQueue_, winApp_->hwnd , &swapChainDesc, nullptr, nullptr, reinterpret_cast<IDXGISwapChain1**>(&swapChain_));
+	hr_ = dxgiFactory_->CreateSwapChainForHwnd(commandQueue_, winapp_->hwnd , &swapChainDesc, nullptr, nullptr, reinterpret_cast<IDXGISwapChain1**>(&swapChain_));
 	assert(SUCCEEDED(hr_));
 
 	// RTV用のヒープでディスクリプタの数は2。RTVはShader内で触るものではないので、ShaderVisibleはfalse
@@ -140,7 +140,7 @@ void DirectXCommon::Initialize(WinApp* winApp_) {
 	device_->CreateRenderTargetView(swapChainResources[1], &rtvDesc, rtvHandles[1]);
 
 	// DepthStencilTextureをウィンドウのサイズで作成
-	depthStencilResource = CreateDepthStencilTextureResource(device_, winApp_->kClientWidth, winApp_->kClientHeight);
+	depthStencilResource = CreateDepthStencilTextureResource(device_, winapp_->kClientWidth, winapp_->kClientHeight);
 
 	// DSV用のヒープでディスクリプタの数は1。DSVはShader内で触るものではないので、shaderVisibleはfalse
 	dsvDescriptorHeap_ = CreateDescriptorHeap(device_, D3D12_DESCRIPTOR_HEAP_TYPE_DSV, 1, false);
@@ -236,7 +236,7 @@ void DirectXCommon::Close(){
 	assert(SUCCEEDED(hr_));
 }
 
-void DirectXCommon::Release(WinApp* winApp_){
+void DirectXCommon::Release(){
 
 	CloseHandle(fenceEvent);
 	fence->Release();
@@ -255,9 +255,9 @@ void DirectXCommon::Release(WinApp* winApp_){
 	dxgiFactory_->Release();
 
 #ifdef _DEBUG
-	winApp_->debugController->Release();
+	winapp_->debugController->Release();
 #endif
-	CloseWindow(winApp_->hwnd);
+	CloseWindow(winapp_->hwnd);
 
 	// リソースリークチェック
 	IDXGIDebug1* debug;

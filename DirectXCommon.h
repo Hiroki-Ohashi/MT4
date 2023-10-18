@@ -20,10 +20,10 @@
 class DirectXCommon {
 public:
 	// Default Methods
-	void Initialize(WinApp* winApp_);
+	void Initialize();
 	void Update();
 	// void Draw(); //not use
-	void Release(WinApp* winApp_);
+	void Release();
 	
 
 	// User Methods
@@ -38,6 +38,9 @@ public:
 	ID3D12Device* GetDevice() { return device_; }
 
 public:
+
+	static WinApp* winapp_;
+
 	IDXGIFactory7* dxgiFactory_ = nullptr;
 	ID3D12Device* device_ = nullptr;
 	IDXGIAdapter4* useAdapter_ = nullptr;

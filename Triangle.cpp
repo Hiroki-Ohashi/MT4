@@ -62,40 +62,62 @@ void Triangle::CreateVertexResource(DirectXCommon* dir_, Mesh* mesh_, Vector4* p
 	// 左下
 	vertexData[0].position = pos[0];
 	vertexData[0].texcoord = { 0.0f, 1.0f };
+
+	vertexData[0].normal.x = vertexData[0].position.x;
+	vertexData[0].normal.y = vertexData[0].position.y;
+	vertexData[0].normal.z = vertexData[0].position.z;
+
 	// 上
 	vertexData[1].position = pos[1];
 	vertexData[1].texcoord = { 0.5f, 0.0f };
+
+	vertexData[1].normal.x = vertexData[1].position.x;
+	vertexData[1].normal.y = vertexData[1].position.y;
+	vertexData[1].normal.z = vertexData[1].position.z;
 
 	// 右上
 	vertexData[2].position = pos[2];
 	vertexData[2].texcoord = { 1.0f, 1.0f };
 
+	vertexData[2].normal.x = vertexData[2].position.x;
+	vertexData[2].normal.y = vertexData[2].position.y;
+	vertexData[2].normal.z = vertexData[2].position.z;
+
 	// 左下2
 	vertexData[3].position = pos[0];
 	vertexData[3].texcoord = { 0.0f, 1.0f };
+
+	vertexData[3].normal.x = vertexData[3].position.x;
+	vertexData[3].normal.y = vertexData[3].position.y;
+	vertexData[3].normal.z = vertexData[3].position.z;
+
 	// 上2
 	vertexData[4].position = pos[1];
 	vertexData[4].texcoord = { 0.5f, 0.0f };
 
+	vertexData[4].normal.x = vertexData[4].position.x;
+	vertexData[4].normal.y = vertexData[4].position.y;
+	vertexData[4].normal.z = vertexData[4].position.z;
+
 	// 右上2
 	vertexData[5].position = pos[2];
 	vertexData[5].texcoord = { 1.0f, 1.0f };
+
+	vertexData[5].normal.x = vertexData[4].position.x;
+	vertexData[5].normal.y = vertexData[4].position.y;
+	vertexData[5].normal.z = vertexData[4].position.z;
+
 }
 
 void Triangle::CreateMaterialResource(DirectXCommon* dir_, Mesh* mesh_){
-	//// マテリアル用のリソースを作る。今回はcolor1つ分のサイズを用意する
-	materialResource = mesh_->Mesh::CreateBufferResource(dir_->GetDevice(), sizeof(Vector4));
-	
-	// リソースの先頭のアドレスから使う
-	materialBufferView.BufferLocation = materialResource->GetGPUVirtualAddress();
-	// 使用するリソースのサイズは頂点3つ分のサイズ
-	materialBufferView.SizeInBytes = sizeof(Vector4);
-	// 1頂点あたりのサイズ
-	materialBufferView.StrideInBytes = sizeof(Vector4);
+	// マテリアル用のリソースを作る。今回はcolor1つ分のサイズを用意する
+	materialResource = mesh_->Mesh::CreateBufferResource(dir_->GetDevice(), sizeof(Material));
+	// マテリアルにデータを書き込む
+	materialData = nullptr;
 	// 書き込むためのアドレスを取得
 	materialResource->Map(0, nullptr, reinterpret_cast<void**>(&materialData));
-	// 今回は赤を書き込んでみる
-	*materialData = Vector4(1.0f, 1.0f, 1.0f, 1.0f);
+	// 白を設定
+	materialData->color = { 1.0f, 1.0f, 1.0f, 1.0f };
 }
 
 void Triangle::CreateWVPResource(DirectXCommon* dir_, Mesh* mesh_){

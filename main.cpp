@@ -64,7 +64,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	ImGuiManeger* imgui = new ImGuiManeger();
 	Camera* camera = new Camera();
 	
-	directX->Initialize(winapp);
+	directX->Initialize();
 	mesh->Initialize(directX);
 	sprite->Initialize(directX, mesh);
 	sphere->Initialize(directX, mesh);
@@ -95,8 +95,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			imgui->Update();
 			directX->Update();
 			mesh->Update(directX);
-			sprite->Update(winapp);
-			camera->Update(winapp);
+			sprite->Update();
+			camera->Update();
 			sphere->Update(*camera->transformationMatrixData, useMonsterBoll);
 
 			for (int i = 0; i < 2; i++) {
@@ -113,11 +113,19 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			sphere->Draw(directX, mesh);
 			sprite->Draw(directX, mesh);
 
+
 			ImGui::Begin("Mesh Color");
-			ImGui::ColorEdit3("Mesh Color", &triangle[0]->materialData->x);
-			ImGui::End();
+
+			ImGui::ColorEdit3("Triangle[0] Color", &triangle[0]->materialData->color.x);
+			ImGui::ColorEdit3("Triangle[1] Color", &triangle[1]->materialData->color.x);
+
+			ImGui::ColorEdit3("Sprite Color", &sprite->GetMaterialDataSprite()->color.x);
+
+			ImGui::ColorEdit3("Sphere Color", &sphere->GetMaterialDataSphere()->color.x);
 
 			ImGui::Checkbox("useMonsterBall", &useMonsterBoll);
+
+			ImGui::End();
 
 			/*ImGui::Begin("Camera Position");
 			ImGui::SliderFloat3("Camera Pos", &cameraTransform.translate.x, -1.0f, 1.0f);
@@ -145,7 +153,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	mesh->Release();
 	delete mesh;
 	imgui->Release();
-	directX->Release(winapp);
+	directX->Release();
 	delete camera;
 
 	delete imgui;

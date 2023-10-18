@@ -30,14 +30,13 @@ public:
 public:
 
 	D3D12_VERTEX_BUFFER_VIEW vertexBufferView{};
-	D3D12_VERTEX_BUFFER_VIEW materialBufferView{};
 
 	ID3D12Resource* vertexResource;
 	ID3D12Resource* materialResource;
 	ID3D12Resource* wvpResource;
 
 	VertexData* vertexData;
-	Vector4* materialData;
+	Material* materialData;
 	Matrix4x4* wvpData;
 
 	Transform transform;

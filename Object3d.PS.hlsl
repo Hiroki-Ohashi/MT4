@@ -5,9 +5,17 @@ SamplerState gSampler : register(s0);
 
 struct Material {
 	float32_t4 color;
+	int32_t enableLighting;
+};
+
+struct DirectionalLight {
+	Vector4 color;
+	Vector4 direction;
+	float intensity;
 };
 
 ConstantBuffer<Material> gMaterial : register(b0);
+ConstantBuffer<DirectionalLight> gDirectionalLight : register(b1);
 
 struct PixelShaderOutput {
 	float32_t4 color : SV_TARGET0;
