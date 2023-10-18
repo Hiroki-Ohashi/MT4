@@ -35,8 +35,7 @@ private:
 	Matrix4x4* transformationMatrixDataSphere;
 
 	Transform transformSphere;
-
-	float PI = 3.141592653f;
+	Matrix4x4 worldMatrixSphere;
 
 	uint32_t latIndex = 16;
 	uint32_t lonIndex = 16;

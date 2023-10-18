@@ -76,7 +76,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		triangle[i]->Initialize(directX, mesh, pos[i]);
 	}
 
-	bool useMonsterBoll = false;
+	bool useMonsterBoll = true;
 
 	MSG msg{};
 
@@ -96,7 +96,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			directX->Update();
 			mesh->Update(directX);
 			sprite->Update(winapp);
-			sphere->Update(winapp, *camera->transformationMatrixData);
 			camera->Update(winapp);
 			sphere->Update(*camera->transformationMatrixData, useMonsterBoll);
 

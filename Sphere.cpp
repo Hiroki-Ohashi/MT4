@@ -6,7 +6,7 @@ void Sphere::Initialize(DirectXCommon* dir_, Mesh* mesh_){
 	Sphere::CreateVertexResourceSphere(dir_, mesh_);
 	Sphere::CreateTransformationMatrixResourceSphere(dir_, mesh_);
 
-	useMonsterBoll_ = false;
+	useMonsterBoll_ = true;
 
 	transformSphere = { {0.5f,0.5f,0.5f},{0.0f,0.0f,0.0f},{1.0f,0.0f,0.0f} };
 }
@@ -40,7 +40,7 @@ void Sphere::Release() {
 void Sphere::CreateVertexResourceSphere(DirectXCommon* dir_, Mesh* mesh_){
 
 	// Sprite用の頂点リソースを作る
-	vertexResourceSphere = mesh_->CreateBufferResource(dir_->GetDevice(), sizeof(VertexData) * 6);
+	vertexResourceSphere = mesh_->CreateBufferResource(dir_->GetDevice(), sizeof(VertexData) * startIndex);
 
 	// リソースの先頭のアドレスから使う
 	vertexBufferViewSphere.BufferLocation = vertexResourceSphere->GetGPUVirtualAddress();
@@ -52,14 +52,14 @@ void Sphere::CreateVertexResourceSphere(DirectXCommon* dir_, Mesh* mesh_){
 	vertexResourceSphere->Map(0, nullptr, reinterpret_cast<void**>(&vertexDataSphere));
 
 	// 経度1つ分の角度
-	const float kLonEvery = 2.0f * PI / float(kSubdivision);
+	const float kLonEvery = 2.0f * float(M_PI) / float(kSubdivision);
 
 	// 緯度1つ分の角度
-	const float kLatEvery = PI / float(kSubdivision);
+	const float kLatEvery = float(M_PI) / float(kSubdivision);
 
 	// 緯度の方向に分割
 	for (latIndex = 0; latIndex < kSubdivision; ++latIndex) {
-		float lat = -PI / 2.0f + kLatEvery * latIndex;
+		float lat = float(-M_PI) / 2.0f + kLatEvery * latIndex;
 
 		// 経度の方向に分割しながら線を書く
 		for (lonIndex = 0; lonIndex < kSubdivision; ++lonIndex) {
