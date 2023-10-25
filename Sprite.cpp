@@ -7,14 +7,17 @@ void Sprite::Initialize(DirectXCommon* dir_, Mesh* mesh_){
 	Sprite::CreateTransformationMatrixResourceSprite(dir_, mesh_);
 
 	transformSprite = { {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
+
+	// SpriteはLightingしないのでfalseを設定
+	materialDataSprite->enableLighting = false;
 }
 
 void Sprite::Update(){
-	Matrix4x4 worldMatrixSprite = MakeAffineMatrix(transformSprite.scale, transformSprite.rotate, transformSprite.translate);
+	transformationMatrixDataSprite->World = MakeAffineMatrix(transformSprite.scale, transformSprite.rotate, transformSprite.translate);
 	Matrix4x4 viewMatrixSprite = MakeIndentity4x4();
 	Matrix4x4 projectionMatrixSprite = MakeOrthographicMatrix(0.0f, 0.0f, float(winapp_->kClientWidth), float(winapp_->kClientHeight), 0.0f, 100.0f);
-	Matrix4x4 worldViewProjectionMatrixSprite = Multiply(worldMatrixSprite, Multiply(viewMatrixSprite, projectionMatrixSprite));
-	*transformationMatrixDataSprite = worldViewProjectionMatrixSprite;
+	Matrix4x4 worldViewProjectionMatrixSprite = Multiply(transformationMatrixDataSprite->World, Multiply(viewMatrixSprite, projectionMatrixSprite));
+	transformationMatrixDataSprite->WVP = worldViewProjectionMatrixSprite;
 }
 
 void Sprite::Draw(DirectXCommon* dir_, Mesh* mesh_){
@@ -86,18 +89,16 @@ void Sprite::CreateMaterialResourceSprite(DirectXCommon* dir_, Mesh* mesh_){
 	materialResourceSprite->Map(0, nullptr, reinterpret_cast<void**>(&materialDataSprite));
 	// 白を設定
 	materialDataSprite->color = { 1.0f, 1.0f, 1.0f, 1.0f };
-	// SpriteはLightingしないのでfalseを設定
-	materialDataSprite->enableLighting = false;
 }
 
 
 void Sprite::CreateTransformationMatrixResourceSprite(DirectXCommon* dir_, Mesh* mesh_){
 	// Sprite用のTransformationMatrix用のリソースを作る。Matrix4x4 1つ分のサイズを用意する
-	transformationMatrixResourceSprite = mesh_->CreateBufferResource(dir_->GetDevice(), sizeof(Matrix4x4));
+	transformationMatrixResourceSprite = mesh_->CreateBufferResource(dir_->GetDevice(), sizeof(TransformationMatrix));
 
 	// 書き込むためのアドレスを取得
 	transformationMatrixResourceSprite->Map(0, nullptr, reinterpret_cast<void**>(&transformationMatrixDataSprite));
 
 	// 単位行列を書き込んでおく
-	*transformationMatrixDataSprite = MakeIndentity4x4();
+	transformationMatrixDataSprite->WVP = MakeIndentity4x4();
 }

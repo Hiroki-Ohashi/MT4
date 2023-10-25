@@ -40,7 +40,7 @@ private:
 
 	VertexData* vertexDataSprite;
 	Material* materialDataSprite;
-	Matrix4x4* transformationMatrixDataSprite;
+	TransformationMatrix* transformationMatrixDataSprite;
 
 	Transform transformSprite;
 };

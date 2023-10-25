@@ -49,7 +49,7 @@ struct TransformationMatrix {
 
 struct DirectionalLight {
 	Vector4 color;
-	Vector4 direction;
+	Vector3 direction;
 	float intensity;
 };
 

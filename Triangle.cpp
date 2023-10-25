@@ -12,9 +12,9 @@ void Triangle::Initialize(DirectXCommon* dir_, Mesh* mesh_, Vector4* pos){
 void Triangle::Update(const Matrix4x4& transformationMatrixData){
 	transform.rotate.y += 0.03f;
 
-	worldMatrix = MakeAffineMatrix(transform.scale, transform.rotate, transform.translate);
-	worldMatrix = Multiply(worldMatrix, transformationMatrixData);
-	*wvpData = worldMatrix;
+	wvpData->World = MakeAffineMatrix(transform.scale, transform.rotate, transform.translate);
+	wvpData->World = Multiply(wvpData->World, transformationMatrixData);
+	wvpData->WVP = wvpData->World;
 }
 
 void Triangle::Draw(DirectXCommon* dir_, Mesh* mesh_){
@@ -118,13 +118,15 @@ void Triangle::CreateMaterialResource(DirectXCommon* dir_, Mesh* mesh_){
 	materialResource->Map(0, nullptr, reinterpret_cast<void**>(&materialData));
 	// 白を設定
 	materialData->color = { 1.0f, 1.0f, 1.0f, 1.0f };
+
+	materialData->enableLighting = false;
 }
 
 void Triangle::CreateWVPResource(DirectXCommon* dir_, Mesh* mesh_){
 	// WVP用のリソースを作る。Matrix4x4 1つ分のサイズを用意する
-	wvpResource = mesh_->CreateBufferResource(dir_->GetDevice(), sizeof(Matrix4x4));
+	wvpResource = mesh_->CreateBufferResource(dir_->GetDevice(), sizeof(TransformationMatrix));
 	// 書き込むためのアドレスを取得
 	wvpResource->Map(0, nullptr, reinterpret_cast<void**>(&wvpData));
 	// 単位行列を書き込んでおく
-	*wvpData = MakeIndentity4x4();
+	wvpData->WVP = MakeIndentity4x4();
 }

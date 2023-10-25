@@ -25,30 +25,29 @@ public:
 	void CreateVertexResourceSphere(DirectXCommon* dir_, Mesh* mesh_);
 	void CreateMaterialResourceSphere(DirectXCommon* dir_, Mesh* mesh_);
 	void CreateTransformationMatrixResourceSphere(DirectXCommon* dir_, Mesh* mesh_);
+	void CreateDirectionalResource(DirectXCommon* dir_, Mesh* mesh_);
 
 	Material* GetMaterialDataSphere() { return materialDataSphere; }
-
+	DirectionalLight* GetdirectionalLightData() { return directionalLightData; }
 private:
 	ID3D12Resource* vertexResourceSphere;
 	ID3D12Resource* materialResourceSphere;
-	ID3D12Resource* transformationMatrixResourceSphere;
+	ID3D12Resource* wvpResourceSphere;
+	ID3D12Resource* directionalLightResource;
 
 	D3D12_VERTEX_BUFFER_VIEW vertexBufferViewSphere{};
 
 	VertexData* vertexDataSphere;
 	Material* materialDataSphere;
-	Matrix4x4* transformationMatrixDataSphere;
+	TransformationMatrix* wvpResourceDataSphere;
 
 	Transform transformSphere;
-	Matrix4x4 worldMatrixSphere;
+	TransformationMatrix* worldMatrixSphere;
 
-	uint32_t latIndex = 16;
-	uint32_t lonIndex = 16;
-	uint32_t kSubdivision = 16;
-	
-	int32_t startIndex = (latIndex * kSubdivision + lonIndex) * 6;
-
-	DirectionalLight directionalLightData;
+	const uint32_t kSubdivision = 16; //分割数
+	uint32_t vertexIndex = (kSubdivision * kSubdivision) * 6;
 
 	bool useMonsterBoll_;
+
+	DirectionalLight* directionalLightData;
 };

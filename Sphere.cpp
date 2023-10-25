@@ -3,20 +3,27 @@
 #include "math.h"
 
 void Sphere::Initialize(DirectXCommon* dir_, Mesh* mesh_){
+
 	Sphere::CreateVertexResourceSphere(dir_, mesh_);
 	Sphere::CreateMaterialResourceSphere(dir_, mesh_);
 	Sphere::CreateTransformationMatrixResourceSphere(dir_, mesh_);
+	Sphere::CreateDirectionalResource(dir_, mesh_);
 
 	useMonsterBoll_ = true;
 
 	transformSphere = { {0.5f,0.5f,0.5f},{0.0f,0.0f,0.0f},{1.0f,0.0f,0.0f} };
+
+	directionalLightData->color = { 1.0f, 1.0f, 1.0f, 1.0f };
+	directionalLightData->direction = { 0.0f, -1.0f, 0.0f };
+	directionalLightData->intensity = 1.0f;
 }
 
 void Sphere::Update(const Matrix4x4& transformationMatrixData, bool useMonsterBoll){
-	transformSphere.rotate.y += 0.01f;
-	worldMatrixSphere = MakeAffineMatrix(transformSphere.scale, transformSphere.rotate, transformSphere.translate);
-	worldMatrixSphere = Multiply(worldMatrixSphere, transformationMatrixData);
-	*transformationMatrixDataSphere = worldMatrixSphere;
+	transformSphere.rotate.y += 0.03f;
+
+	wvpResourceDataSphere->World = MakeAffineMatrix(transformSphere.scale, transformSphere.rotate, transformSphere.translate);
+	wvpResourceDataSphere->World = Multiply(wvpResourceDataSphere->World, transformationMatrixData);
+	wvpResourceDataSphere->WVP = wvpResourceDataSphere->World;
 
 	useMonsterBoll_ = useMonsterBoll;
 
@@ -28,28 +35,30 @@ void Sphere::Draw(DirectXCommon* dir_, Mesh* mesh_){
 	// マテリアルCBufferの場所を設定
 	dir_->GetCommandList()->SetGraphicsRootConstantBufferView(0, materialResourceSphere->GetGPUVirtualAddress());
 	// TransformationMatrixCBufferの場所を設定
-	dir_->GetCommandList()->SetGraphicsRootConstantBufferView(1, transformationMatrixResourceSphere->GetGPUVirtualAddress());
+	dir_->GetCommandList()->SetGraphicsRootConstantBufferView(1, wvpResourceSphere->GetGPUVirtualAddress());
+	dir_->GetCommandList()->SetGraphicsRootConstantBufferView(3, directionalLightResource->GetGPUVirtualAddress());
 	// SRVのDescriptorTableの先頭を設定。2はrootParameter[2]である。
 	dir_->GetCommandList()->SetGraphicsRootDescriptorTable(2, useMonsterBoll_ ? mesh_->textureSrvHandleGPU2 : mesh_->textureSrvHandleGPU);
 	// 描画(DrawCall/ドローコール)
-	dir_->GetCommandList()->DrawInstanced(startIndex, 1, 0, 0);
+	dir_->GetCommandList()->DrawInstanced(vertexIndex, 1, 0, 0);
 }
 
 void Sphere::Release() {
 	vertexResourceSphere->Release();
 	materialResourceSphere->Release();
-	transformationMatrixResourceSphere->Release();
+	wvpResourceSphere->Release();
+	directionalLightResource->Release();
 }
 
 void Sphere::CreateVertexResourceSphere(DirectXCommon* dir_, Mesh* mesh_){
 
 	// Sprite用の頂点リソースを作る
-	vertexResourceSphere = mesh_->CreateBufferResource(dir_->GetDevice(), sizeof(VertexData) * startIndex);
+	vertexResourceSphere = mesh_->CreateBufferResource(dir_->GetDevice(), sizeof(VertexData) * vertexIndex);
 
 	// リソースの先頭のアドレスから使う
 	vertexBufferViewSphere.BufferLocation = vertexResourceSphere->GetGPUVirtualAddress();
 	// 使用するリソースのサイズは頂点6つ分のサイズ
-	vertexBufferViewSphere.SizeInBytes = sizeof(VertexData) * startIndex;
+	vertexBufferViewSphere.SizeInBytes = sizeof(VertexData) * vertexIndex;
 	// 1頂点あたりのサイズ
 	vertexBufferViewSphere.StrideInBytes = sizeof(VertexData);
 
@@ -62,15 +71,13 @@ void Sphere::CreateVertexResourceSphere(DirectXCommon* dir_, Mesh* mesh_){
 	const float kLatEvery = float(M_PI) / float(kSubdivision);
 
 	// 緯度の方向に分割
-	for (latIndex = 0; latIndex < kSubdivision; ++latIndex) {
+	for (uint32_t latIndex = 0; latIndex < kSubdivision; ++latIndex) {
 		float lat = float(-M_PI) / 2.0f + kLatEvery * latIndex;
 
 		// 経度の方向に分割しながら線を書く
-		for (lonIndex = 0; lonIndex < kSubdivision; ++lonIndex) {
+		for (uint32_t lonIndex = 0; lonIndex < kSubdivision; ++lonIndex) {
 			int32_t start = (latIndex * kSubdivision + lonIndex) * 6;
 			float lon = lonIndex * kLonEvery;
-			float u = float(lonIndex) / float(kSubdivision);
-			float v = 1.0f - float(latIndex) / float(kSubdivision);
 
 			// 頂点にデータを入力する
 			// 基準点a
@@ -79,7 +86,7 @@ void Sphere::CreateVertexResourceSphere(DirectXCommon* dir_, Mesh* mesh_){
 			vertexDataSphere[start].position.z = cos(lat) * sin(lon);
 			vertexDataSphere[start].position.w = 1.0f;
 
-			vertexDataSphere[start].texcoord = { u,v + (1.0f / kSubdivision) };
+			vertexDataSphere[start].texcoord = { float(lonIndex) / float(kSubdivision) ,1.0f - float(latIndex) / float(kSubdivision) };
 
 			vertexDataSphere[start].normal.x = vertexDataSphere[start].position.x;
 			vertexDataSphere[start].normal.y = vertexDataSphere[start].position.y;
@@ -91,7 +98,7 @@ void Sphere::CreateVertexResourceSphere(DirectXCommon* dir_, Mesh* mesh_){
 			vertexDataSphere[start + 1].position.z = cos(lat + kLatEvery) * sin(lon);
 			vertexDataSphere[start + 1].position.w = 1.0f;
 
-			vertexDataSphere[start + 1].texcoord = { u,v };
+			vertexDataSphere[start + 1].texcoord = { vertexDataSphere[start].texcoord.x,vertexDataSphere[start].texcoord.y - (1.0f / kSubdivision) };
 
 			vertexDataSphere[start + 1].normal.x = vertexDataSphere[start + 1].position.x;
 			vertexDataSphere[start + 1].normal.y = vertexDataSphere[start + 1].position.y;
@@ -103,7 +110,7 @@ void Sphere::CreateVertexResourceSphere(DirectXCommon* dir_, Mesh* mesh_){
 			vertexDataSphere[start + 2].position.z = cos(lat) * sin(lon + kLonEvery);
 			vertexDataSphere[start + 2].position.w = 1.0f;
 
-			vertexDataSphere[start + 2].texcoord = { u + (1.0f / kSubdivision),v + (1.0f / kSubdivision) };
+			vertexDataSphere[start + 2].texcoord = { vertexDataSphere[start].texcoord.x + (1.0f / (float)kSubdivision),vertexDataSphere[start].texcoord.y };
 			
 			vertexDataSphere[start + 2].normal.x = vertexDataSphere[start + 2].position.x;
 			vertexDataSphere[start + 2].normal.y = vertexDataSphere[start + 2].position.y;
@@ -115,7 +122,7 @@ void Sphere::CreateVertexResourceSphere(DirectXCommon* dir_, Mesh* mesh_){
 			vertexDataSphere[start + 3].position.z = cos(lat + kLatEvery) * sin(lon);
 			vertexDataSphere[start + 3].position.w = 1.0f;
 			
-			vertexDataSphere[start + 3].texcoord = { u,v };
+			vertexDataSphere[start + 3].texcoord = { vertexDataSphere[start].texcoord.x,vertexDataSphere[start].texcoord.y - (1.0f / (float)kSubdivision) };
 
 			vertexDataSphere[start + 3].normal.x = vertexDataSphere[start + 3].position.x;
 			vertexDataSphere[start + 3].normal.y = vertexDataSphere[start + 3].position.y;
@@ -127,7 +134,7 @@ void Sphere::CreateVertexResourceSphere(DirectXCommon* dir_, Mesh* mesh_){
 			vertexDataSphere[start + 4].position.z = cos(lat + kLatEvery) * sin(lon + kLonEvery);
 			vertexDataSphere[start + 4].position.w = 1.0f;
 			
-			vertexDataSphere[start + 4].texcoord = { u + (1.0f / kSubdivision),v };
+			vertexDataSphere[start + 4].texcoord = { vertexDataSphere[start].texcoord.x + (1.0f / (float)kSubdivision),vertexDataSphere[start].texcoord.y - (1.0f / (float)kSubdivision) };
 
 			vertexDataSphere[start + 4].normal.x = vertexDataSphere[start + 4].position.x;
 			vertexDataSphere[start + 4].normal.y = vertexDataSphere[start + 4].position.y;
@@ -139,7 +146,7 @@ void Sphere::CreateVertexResourceSphere(DirectXCommon* dir_, Mesh* mesh_){
 			vertexDataSphere[start + 5].position.z = cos(lat) * sin(lon + kLonEvery);
 			vertexDataSphere[start + 5].position.w = 1.0f;
 			
-			vertexDataSphere[start + 5].texcoord = { u + (1.0f / kSubdivision),v + (1.0f / kSubdivision) };
+			vertexDataSphere[start + 5].texcoord = { vertexDataSphere[start].texcoord.x + (1.0f / (float)kSubdivision),vertexDataSphere[start].texcoord.y };
 
 			vertexDataSphere[start + 5].normal.x = vertexDataSphere[start + 5].position.x;
 			vertexDataSphere[start + 5].normal.y = vertexDataSphere[start + 5].position.y;
@@ -164,11 +171,17 @@ void Sphere::CreateMaterialResourceSphere(DirectXCommon* dir_, Mesh* mesh_){
 
 void Sphere::CreateTransformationMatrixResourceSphere(DirectXCommon* dir_, Mesh* mesh_){
 	// Sprite用のTransformationMatrix用のリソースを作る。Matrix4x4 1つ分のサイズを用意する
-	transformationMatrixResourceSphere = mesh_->CreateBufferResource(dir_->GetDevice(), sizeof(Matrix4x4));
+	wvpResourceSphere = mesh_->CreateBufferResource(dir_->GetDevice(), sizeof(TransformationMatrix));
 
 	// 書き込むためのアドレスを取得
-	transformationMatrixResourceSphere->Map(0, nullptr, reinterpret_cast<void**>(&transformationMatrixDataSphere));
+	wvpResourceSphere->Map(0, nullptr, reinterpret_cast<void**>(&wvpResourceDataSphere));
 
 	// 単位行列を書き込んでおく
-	*transformationMatrixDataSphere = MakeIndentity4x4();
+	wvpResourceDataSphere->WVP = MakeIndentity4x4();
+	wvpResourceDataSphere->World = MakeIndentity4x4();
+}
+
+void Sphere::CreateDirectionalResource(DirectXCommon* dir_, Mesh* mesh_){
+	directionalLightResource = mesh_->CreateBufferResource(dir_->GetDevice(), sizeof(DirectionalLight));
+	directionalLightResource->Map(0, nullptr, reinterpret_cast<void**>(&directionalLightData));
 }

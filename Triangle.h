@@ -37,7 +37,7 @@ public:
 
 	VertexData* vertexData;
 	Material* materialData;
-	Matrix4x4* wvpData;
+	TransformationMatrix* wvpData;
 
 	Transform transform;
 

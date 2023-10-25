@@ -125,6 +125,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 			ImGui::Checkbox("useMonsterBall", &useMonsterBoll);
 
+			ImGui::SliderFloat3("directionalLight", &sphere->GetdirectionalLightData()->direction.x, -1.0f, 1.0f);
+
+			ImGui::SliderFloat("aaa", &sphere->GetdirectionalLightData()->intensity, 0.0f, 1.0f);
+
 			ImGui::End();
 
 			/*ImGui::Begin("Camera Position");
