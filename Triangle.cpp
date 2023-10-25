@@ -120,6 +120,7 @@ void Triangle::CreateMaterialResource(DirectXCommon* dir_, Mesh* mesh_){
 	materialData->color = { 1.0f, 1.0f, 1.0f, 1.0f };
 
 	materialData->enableLighting = false;
+	materialData->uvTransform = MakeIndentity4x4();
 }
 
 void Triangle::CreateWVPResource(DirectXCommon* dir_, Mesh* mesh_){

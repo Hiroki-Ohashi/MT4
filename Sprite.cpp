@@ -1,4 +1,6 @@
 #include "Sprite.h"
+#include "externals/imgui/imgui.h"
+
 
 void Sprite::Initialize(DirectXCommon* dir_, Mesh* mesh_){
 
@@ -7,6 +9,7 @@ void Sprite::Initialize(DirectXCommon* dir_, Mesh* mesh_){
 	Sprite::CreateTransformationMatrixResourceSprite(dir_, mesh_);
 
 	transformSprite = { {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
+	uvTransformSprite = {{1.0f, 1.0f, 1.0f},{0.0f, 0.0f, 0.0f},{0.0f, 0.0f, 0.0f},};
 
 	// SpriteはLightingしないのでfalseを設定
 	materialDataSprite->enableLighting = false;
@@ -18,6 +21,11 @@ void Sprite::Update(){
 	Matrix4x4 projectionMatrixSprite = MakeOrthographicMatrix(0.0f, 0.0f, float(winapp_->kClientWidth), float(winapp_->kClientHeight), 0.0f, 100.0f);
 	Matrix4x4 worldViewProjectionMatrixSprite = Multiply(transformationMatrixDataSprite->World, Multiply(viewMatrixSprite, projectionMatrixSprite));
 	transformationMatrixDataSprite->WVP = worldViewProjectionMatrixSprite;
+
+	Matrix4x4 uvtransformMatrix = MakeScaleMatrix(uvTransformSprite.scale);
+	uvtransformMatrix = Multiply(uvtransformMatrix, MakeRotateZMatrix(uvTransformSprite.rotate.z));
+	uvtransformMatrix = Multiply(uvtransformMatrix, MakeTranslateMatrix(uvTransformSprite.translate));
+	materialDataSprite->uvTransform = uvtransformMatrix;
 }
 
 void Sprite::Draw(DirectXCommon* dir_, Mesh* mesh_){
@@ -33,6 +41,11 @@ void Sprite::Draw(DirectXCommon* dir_, Mesh* mesh_){
 	dir_->GetCommandList()->SetGraphicsRootDescriptorTable(2, mesh_->textureSrvHandleGPU);
 	// 描画(DrawCall/ドローコール)
 	dir_->GetCommandList()->DrawIndexedInstanced(6, 1, 0, 0, 0);
+
+	ImGui::Text("UVTransform");
+	ImGui::DragFloat2("UVTransform", &uvTransformSprite.translate.x, 0.01f, -10.0f, 10.0f);
+	ImGui::DragFloat2("UVScale", &uvTransformSprite.scale.x, 0.01f, -10.0f, 10.0f);
+	ImGui::SliderAngle("UVRotate", &uvTransformSprite.rotate.z);
 }
 
 void Sprite::Release(){
@@ -102,6 +115,8 @@ void Sprite::CreateMaterialResourceSprite(DirectXCommon* dir_, Mesh* mesh_){
 	materialResourceSprite->Map(0, nullptr, reinterpret_cast<void**>(&materialDataSprite));
 	// 白を設定
 	materialDataSprite->color = { 1.0f, 1.0f, 1.0f, 1.0f };
+
+	materialDataSprite->uvTransform = MakeIndentity4x4();
 }
 
 

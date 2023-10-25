@@ -40,6 +40,8 @@ struct VertexData {
 struct Material {
 	Vector4 color;
 	int32_t enableLighting;
+	float padding[3];
+	Matrix4x4 uvTransform;
 };
 
 struct TransformationMatrix {
@@ -69,3 +71,6 @@ Matrix4x4 MakeOrthographicMatrix(float left, float right, float top, float botto
 Matrix4x4 Inverse(const Matrix4x4& m);
 
 Vector3 Normalize(const Vector3& v1);
+
+Matrix4x4 MakeScaleMatrix(const Vector3& scale);
+Matrix4x4 MakeTranslateMatrix(const Vector3& translate);

@@ -12,6 +12,7 @@ void Sphere::Initialize(DirectXCommon* dir_, Mesh* mesh_){
 	useMonsterBoll_ = true;
 
 	transformSphere = { {0.5f,0.5f,0.5f},{0.0f,0.0f,0.0f},{1.0f,0.0f,0.0f} };
+	uvTransformSphere = { {1.0f, 1.0f, 1.0f},{0.0f, 0.0f, 0.0f},{0.0f, 0.0f, 0.0f}, };
 
 	directionalLightData->color = { 1.0f, 1.0f, 1.0f, 1.0f };
 	directionalLightData->direction = { 0.0f, -1.0f, 1.0f };
@@ -166,6 +167,8 @@ void Sphere::CreateMaterialResourceSphere(DirectXCommon* dir_, Mesh* mesh_){
 	materialDataSphere->color = { 1.0f, 1.0f, 1.0f, 1.0f };
 	// SphereはLightingするのでtrueを設定
 	materialDataSphere->enableLighting = true;
+
+	materialDataSphere->uvTransform = MakeIndentity4x4();
 }
 
 void Sphere::CreateTransformationMatrixResourceSphere(DirectXCommon* dir_, Mesh* mesh_){

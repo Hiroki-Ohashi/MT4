@@ -42,6 +42,7 @@ private:
 	TransformationMatrix* wvpResourceDataSphere;
 
 	Transform transformSphere;
+	Transform uvTransformSphere;
 	TransformationMatrix* worldMatrixSphere;
 
 	const uint32_t kSubdivision = 32; //分割数
