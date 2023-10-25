@@ -125,7 +125,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 			ImGui::Checkbox("useMonsterBall", &useMonsterBoll);
 
-			ImGui::SliderFloat3("directionalLight", &sphere->GetdirectionalLightData()->direction.x, -2.0f, 2.0f);
+			ImGui::SliderFloat3("directionalLight", &sphere->GetdirectionalLightData()->direction.x, -1.0f, 1.0f);
+			sphere->GetdirectionalLightData()->direction = Normalize(sphere->GetdirectionalLightData()->direction);
 
 			ImGui::SliderFloat("aaa", &sphere->GetdirectionalLightData()->intensity, 0.0f, 1.0f);
 

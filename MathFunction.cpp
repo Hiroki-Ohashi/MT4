@@ -275,3 +275,11 @@ Matrix4x4 MakeOrthographicMatrix(float left, float top, float right, float botto
 	return result;
 }
 
+Vector3 Normalize(const Vector3& v1) {
+	Vector3 Result = v1;
+	float length = sqrt(v1.x * v1.x + v1.y * v1.y + v1.z * v1.z);
+	Result.x /= length;
+	Result.y /= length;
+	Result.z /= length;
+	return Result;
+}

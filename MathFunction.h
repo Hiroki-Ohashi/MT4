@@ -67,3 +67,5 @@ Matrix4x4 MakePerspectiveMatrix(float fovY, float aspectRatio, float nearClip, f
 Matrix4x4 MakeOrthographicMatrix(float left, float right, float top, float bottom, float nearClip, float farClip);
 
 Matrix4x4 Inverse(const Matrix4x4& m);
+
+Vector3 Normalize(const Vector3& v1);
