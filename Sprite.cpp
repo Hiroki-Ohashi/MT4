@@ -42,10 +42,11 @@ void Sprite::Draw(DirectXCommon* dir_, Mesh* mesh_){
 	// 描画(DrawCall/ドローコール)
 	dir_->GetCommandList()->DrawIndexedInstanced(6, 1, 0, 0, 0);
 
-	ImGui::Text("UVTransform");
+	ImGui::Begin("UVTransform");
 	ImGui::DragFloat2("UVTransform", &uvTransformSprite.translate.x, 0.01f, -10.0f, 10.0f);
 	ImGui::DragFloat2("UVScale", &uvTransformSprite.scale.x, 0.01f, -10.0f, 10.0f);
 	ImGui::SliderAngle("UVRotate", &uvTransformSprite.rotate.z);
+	ImGui::End();
 }
 
 void Sprite::Release(){

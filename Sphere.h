@@ -16,7 +16,7 @@ class Sphere {
 public:
 	void Initialize(DirectXCommon* dir_, Mesh* mesh_);
 
-	void Update(const Matrix4x4& transformationMatrixData, bool useMonsterBoll);
+	void Update(const Matrix4x4& transformationMatrixData);
 
 	void Draw(DirectXCommon* dir_, Mesh* mesh_);
 
@@ -28,7 +28,7 @@ public:
 	void CreateDirectionalResource(DirectXCommon* dir_, Mesh* mesh_);
 
 	Material* GetMaterialDataSphere() { return materialDataSphere; }
-	DirectionalLight* GetdirectionalLightData() { return directionalLightData; }
+
 private:
 	ID3D12Resource* vertexResourceSphere;
 	ID3D12Resource* materialResourceSphere;
@@ -48,7 +48,7 @@ private:
 	const uint32_t kSubdivision = 32; //分割数
 	uint32_t vertexIndex = (kSubdivision * kSubdivision) * 6;
 
-	bool useMonsterBoll_;
+	bool useMonsterBoll_ = true;
 
 	DirectionalLight* directionalLightData;
 };

@@ -1,6 +1,7 @@
 #include "Sphere.h"
 #define _USE_MATH_DEFINES
 #include "math.h"
+#include "externals/imgui/imgui.h"
 
 void Sphere::Initialize(DirectXCommon* dir_, Mesh* mesh_){
 
@@ -8,8 +9,6 @@ void Sphere::Initialize(DirectXCommon* dir_, Mesh* mesh_){
 	Sphere::CreateMaterialResourceSphere(dir_, mesh_);
 	Sphere::CreateTransformationMatrixResourceSphere(dir_, mesh_);
 	Sphere::CreateDirectionalResource(dir_, mesh_);
-
-	useMonsterBoll_ = true;
 
 	transformSphere = { {0.5f,0.5f,0.5f},{0.0f,0.0f,0.0f},{1.0f,0.0f,0.0f} };
 	uvTransformSphere = { {1.0f, 1.0f, 1.0f},{0.0f, 0.0f, 0.0f},{0.0f, 0.0f, 0.0f}, };
@@ -19,14 +18,12 @@ void Sphere::Initialize(DirectXCommon* dir_, Mesh* mesh_){
 	directionalLightData->intensity = 1.0f;
 }
 
-void Sphere::Update(const Matrix4x4& transformationMatrixData, bool useMonsterBoll){
+void Sphere::Update(const Matrix4x4& transformationMatrixData){
 	transformSphere.rotate.y += 0.03f;
 
 	wvpResourceDataSphere->World = MakeAffineMatrix(transformSphere.scale, transformSphere.rotate, transformSphere.translate);
 	wvpResourceDataSphere->World = Multiply(wvpResourceDataSphere->World, transformationMatrixData);
 	wvpResourceDataSphere->WVP = wvpResourceDataSphere->World;
-
-	useMonsterBoll_ = useMonsterBoll;
 }
 
 void Sphere::Draw(DirectXCommon* dir_, Mesh* mesh_){
@@ -41,6 +38,14 @@ void Sphere::Draw(DirectXCommon* dir_, Mesh* mesh_){
 	dir_->GetCommandList()->SetGraphicsRootDescriptorTable(2, useMonsterBoll_ ? mesh_->textureSrvHandleGPU2 : mesh_->textureSrvHandleGPU);
 	// 描画(DrawCall/ドローコール)
 	dir_->GetCommandList()->DrawInstanced(vertexIndex, 1, 0, 0);
+
+	ImGui::Begin("Sphere");
+	ImGui::Checkbox("useMonsterBall", &useMonsterBoll_);
+	ImGui::SliderFloat3("Light Direction", &directionalLightData->direction.x, -1.0f, 1.0f);
+	directionalLightData->direction = Normalize(directionalLightData->direction);
+
+	ImGui::SliderFloat("Intensity", &directionalLightData->intensity, 0.0f, 1.0f);
+	ImGui::End();
 }
 
 void Sphere::Release() {
