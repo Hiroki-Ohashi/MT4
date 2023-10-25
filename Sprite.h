@@ -35,12 +35,15 @@ private:
 	ID3D12Resource* vertexResourceSprite;
 	ID3D12Resource* materialResourceSprite;
 	ID3D12Resource* transformationMatrixResourceSprite;
+	ID3D12Resource* indexResourceSprite;
 
 	D3D12_VERTEX_BUFFER_VIEW vertexBufferViewSprite{};
+	D3D12_INDEX_BUFFER_VIEW indexBufferViewSprite{};
 
 	VertexData* vertexDataSprite;
 	Material* materialDataSprite;
 	TransformationMatrix* transformationMatrixDataSprite;
+	uint32_t* indexDataSprite;
 
 	Transform transformSprite;
 };

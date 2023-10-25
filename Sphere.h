@@ -44,7 +44,7 @@ private:
 	Transform transformSphere;
 	TransformationMatrix* worldMatrixSphere;
 
-	const uint32_t kSubdivision = 16; //分割数
+	const uint32_t kSubdivision = 32; //分割数
 	uint32_t vertexIndex = (kSubdivision * kSubdivision) * 6;
 
 	bool useMonsterBoll_;
