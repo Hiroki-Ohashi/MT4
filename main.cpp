@@ -13,6 +13,7 @@
 #include "MathFunction.h"
 #include "Camera.h"
 #include "Sphere.h"
+#include "Model.h"
 #include "externals/imgui/imgui.h"
 
 
@@ -61,6 +62,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	Triangle* triangle[Max];
 	Sprite* sprite = new Sprite();
 	Sphere* sphere = new Sphere();
+	Model* model = new Model();
 	ImGuiManeger* imgui = new ImGuiManeger();
 	Camera* camera = new Camera();
 	
@@ -68,6 +70,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	mesh->Initialize(directX);
 	sprite->Initialize(directX, mesh);
 	sphere->Initialize(directX, mesh);
+	model->Initialize(directX, mesh);
 	camera->Initialize();
 	imgui->Initialize(winapp, directX);
 
@@ -96,6 +99,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			sprite->Update();
 			camera->Update();
 			sphere->Update(*camera->transformationMatrixData);
+			model->Update(*camera->transformationMatrixData);
 
 			for (int i = 0; i < 2; i++) {
 				triangle[i]->Update(*camera->transformationMatrixData);
@@ -110,6 +114,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 			sphere->Draw(directX, mesh);
 			sprite->Draw(directX, mesh);
+			model->Draw(directX, mesh);
 
 
 			ImGui::Begin("Mesh Color");
@@ -146,6 +151,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	delete sphere;
 	mesh->Release();
 	delete mesh;
+	model->Release();
+	delete model;
 	imgui->Release();
 	directX->Release();
 	delete camera;

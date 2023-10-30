@@ -40,7 +40,7 @@ void Sprite::Draw(DirectXCommon* dir_, Mesh* mesh_){
 	// SRVのDescriptorTableの先頭を設定。2はrootParameter[2]である。
 	dir_->GetCommandList()->SetGraphicsRootDescriptorTable(2, mesh_->textureSrvHandleGPU);
 	// 描画(DrawCall/ドローコール)
-	dir_->GetCommandList()->DrawIndexedInstanced(6, 1, 0, 0, 0);
+	//dir_->GetCommandList()->DrawIndexedInstanced(6, 1, 0, 0, 0);
 
 	ImGui::Begin("UVTransform");
 	ImGui::DragFloat2("UVTransform", &uvTransformSprite.translate.x, 0.01f, -10.0f, 10.0f);

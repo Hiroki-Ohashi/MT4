@@ -28,7 +28,7 @@ void Triangle::Draw(DirectXCommon* dir_, Mesh* mesh_){
 	// SRVのDescriptorTableの先頭を設定。2はrootParameter[2]である。
 	dir_->GetCommandList()->SetGraphicsRootDescriptorTable(2, mesh_->textureSrvHandleGPU);
 	// 描画(DrawCall/ドローコール)。3頂点で1つのインスタンス。
-	dir_->GetCommandList()->DrawInstanced(6, 1, 0, 0);
+	//dir_->GetCommandList()->DrawInstanced(6, 1, 0, 0);
 }
 
 void Triangle::Release(){

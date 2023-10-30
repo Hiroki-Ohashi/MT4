@@ -28,6 +28,7 @@ public:
 	void CreateDirectionalResource(DirectXCommon* dir_, Mesh* mesh_);
 
 	Material* GetMaterialDataSphere() { return materialDataSphere; }
+	DirectionalLight* GetDirectionalLightData(){return directionalLightData;}
 
 private:
 	ID3D12Resource* vertexResourceSphere;
@@ -45,7 +46,7 @@ private:
 	Transform uvTransformSphere;
 	TransformationMatrix* worldMatrixSphere;
 
-	const uint32_t kSubdivision = 32; //分割数
+	const uint32_t kSubdivision = 128; //分割数
 	uint32_t vertexIndex = (kSubdivision * kSubdivision) * 6;
 
 	bool useMonsterBoll_ = true;

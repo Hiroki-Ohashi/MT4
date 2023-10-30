@@ -19,7 +19,7 @@ void Sphere::Initialize(DirectXCommon* dir_, Mesh* mesh_){
 }
 
 void Sphere::Update(const Matrix4x4& transformationMatrixData){
-	transformSphere.rotate.y += 0.03f;
+	transformSphere.rotate.y += 0.1f;
 
 	wvpResourceDataSphere->World = MakeAffineMatrix(transformSphere.scale, transformSphere.rotate, transformSphere.translate);
 	wvpResourceDataSphere->World = Multiply(wvpResourceDataSphere->World, transformationMatrixData);
@@ -57,7 +57,7 @@ void Sphere::Release() {
 
 void Sphere::CreateVertexResourceSphere(DirectXCommon* dir_, Mesh* mesh_){
 
-	// Sprite用の頂点リソースを作る
+	// 頂点リソースを作る
 	vertexResourceSphere = mesh_->CreateBufferResource(dir_->GetDevice(), sizeof(VertexData) * vertexIndex);
 
 	// リソースの先頭のアドレスから使う
