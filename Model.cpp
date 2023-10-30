@@ -10,7 +10,7 @@ void Model::Initialize(DirectXCommon* dir_, Mesh* mesh_){
 	Model::CreateMaterialResource(dir_, mesh_);
 	Model::CreateWVPResource(dir_, mesh_);
 
-	transform = { { 0.5f,0.5f,0.5f},{0.0f,0.0f,0.0f},{0.0f,-0.5f,0.0f} };
+	transform = { { 0.5f,0.5f,0.5f},{0.0f,0.0f,0.0f},{0.0f,-0.5f,1.0f} };
 	uvTransform = { {1.0f, 1.0f, 1.0f},{0.0f, 0.0f, 0.0f},{0.0f, 0.0f, 0.0f}, };
 
 	// Lightingするか
@@ -25,7 +25,7 @@ void Model::Update(const Matrix4x4& transformationMatrixData){
 	Matrix4x4 uvtransformMatrix = MakeScaleMatrix(uvTransform.scale);
 	uvtransformMatrix = Multiply(uvtransformMatrix, MakeRotateZMatrix(uvTransform.rotate.z));
 	uvtransformMatrix = Multiply(uvtransformMatrix, MakeTranslateMatrix(uvTransform.translate));
-	/*materialData->uvTransform = uvtransformMatrix;*/
+	materialData->uvTransform = uvtransformMatrix;
 }
 
 void Model::Draw(DirectXCommon* dir_, Mesh* mesh_){
@@ -43,6 +43,9 @@ void Model::Draw(DirectXCommon* dir_, Mesh* mesh_){
 	ImGui::Begin("Model");
 	ImGui::SliderAngle(".Rotate.y ", &transform.rotate.y);
 	ImGui::SliderFloat3("translate", &transform.translate.x, -1.0f, 1.0f);
+	ImGui::DragFloat2("UVTransform", &uvTransform.translate.x, 0.01f, -10.0f, 10.0f);
+	ImGui::DragFloat2("UVScale", &uvTransform.scale.x, 0.01f, -10.0f, 10.0f);
+	ImGui::SliderAngle("UVRotate", &uvTransform.rotate.z);
 	ImGui::End();
 }
 

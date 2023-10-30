@@ -19,11 +19,16 @@ void Sphere::Initialize(DirectXCommon* dir_, Mesh* mesh_){
 }
 
 void Sphere::Update(const Matrix4x4& transformationMatrixData){
-	transformSphere.rotate.y += 0.1f;
+	transformSphere.rotate.y += 0.03f;
 
 	wvpResourceDataSphere->World = MakeAffineMatrix(transformSphere.scale, transformSphere.rotate, transformSphere.translate);
 	wvpResourceDataSphere->World = Multiply(wvpResourceDataSphere->World, transformationMatrixData);
 	wvpResourceDataSphere->WVP = wvpResourceDataSphere->World;
+
+	Matrix4x4 uvtransformMatrix = MakeScaleMatrix(uvTransformSphere.scale);
+	uvtransformMatrix = Multiply(uvtransformMatrix, MakeRotateZMatrix(uvTransformSphere.rotate.z));
+	uvtransformMatrix = Multiply(uvtransformMatrix, MakeTranslateMatrix(uvTransformSphere.translate));
+	materialDataSphere->uvTransform = uvtransformMatrix;
 }
 
 void Sphere::Draw(DirectXCommon* dir_, Mesh* mesh_){
@@ -43,8 +48,10 @@ void Sphere::Draw(DirectXCommon* dir_, Mesh* mesh_){
 	ImGui::Checkbox("useMonsterBall", &useMonsterBoll_);
 	ImGui::SliderFloat3("Light Direction", &directionalLightData->direction.x, -1.0f, 1.0f);
 	directionalLightData->direction = Normalize(directionalLightData->direction);
-
 	ImGui::SliderFloat("Intensity", &directionalLightData->intensity, 0.0f, 1.0f);
+	ImGui::DragFloat2("UVTransform", &uvTransformSphere.translate.x, 0.01f, -10.0f, 10.0f);
+	ImGui::DragFloat2("UVScale", &uvTransformSphere.scale.x, 0.01f, -10.0f, 10.0f);
+	ImGui::SliderAngle("UVRotate", &uvTransformSphere.rotate.z);
 	ImGui::End();
 }
 
