@@ -59,4 +59,6 @@ private:
 
 	Transform transform;
 	Transform uvTransform;
+
+	bool isModel;
 };

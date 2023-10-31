@@ -24,7 +24,7 @@ void Mesh::Initialize(DirectXCommon* dir_) {
 	UploadTextureData(textureResource.Get(), mipImages);
 
 	// 2枚目のTextureを読んで転送する
-	DirectX::ScratchImage mipImages2 = LoadTexture("resources/monsterBall.png");
+	DirectX::ScratchImage mipImages2 = LoadTexture("resources/moon.png");
 	const DirectX::TexMetadata& metadata2 = mipImages2.GetMetadata();
 	textureResource2 = CreateTextureResource(dir_->GetDevice(), metadata2);
 	UploadTextureData(textureResource2.Get(), mipImages2);
@@ -50,7 +50,7 @@ void Mesh::Initialize(DirectXCommon* dir_) {
 	textureSrvHandleCPU.ptr += dir_->GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 	textureSrvHandleGPU.ptr += dir_->GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 
-	// 二枚目のSRVを作成するDescriptorHeapの場所を決める
+	// 2枚目のSRVを作成するDescriptorHeapの場所を決める
 	textureSrvHandleCPU2 = GetCPUDescriptorHandle(dir_->GetSrvDescriptorHeap(), descriptorSizeSRV, 2);
 	textureSrvHandleGPU2 = GetGPUDescriptorHandle(dir_->GetSrvDescriptorHeap(), descriptorSizeSRV, 2);
 

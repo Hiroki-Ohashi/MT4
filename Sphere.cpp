@@ -10,7 +10,7 @@ void Sphere::Initialize(DirectXCommon* dir_, Mesh* mesh_){
 	Sphere::CreateTransformationMatrixResourceSphere(dir_, mesh_);
 	Sphere::CreateDirectionalResource(dir_, mesh_);
 
-	transformSphere = { {0.5f,0.5f,0.5f},{0.0f,0.0f,0.0f},{1.0f,0.0f,0.0f} };
+	transformSphere = { {0.5f,0.5f,0.5f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
 	uvTransformSphere = { {1.0f, 1.0f, 1.0f},{0.0f, 0.0f, 0.0f},{0.0f, 0.0f, 0.0f}, };
 
 	directionalLightData->color = { 1.0f, 1.0f, 1.0f, 1.0f };
@@ -19,7 +19,7 @@ void Sphere::Initialize(DirectXCommon* dir_, Mesh* mesh_){
 }
 
 void Sphere::Update(const Matrix4x4& transformationMatrixData){
-	transformSphere.rotate.y += 0.05f;
+	transformSphere.rotate.y += 0.02f;
 
 	wvpResourceDataSphere->World = MakeAffineMatrix(transformSphere.scale, transformSphere.rotate, transformSphere.translate);
 	wvpResourceDataSphere->World = Multiply(wvpResourceDataSphere->World, transformationMatrixData);
@@ -40,15 +40,22 @@ void Sphere::Draw(DirectXCommon* dir_, Mesh* mesh_){
 	dir_->GetCommandList()->SetGraphicsRootConstantBufferView(1, wvpResourceSphere->GetGPUVirtualAddress());
 	dir_->GetCommandList()->SetGraphicsRootConstantBufferView(3, directionalLightResource->GetGPUVirtualAddress());
 	// SRVのDescriptorTableの先頭を設定。2はrootParameter[2]である。
-	dir_->GetCommandList()->SetGraphicsRootDescriptorTable(2, useMonsterBoll_ ? mesh_->textureSrvHandleGPU2 : mesh_->textureSrvHandleGPU);
-	// 描画(DrawCall/ドローコール)
-	dir_->GetCommandList()->DrawInstanced(vertexIndex, 1, 0, 0);
+	dir_->GetCommandList()->SetGraphicsRootDescriptorTable(2, useMoon ? mesh_->textureSrvHandleGPU2 : mesh_->textureSrvHandleGPU);
+	if (isSphere == true) {
+		// 描画(DrawCall/ドローコール)
+		dir_->GetCommandList()->DrawInstanced(vertexIndex, 1, 0, 0);
+	}
 
 	ImGui::Begin("Sphere");
-	ImGui::Checkbox("useMonsterBall", &useMonsterBoll_);
+	ImGui::Checkbox("IsSphere", &isSphere);
+	ImGui::Checkbox("useMoon", &useMoon);
+
+	ImGui::DragFloat3("Transform", &transformSphere.translate.x, 0.01f, -10.0f, 10.0f);
+
 	ImGui::SliderFloat3("Light Direction", &directionalLightData->direction.x, -1.0f, 1.0f);
 	directionalLightData->direction = Normalize(directionalLightData->direction);
 	ImGui::SliderFloat("Intensity", &directionalLightData->intensity, 0.0f, 1.0f);
+
 	ImGui::DragFloat2("UVTransform", &uvTransformSphere.translate.x, 0.01f, -10.0f, 10.0f);
 	ImGui::DragFloat2("UVScale", &uvTransformSphere.scale.x, 0.01f, -10.0f, 10.0f);
 	ImGui::SliderAngle("UVRotate", &uvTransformSphere.rotate.z);

@@ -49,7 +49,8 @@ private:
 	const uint32_t kSubdivision = 64; //分割数
 	uint32_t vertexIndex = (kSubdivision * kSubdivision) * 6;
 
-	bool useMonsterBoll_ = true;
+	bool isSphere = true;
+	bool useMoon = false;
 
 	DirectionalLight* directionalLightData;
 };

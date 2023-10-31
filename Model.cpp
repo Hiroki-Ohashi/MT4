@@ -37,12 +37,18 @@ void Model::Draw(DirectXCommon* dir_, Mesh* mesh_){
 	dir_->GetCommandList()->SetGraphicsRootConstantBufferView(1, wvpResource->GetGPUVirtualAddress());
 	// SRVのDescriptorTableの先頭を設定。2はrootParameter[2]である。
 	dir_->GetCommandList()->SetGraphicsRootDescriptorTable(2, mesh_->textureSrvHandleGPU);
-	// 描画(DrawCall/ドローコール)
-	dir_->GetCommandList()->DrawInstanced(UINT(modelData.vertices.size()), 1, 0, 0);
+	if (isModel == true) {
+		// 描画(DrawCall/ドローコール)
+		dir_->GetCommandList()->DrawInstanced(UINT(modelData.vertices.size()), 1, 0, 0);
+	}
 
 	ImGui::Begin("Model");
-	ImGui::SliderAngle(".Rotate.y ", &transform.rotate.y);
-	ImGui::SliderFloat3("translate", &transform.translate.x, -1.0f, 1.0f);
+
+	ImGui::Checkbox("IsModel", &isModel);
+
+	ImGui::SliderAngle("Rotate.y ", &transform.rotate.y);
+	ImGui::DragFloat3("Transform", &transform.translate.x, 0.01f, -10.0f, 10.0f);
+
 	ImGui::DragFloat2("UVTransform", &uvTransform.translate.x, 0.01f, -10.0f, 10.0f);
 	ImGui::DragFloat2("UVScale", &uvTransform.scale.x, 0.01f, -10.0f, 10.0f);
 	ImGui::SliderAngle("UVRotate", &uvTransform.rotate.z);

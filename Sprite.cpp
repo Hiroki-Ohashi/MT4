@@ -39,10 +39,16 @@ void Sprite::Draw(DirectXCommon* dir_, Mesh* mesh_){
 	dir_->GetCommandList()->SetGraphicsRootConstantBufferView(1, transformationMatrixResourceSprite->GetGPUVirtualAddress());
 	// SRVのDescriptorTableの先頭を設定。2はrootParameter[2]である。
 	dir_->GetCommandList()->SetGraphicsRootDescriptorTable(2, mesh_->textureSrvHandleGPU);
-	// 描画(DrawCall/ドローコール)
-	dir_->GetCommandList()->DrawIndexedInstanced(6, 1, 0, 0, 0);
+	if (isSprite == true) {
+		// 描画(DrawCall/ドローコール)
+		dir_->GetCommandList()->DrawIndexedInstanced(6, 1, 0, 0, 0);
+	}
 
-	ImGui::Begin("UVTransform");
+	ImGui::Begin("Sprite");
+	ImGui::Checkbox("IsSprite", &isSprite);
+
+	ImGui::DragFloat2("Transform", &transformSprite.translate.x, 0.1f, -1000.0f, 1000.0f);
+
 	ImGui::DragFloat2("UVTransform", &uvTransformSprite.translate.x, 0.01f, -10.0f, 10.0f);
 	ImGui::DragFloat2("UVScale", &uvTransformSprite.scale.x, 0.01f, -10.0f, 10.0f);
 	ImGui::SliderAngle("UVRotate", &uvTransformSprite.rotate.z);
