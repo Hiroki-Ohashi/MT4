@@ -50,10 +50,6 @@ void Sprite::Draw(DirectXCommon* dir_, Mesh* mesh_){
 }
 
 void Sprite::Release(){
-	vertexResourceSprite->Release();
-	materialResourceSprite->Release();
-	transformationMatrixResourceSprite->Release();
-	indexResourceSprite->Release();
 }
 
 void Sprite::CreateVertexResourceSprite(DirectXCommon* dir_, Mesh* mesh_){

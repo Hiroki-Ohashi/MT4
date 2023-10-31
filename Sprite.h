@@ -32,10 +32,10 @@ private:
 
 	static WinApp* winapp_;
 
-	ID3D12Resource* vertexResourceSprite;
-	ID3D12Resource* materialResourceSprite;
-	ID3D12Resource* transformationMatrixResourceSprite;
-	ID3D12Resource* indexResourceSprite;
+	Microsoft::WRL::ComPtr<ID3D12Resource> vertexResourceSprite;
+	Microsoft::WRL::ComPtr<ID3D12Resource> materialResourceSprite;
+	Microsoft::WRL::ComPtr<ID3D12Resource> transformationMatrixResourceSprite;
+	Microsoft::WRL::ComPtr<ID3D12Resource> indexResourceSprite;
 
 	D3D12_VERTEX_BUFFER_VIEW vertexBufferViewSprite{};
 	D3D12_INDEX_BUFFER_VIEW indexBufferViewSprite{};

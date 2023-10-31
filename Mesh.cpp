@@ -21,13 +21,13 @@ void Mesh::Initialize(DirectXCommon* dir_) {
 	DirectX::ScratchImage mipImages = LoadTexture("resources/uvChecker.png");
 	const DirectX::TexMetadata& metadata = mipImages.GetMetadata();
 	textureResource = CreateTextureResource(dir_->GetDevice(), metadata);
-	UploadTextureData(textureResource, mipImages);
+	UploadTextureData(textureResource.Get(), mipImages);
 
 	// 2枚目のTextureを読んで転送する
 	DirectX::ScratchImage mipImages2 = LoadTexture("resources/monsterBall.png");
 	const DirectX::TexMetadata& metadata2 = mipImages2.GetMetadata();
 	textureResource2 = CreateTextureResource(dir_->GetDevice(), metadata2);
-	UploadTextureData(textureResource2, mipImages2);
+	UploadTextureData(textureResource2.Get(), mipImages2);
 
 	// metaDataを基にSRVの設定
 	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc{};
@@ -43,20 +43,20 @@ void Mesh::Initialize(DirectXCommon* dir_) {
 	srvDesc2.Texture2D.MipLevels = UINT(metadata2.mipLevels);
 
 	// SRVを作成するDescriptorHeapの場所を決める
-	textureSrvHandleCPU = dir_->srvDescriptorHeap_->GetCPUDescriptorHandleForHeapStart();
-	textureSrvHandleGPU = dir_->srvDescriptorHeap_->GetGPUDescriptorHandleForHeapStart();
+	textureSrvHandleCPU = dir_->GetSrvDescriptorHeap()->GetCPUDescriptorHandleForHeapStart();
+	textureSrvHandleGPU = dir_->GetSrvDescriptorHeap()->GetGPUDescriptorHandleForHeapStart();
 
 	// 先頭はImGuiが使っているのでその次を使う
 	textureSrvHandleCPU.ptr += dir_->GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 	textureSrvHandleGPU.ptr += dir_->GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 
 	// 二枚目のSRVを作成するDescriptorHeapの場所を決める
-	textureSrvHandleCPU2 = GetCPUDescriptorHandle(dir_->srvDescriptorHeap_, descriptorSizeSRV, 2);
-	textureSrvHandleGPU2 = GetGPUDescriptorHandle(dir_->srvDescriptorHeap_, descriptorSizeSRV, 2);
+	textureSrvHandleCPU2 = GetCPUDescriptorHandle(dir_->GetSrvDescriptorHeap(), descriptorSizeSRV, 2);
+	textureSrvHandleGPU2 = GetGPUDescriptorHandle(dir_->GetSrvDescriptorHeap(), descriptorSizeSRV, 2);
 
 	// SRVの生成
-	dir_->GetDevice()->CreateShaderResourceView(textureResource, &srvDesc, textureSrvHandleCPU);
-	dir_->GetDevice()->CreateShaderResourceView(textureResource2, &srvDesc2, textureSrvHandleCPU2);
+	dir_->GetDevice()->CreateShaderResourceView(textureResource.Get(), &srvDesc, textureSrvHandleCPU);
+	dir_->GetDevice()->CreateShaderResourceView(textureResource2.Get(), &srvDesc2, textureSrvHandleCPU2);
 
 	Mesh::CreatePso(dir_);
 	Mesh::Viewport();
@@ -170,7 +170,7 @@ void Mesh::CreatePso(DirectXCommon* dir_){
 	depthStencilDesc.DepthFunc = D3D12_COMPARISON_FUNC_LESS_EQUAL;
 
 	// PSO生成
-	graphicsPipelineStateDesc.pRootSignature = rootSignature;// RootSignature
+	graphicsPipelineStateDesc.pRootSignature = rootSignature.Get();// RootSignature
 	graphicsPipelineStateDesc.InputLayout = inputLayoutDesc;// InputLayout
 	graphicsPipelineStateDesc.VS = { vertexShaderBlob->GetBufferPointer(), vertexShaderBlob->GetBufferSize() };// VertexShader
 	graphicsPipelineStateDesc.PS = { pixelShaderBlob->GetBufferPointer(), pixelShaderBlob->GetBufferSize() };// PixelShader
@@ -200,8 +200,8 @@ void Mesh::Update(DirectXCommon* dir_){
 	dir_->GetCommandList()->RSSetViewports(1, &viewport);
 	dir_->GetCommandList()->RSSetScissorRects(1, &scissorRect);
 	// RootSignatureを設定。PSOに設定しているけど別途設定が必要
-	dir_->GetCommandList()->SetGraphicsRootSignature(rootSignature);
-	dir_->GetCommandList()->SetPipelineState(graphicsPipelineState);
+	dir_->GetCommandList()->SetGraphicsRootSignature(rootSignature.Get());
+	dir_->GetCommandList()->SetPipelineState(graphicsPipelineState.Get());
 }
 
 void Mesh::Viewport(){
@@ -225,22 +225,11 @@ void Mesh::Scissor(){
 }
 
 void Mesh::Release(){
-	graphicsPipelineState->Release();
-	signatureBlob->Release();
-
-	if (errorBlob) {
-		errorBlob->Release();
-	}
-
-	rootSignature->Release();
 	vertexShaderBlob->Release();
 	pixelShaderBlob->Release();
-
-	textureResource->Release();
-	textureResource2->Release();
 }
 
-ID3D12Resource* Mesh::CreateBufferResource(ID3D12Device* device, size_t sizeInbytes) {
+Microsoft::WRL::ComPtr<ID3D12Resource> Mesh::CreateBufferResource(ID3D12Device* device, size_t sizeInbytes) {
 	ID3D12Resource* Resource = nullptr;
 
 	D3D12_HEAP_PROPERTIES uploadHeapProperties{};
@@ -274,7 +263,7 @@ ID3D12Resource* Mesh::CreateBufferResource(ID3D12Device* device, size_t sizeInby
 }
 
 // textureResource
-ID3D12Resource* Mesh::CreateTextureResource(ID3D12Device* device, const DirectX::TexMetadata& metadata)
+Microsoft::WRL::ComPtr<ID3D12Resource> Mesh::CreateTextureResource(ID3D12Device* device, const DirectX::TexMetadata& metadata)
 {
 	// metadataを基にResourceの設定
 	D3D12_RESOURCE_DESC resourceDesc{};

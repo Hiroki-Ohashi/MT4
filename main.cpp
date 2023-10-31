@@ -119,18 +119,12 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 			ImGui::Begin("Mesh Color");
 
-			ImGui::ColorEdit3("Triangle[0] Color", &triangle[0]->materialData->color.x);
-			ImGui::ColorEdit3("Triangle[1] Color", &triangle[1]->materialData->color.x);
+			ImGui::ColorEdit3("Triangle[0] Color", &triangle[0]->GetMaterialData()->color.x);
+			ImGui::ColorEdit3("Triangle[1] Color", &triangle[1]->GetMaterialData()->color.x);
 			ImGui::ColorEdit3("Sprite Color", &sprite->GetMaterialDataSprite()->color.x);
 			ImGui::ColorEdit3("Sphere Color", &sphere->GetMaterialDataSphere()->color.x);
 
 			ImGui::End();
-
-			/*ImGui::Begin("Camera Position");
-			ImGui::SliderFloat3("Camera Pos", &cameraTransform.translate.x, -1.0f, 1.0f);
-			ImGui::SliderFloat3("Camera scale", &cameraTransform.scale.x, -1.0f, 1.0f);
-			ImGui::SliderFloat3("Camera rotate", &cameraTransform.rotate.x, -1.0f, 1.0f);
-			ImGui::End();*/
 
 
 			imgui->Draw(directX);
@@ -140,23 +134,19 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		CoUninitialize();
 	}
 
-	for (int i = 0; i < Max; i++) {
-		triangle[i]->Release();
-		delete triangle[i];
-	}
-
-	sprite->Release();
-	delete sprite;
-	sphere->Release();
-	delete sphere;
 	mesh->Release();
-	delete mesh;
-	model->Release();
-	delete model;
 	imgui->Release();
 	directX->Release();
-	delete camera;
 
+
+	for (int i = 0; i < Max; i++) {
+		delete triangle[i];
+	}
+	delete sprite;
+	delete sphere;
+	delete mesh;
+	delete model;
+	delete camera;
 	delete imgui;
 	delete directX;
 

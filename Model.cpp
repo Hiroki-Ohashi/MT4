@@ -50,9 +50,6 @@ void Model::Draw(DirectXCommon* dir_, Mesh* mesh_){
 }
 
 void Model::Release(){
-	wvpResource->Release();
-	materialResource->Release();
-	vertexResource->Release();
 }
 
 void Model::CreateVertexResource(DirectXCommon* dir_, Mesh* mesh_){

@@ -4,6 +4,7 @@
 #include <dxgi1_6.h>
 #include <cassert>
 #include <cstdint>
+
 #include "WinApp.h"
 #include "Function.h"
 #include "MathFunction.h"
@@ -27,13 +28,15 @@ public:
 	void CreateMaterialResource(DirectXCommon* dir_, Mesh* mesh_);
 	void CreateWVPResource(DirectXCommon* dir_, Mesh* mesh_);
 
-public:
+	Material* GetMaterialData() { return materialData; }
+
+private:
 
 	D3D12_VERTEX_BUFFER_VIEW vertexBufferView{};
 
-	ID3D12Resource* vertexResource;
-	ID3D12Resource* materialResource;
-	ID3D12Resource* wvpResource;
+	Microsoft::WRL::ComPtr<ID3D12Resource> vertexResource;
+	Microsoft::WRL::ComPtr<ID3D12Resource> materialResource;
+	Microsoft::WRL::ComPtr<ID3D12Resource> wvpResource;
 
 	VertexData* vertexData;
 	Material* materialData;

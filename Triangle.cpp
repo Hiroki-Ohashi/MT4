@@ -32,9 +32,6 @@ void Triangle::Draw(DirectXCommon* dir_, Mesh* mesh_){
 }
 
 void Triangle::Release(){
-	vertexResource->Release();
-	materialResource->Release();
-	wvpResource->Release();
 }
 
 void Triangle::CreateVertexResource(DirectXCommon* dir_, Mesh* mesh_, Vector4* pos){

@@ -19,7 +19,7 @@ void Sphere::Initialize(DirectXCommon* dir_, Mesh* mesh_){
 }
 
 void Sphere::Update(const Matrix4x4& transformationMatrixData){
-	transformSphere.rotate.y += 0.03f;
+	transformSphere.rotate.y += 0.05f;
 
 	wvpResourceDataSphere->World = MakeAffineMatrix(transformSphere.scale, transformSphere.rotate, transformSphere.translate);
 	wvpResourceDataSphere->World = Multiply(wvpResourceDataSphere->World, transformationMatrixData);
@@ -56,10 +56,6 @@ void Sphere::Draw(DirectXCommon* dir_, Mesh* mesh_){
 }
 
 void Sphere::Release() {
-	vertexResourceSphere->Release();
-	materialResourceSphere->Release();
-	wvpResourceSphere->Release();
-	directionalLightResource->Release();
 }
 
 void Sphere::CreateVertexResourceSphere(DirectXCommon* dir_, Mesh* mesh_){

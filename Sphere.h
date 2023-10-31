@@ -31,10 +31,10 @@ public:
 	DirectionalLight* GetDirectionalLightData(){return directionalLightData;}
 
 private:
-	ID3D12Resource* vertexResourceSphere;
-	ID3D12Resource* materialResourceSphere;
-	ID3D12Resource* wvpResourceSphere;
-	ID3D12Resource* directionalLightResource;
+	Microsoft::WRL::ComPtr<ID3D12Resource> vertexResourceSphere;
+	Microsoft::WRL::ComPtr<ID3D12Resource> materialResourceSphere;
+	Microsoft::WRL::ComPtr<ID3D12Resource> wvpResourceSphere;
+	Microsoft::WRL::ComPtr<ID3D12Resource> directionalLightResource;
 
 	D3D12_VERTEX_BUFFER_VIEW vertexBufferViewSphere{};
 
@@ -46,7 +46,7 @@ private:
 	Transform uvTransformSphere;
 	TransformationMatrix* worldMatrixSphere;
 
-	const uint32_t kSubdivision = 128; //分割数
+	const uint32_t kSubdivision = 64; //分割数
 	uint32_t vertexIndex = (kSubdivision * kSubdivision) * 6;
 
 	bool useMonsterBoll_ = true;
