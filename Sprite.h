@@ -48,5 +48,5 @@ private:
 	Transform transformSprite;
 	Transform uvTransformSprite;
 
-	bool isSprite = true;
+	bool isSprite = false;
 };
