@@ -16,7 +16,7 @@ class Triangle {
 public:
 
 	// 初期化
-	void Initialize(DirectXCommon* dir, Mesh* mesh, Vector4* pos);
+	void Initialize(Mesh* mesh, Vector4* pos);
 	// 読み込み
 	void Update(const Matrix4x4& transformationMatrixData);
 	// 描画
@@ -31,8 +31,6 @@ public:
 	Material* GetMaterialData() { return materialData; }
 
 private:
-
-	DirectXCommon* dir_;
 	Mesh* mesh_;
 
 	D3D12_VERTEX_BUFFER_VIEW vertexBufferView{};

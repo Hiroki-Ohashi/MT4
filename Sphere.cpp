@@ -3,9 +3,8 @@
 #include "math.h"
 #include "externals/imgui/imgui.h"
 
-void Sphere::Initialize(DirectXCommon* dir, Mesh* mesh){
+void Sphere::Initialize(Mesh* mesh){
 
-	dir_ = dir;
 	mesh_ = mesh;
 
 	Sphere::CreateVertexResourceSphere();
@@ -36,17 +35,17 @@ void Sphere::Update(const Matrix4x4& transformationMatrixData){
 
 void Sphere::Draw(){
 	// Spriteの描画。変更が必要なものだけ変更する
-	dir_->GetCommandList()->IASetVertexBuffers(0, 1, &vertexBufferViewSphere); // VBVを設定
+	DirectXCommon::GetInsTance()->GetCommandList()->IASetVertexBuffers(0, 1, &vertexBufferViewSphere); // VBVを設定
 	// マテリアルCBufferの場所を設定
-	dir_->GetCommandList()->SetGraphicsRootConstantBufferView(0, materialResourceSphere->GetGPUVirtualAddress());
+	DirectXCommon::GetInsTance()->GetCommandList()->SetGraphicsRootConstantBufferView(0, materialResourceSphere->GetGPUVirtualAddress());
 	// TransformationMatrixCBufferの場所を設定
-	dir_->GetCommandList()->SetGraphicsRootConstantBufferView(1, wvpResourceSphere->GetGPUVirtualAddress());
-	dir_->GetCommandList()->SetGraphicsRootConstantBufferView(3, directionalLightResource->GetGPUVirtualAddress());
+	DirectXCommon::GetInsTance()->GetCommandList()->SetGraphicsRootConstantBufferView(1, wvpResourceSphere->GetGPUVirtualAddress());
+	DirectXCommon::GetInsTance()->GetCommandList()->SetGraphicsRootConstantBufferView(3, directionalLightResource->GetGPUVirtualAddress());
 	// SRVのDescriptorTableの先頭を設定。2はrootParameter[2]である。
-	dir_->GetCommandList()->SetGraphicsRootDescriptorTable(2, useMoon ? mesh_->GetTextureSRVHandleGPU2() : mesh_->GetTextureSRVHandleGPU());
+	DirectXCommon::GetInsTance()->GetCommandList()->SetGraphicsRootDescriptorTable(2, useMoon ? mesh_->GetTextureSRVHandleGPU2() : mesh_->GetTextureSRVHandleGPU());
 	if (isSphere == true) {
 		// 描画(DrawCall/ドローコール)
-		dir_->GetCommandList()->DrawInstanced(vertexIndex, 1, 0, 0);
+		DirectXCommon::GetInsTance()->GetCommandList()->DrawInstanced(vertexIndex, 1, 0, 0);
 	}
 
 	ImGui::Begin("Sphere");
@@ -73,7 +72,7 @@ void Sphere::Release() {
 void Sphere::CreateVertexResourceSphere(){
 
 	// 頂点リソースを作る
-	vertexResourceSphere = mesh_->CreateBufferResource(dir_->GetDevice(), sizeof(VertexData) * vertexIndex);
+	vertexResourceSphere = mesh_->CreateBufferResource(DirectXCommon::GetInsTance()->GetDevice(), sizeof(VertexData) * vertexIndex);
 
 	// リソースの先頭のアドレスから使う
 	vertexBufferViewSphere.BufferLocation = vertexResourceSphere->GetGPUVirtualAddress();
@@ -178,7 +177,7 @@ void Sphere::CreateVertexResourceSphere(){
 
 void Sphere::CreateMaterialResourceSphere(){
 	// マテリアル用のリソースを作る。今回はcolor1つ分のサイズを用意する
-	materialResourceSphere = mesh_->Mesh::CreateBufferResource(dir_->GetDevice(), sizeof(Material));
+	materialResourceSphere = mesh_->Mesh::CreateBufferResource(DirectXCommon::GetInsTance()->GetDevice(), sizeof(Material));
 	// マテリアルにデータを書き込む
 	materialDataSphere = nullptr;
 	// 書き込むためのアドレスを取得
@@ -193,7 +192,7 @@ void Sphere::CreateMaterialResourceSphere(){
 
 void Sphere::CreateTransformationMatrixResourceSphere(){
 	// Sprite用のTransformationMatrix用のリソースを作る。Matrix4x4 1つ分のサイズを用意する
-	wvpResourceSphere = mesh_->CreateBufferResource(dir_->GetDevice(), sizeof(TransformationMatrix));
+	wvpResourceSphere = mesh_->CreateBufferResource(DirectXCommon::GetInsTance()->GetDevice(), sizeof(TransformationMatrix));
 
 	// 書き込むためのアドレスを取得
 	wvpResourceSphere->Map(0, nullptr, reinterpret_cast<void**>(&wvpResourceDataSphere));
@@ -204,6 +203,6 @@ void Sphere::CreateTransformationMatrixResourceSphere(){
 }
 
 void Sphere::CreateDirectionalResource(){
-	directionalLightResource = mesh_->CreateBufferResource(dir_->GetDevice(), sizeof(DirectionalLight));
+	directionalLightResource = mesh_->CreateBufferResource(DirectXCommon::GetInsTance()->GetDevice(), sizeof(DirectionalLight));
 	directionalLightResource->Map(0, nullptr, reinterpret_cast<void**>(&directionalLightData));
 }

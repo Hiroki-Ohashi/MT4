@@ -16,11 +16,11 @@
 
 class Mesh {
 public:
-	void Initialize(DirectXCommon* dir_);
+	void Initialize();
 
-	void CreatePso(DirectXCommon* dir_);
+	void CreatePso();
 
-	void Update(DirectXCommon* dir_);
+	void Update();
 
 	void Viewport();
 	void Scissor();

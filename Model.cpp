@@ -1,9 +1,8 @@
 #include "Model.h"
 #include "externals/imgui/imgui.h"
 
-void Model::Initialize(DirectXCommon* dir, Mesh* mesh){
+void Model::Initialize(Mesh* mesh){
 
-	dir_ = dir;
 	mesh_ = mesh;
 
 	// モデル読み込み
@@ -34,16 +33,16 @@ void Model::Update(const Matrix4x4& transformationMatrixData){
 
 void Model::Draw(){
 	// コマンドを積む
-	dir_->GetCommandList()->IASetVertexBuffers(0, 1, &vertexBufferView); // VBVを設定
+	DirectXCommon::GetInsTance()->GetCommandList()->IASetVertexBuffers(0, 1, &vertexBufferView); // VBVを設定
 	// マテリアルCBufferの場所を設定
-	dir_->GetCommandList()->SetGraphicsRootConstantBufferView(0, materialResource->GetGPUVirtualAddress());
+	DirectXCommon::GetInsTance()->GetCommandList()->SetGraphicsRootConstantBufferView(0, materialResource->GetGPUVirtualAddress());
 	// TransformationMatrixCBufferの場所を設定
-	dir_->GetCommandList()->SetGraphicsRootConstantBufferView(1, wvpResource->GetGPUVirtualAddress());
+	DirectXCommon::GetInsTance()->GetCommandList()->SetGraphicsRootConstantBufferView(1, wvpResource->GetGPUVirtualAddress());
 	// SRVのDescriptorTableの先頭を設定。2はrootParameter[2]である。
-	dir_->GetCommandList()->SetGraphicsRootDescriptorTable(2, mesh_->GetTextureSRVHandleGPU());
+	DirectXCommon::GetInsTance()->GetCommandList()->SetGraphicsRootDescriptorTable(2, mesh_->GetTextureSRVHandleGPU());
 	if (isModel == true) {
 		// 描画(DrawCall/ドローコール)
-		dir_->GetCommandList()->DrawInstanced(UINT(modelData.vertices.size()), 1, 0, 0);
+		DirectXCommon::GetInsTance()->GetCommandList()->DrawInstanced(UINT(modelData.vertices.size()), 1, 0, 0);
 	}
 
 	ImGui::Begin("Model");
@@ -64,7 +63,7 @@ void Model::Release(){
 
 void Model::CreateVertexResource(){
 	// 頂点用のリソースを作る。
-	vertexResource = mesh_->CreateBufferResource(dir_->GetDevice(), sizeof(VertexData) * modelData.vertices.size());
+	vertexResource = mesh_->CreateBufferResource(DirectXCommon::GetInsTance()->GetDevice(), sizeof(VertexData) * modelData.vertices.size());
 
 	// リソースの先頭のアドレスから使う
 	vertexBufferView.BufferLocation = vertexResource->GetGPUVirtualAddress();
@@ -84,7 +83,7 @@ void Model::CreateVertexResource(){
 
 void Model::CreateMaterialResource(){
 	// マテリアル用のリソースを作る。今回はcolor1つ分のサイズを用意する
-	materialResource = mesh_->Mesh::CreateBufferResource(dir_->GetDevice(), sizeof(Material));
+	materialResource = mesh_->Mesh::CreateBufferResource(DirectXCommon::GetInsTance()->GetDevice(), sizeof(Material));
 	// マテリアルにデータを書き込む
 	materialData = nullptr;
 	// 書き込むためのアドレスを取得
@@ -97,7 +96,7 @@ void Model::CreateMaterialResource(){
 
 void Model::CreateWVPResource(){
 	// WVP用のリソースを作る。Matrix4x4 1つ分のサイズを用意する
-	wvpResource = mesh_->CreateBufferResource(dir_->GetDevice(), sizeof(TransformationMatrix));
+	wvpResource = mesh_->CreateBufferResource(DirectXCommon::GetInsTance()->GetDevice(), sizeof(TransformationMatrix));
 
 	// 書き込むためのアドレスを取得
 	wvpResource->Map(0, nullptr, reinterpret_cast<void**>(&wvpData));

@@ -14,7 +14,7 @@ class Mesh;
 
 class Sphere {
 public:
-	void Initialize(DirectXCommon* dir, Mesh* mesh);
+	void Initialize(Mesh* mesh);
 
 	void Update(const Matrix4x4& transformationMatrixData);
 
@@ -31,8 +31,6 @@ public:
 	DirectionalLight* GetDirectionalLightData(){return directionalLightData;}
 
 private:
-
-	DirectXCommon* dir_;
 	Mesh* mesh_;
 
 	Microsoft::WRL::ComPtr<ID3D12Resource> vertexResourceSphere;

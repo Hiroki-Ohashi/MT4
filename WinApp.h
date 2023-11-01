@@ -2,13 +2,16 @@
 #include <Windows.h>
 #include <cstdint>
 #include <d3d12.h>
-
-class DirectXCommon;
+#include "externals/imgui/imgui.h"
+#include "externals/imgui/imgui_impl_dx12.h"
+#include "externals/imgui/imgui_impl_win32.h"
 
 class WinApp {
 public:
-	WinApp(const wchar_t* title);
-	~WinApp();
+
+	static WinApp* GetInsTance();
+
+	void Initialize(const wchar_t* title);
 
 	WNDCLASS wc{};
 

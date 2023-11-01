@@ -1,12 +1,4 @@
-#include <Windows.h>
-#include <cstdint>
-#include <d3d12.h>
 #include "WinApp.h"
-#include "DirectXCommon.h"
-#include "Function.h"
-#include "externals/imgui/imgui.h"
-#include "externals/imgui/imgui_impl_dx12.h"
-#include "externals/imgui/imgui_impl_win32.h"
 
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPram);
 
@@ -29,8 +21,13 @@ LRESULT WinApp::WindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
 	return DefWindowProc(hwnd, msg, wparam, lparam);
 }
 
-WinApp::WinApp(const wchar_t* title) {
+WinApp* WinApp::GetInsTance()
+{
+	static WinApp instance;
+	return &instance;
+}
 
+void WinApp::Initialize(const wchar_t* title){
 	// ウィンドウプロシージャ
 	wc.lpfnWndProc = WindowProc;
 	// ウインドウクラス名
@@ -65,7 +62,7 @@ WinApp::WinApp(const wchar_t* title) {
 	);
 
 #ifdef _DEBUG
-	
+
 	if (SUCCEEDED(D3D12GetDebugInterface(IID_PPV_ARGS(&debugController)))) {
 		// デバッグレイヤーを有効化する
 		debugController->EnableDebugLayer();

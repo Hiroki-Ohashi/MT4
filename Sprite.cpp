@@ -2,9 +2,7 @@
 #include "externals/imgui/imgui.h"
 
 
-void Sprite::Initialize(DirectXCommon* dir, Mesh* mesh){
-
-	dir_ = dir;
+void Sprite::Initialize(Mesh* mesh){
 	mesh_ = mesh;
 
 	Sprite::CreateVertexResourceSprite();
@@ -21,7 +19,7 @@ void Sprite::Initialize(DirectXCommon* dir, Mesh* mesh){
 void Sprite::Update(){
 	transformationMatrixDataSprite->World = MakeAffineMatrix(transformSprite.scale, transformSprite.rotate, transformSprite.translate);
 	Matrix4x4 viewMatrixSprite = MakeIndentity4x4();
-	Matrix4x4 projectionMatrixSprite = MakeOrthographicMatrix(0.0f, 0.0f, float(winapp_->kClientWidth), float(winapp_->kClientHeight), 0.0f, 100.0f);
+	Matrix4x4 projectionMatrixSprite = MakeOrthographicMatrix(0.0f, 0.0f, float(WinApp::GetInsTance()->kClientWidth), float(WinApp::GetInsTance()->kClientHeight), 0.0f, 100.0f);
 	Matrix4x4 worldViewProjectionMatrixSprite = Multiply(transformationMatrixDataSprite->World, Multiply(viewMatrixSprite, projectionMatrixSprite));
 	transformationMatrixDataSprite->WVP = worldViewProjectionMatrixSprite;
 
@@ -33,18 +31,18 @@ void Sprite::Update(){
 
 void Sprite::Draw(){
 	// コマンドを積む
-    dir_->GetCommandList()->IASetVertexBuffers(0, 1, &vertexBufferViewSprite); // VBVを設定
+	DirectXCommon::GetInsTance()->GetCommandList()->IASetVertexBuffers(0, 1, &vertexBufferViewSprite); // VBVを設定
 	// Spriteの描画。変更が必要なものだけ変更する
-	dir_->GetCommandList()->IASetIndexBuffer(&indexBufferViewSprite);
+	DirectXCommon::GetInsTance()->GetCommandList()->IASetIndexBuffer(&indexBufferViewSprite);
 	// マテリアルCBufferの場所を設定
-	dir_->GetCommandList()->SetGraphicsRootConstantBufferView(0, materialResourceSprite->GetGPUVirtualAddress());
+	DirectXCommon::GetInsTance()->GetCommandList()->SetGraphicsRootConstantBufferView(0, materialResourceSprite->GetGPUVirtualAddress());
 	// TransformationMatrixCBufferの場所を設定
-	dir_->GetCommandList()->SetGraphicsRootConstantBufferView(1, transformationMatrixResourceSprite->GetGPUVirtualAddress());
+	DirectXCommon::GetInsTance()->GetCommandList()->SetGraphicsRootConstantBufferView(1, transformationMatrixResourceSprite->GetGPUVirtualAddress());
 	// SRVのDescriptorTableの先頭を設定。2はrootParameter[2]である。
-	dir_->GetCommandList()->SetGraphicsRootDescriptorTable(2, mesh_->GetTextureSRVHandleGPU());
+	DirectXCommon::GetInsTance()->GetCommandList()->SetGraphicsRootDescriptorTable(2, mesh_->GetTextureSRVHandleGPU());
 	if (isSprite == true) {
 		// 描画(DrawCall/ドローコール)
-		dir_->GetCommandList()->DrawIndexedInstanced(6, 1, 0, 0, 0);
+		DirectXCommon::GetInsTance()->GetCommandList()->DrawIndexedInstanced(6, 1, 0, 0, 0);
 	}
 
 	ImGui::Begin("Sprite");
@@ -63,7 +61,7 @@ void Sprite::Release(){
 
 void Sprite::CreateVertexResourceSprite(){
 	// Sprite用の頂点リソースを作る
-	vertexResourceSprite = mesh_->CreateBufferResource(dir_->GetDevice(), sizeof(VertexData) * 4);
+	vertexResourceSprite = mesh_->CreateBufferResource(DirectXCommon::GetInsTance()->GetDevice(), sizeof(VertexData) * 4);
 
 	// リソースの先頭のアドレスから使う
 	vertexBufferViewSprite.BufferLocation = vertexResourceSprite->GetGPUVirtualAddress();
@@ -92,7 +90,7 @@ void Sprite::CreateVertexResourceSprite(){
 	vertexDataSprite[3].normal = { 0.0f, 0.0f, -1.0f };
 
 	// index
-	indexResourceSprite = mesh_->CreateBufferResource(dir_->GetDevice(), sizeof(uint32_t) * 6);
+	indexResourceSprite = mesh_->CreateBufferResource(DirectXCommon::GetInsTance()->GetDevice(), sizeof(uint32_t) * 6);
 	// リソースの先頭のアドレスから使う
 	indexBufferViewSprite.BufferLocation = indexResourceSprite->GetGPUVirtualAddress();
 	// 使用するリソースのサイズはindex6つ分のサイズ
@@ -114,7 +112,7 @@ void Sprite::CreateVertexResourceSprite(){
 
 void Sprite::CreateMaterialResourceSprite(){
 	// マテリアル用のリソースを作る。今回はcolor1つ分のサイズを用意する
-	materialResourceSprite = mesh_->Mesh::CreateBufferResource(dir_->GetDevice(), sizeof(Material));
+	materialResourceSprite = mesh_->Mesh::CreateBufferResource(DirectXCommon::GetInsTance()->GetDevice(), sizeof(Material));
 	// マテリアルにデータを書き込む
 	materialDataSprite = nullptr;
 	// 書き込むためのアドレスを取得
@@ -128,7 +126,7 @@ void Sprite::CreateMaterialResourceSprite(){
 
 void Sprite::CreateTransformationMatrixResourceSprite(){
 	// Sprite用のTransformationMatrix用のリソースを作る。Matrix4x4 1つ分のサイズを用意する
-	transformationMatrixResourceSprite = mesh_->CreateBufferResource(dir_->GetDevice(), sizeof(TransformationMatrix));
+	transformationMatrixResourceSprite = mesh_->CreateBufferResource(DirectXCommon::GetInsTance()->GetDevice(), sizeof(TransformationMatrix));
 
 	// 書き込むためのアドレスを取得
 	transformationMatrixResourceSprite->Map(0, nullptr, reinterpret_cast<void**>(&transformationMatrixDataSprite));

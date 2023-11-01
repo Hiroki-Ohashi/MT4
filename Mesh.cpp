@@ -1,7 +1,7 @@
 #include "Mesh.h"
 
 
-void Mesh::Initialize(DirectXCommon* dir_) {
+void Mesh::Initialize() {
 	// dxcCompilerを初期化
 	hr_ = DxcCreateInstance(CLSID_DxcUtils, IID_PPV_ARGS(&dxcUtils));
 	assert(SUCCEEDED(hr_));
@@ -13,20 +13,20 @@ void Mesh::Initialize(DirectXCommon* dir_) {
 	assert(SUCCEEDED(hr_));
 
 	// DescriptorSizeを取得しておく
-	const uint32_t descriptorSizeSRV = dir_->GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-	const uint32_t descriptorSizeRTV = dir_->GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
-	const uint32_t descriptorSizeDSV = dir_->GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_DSV);
+	const uint32_t descriptorSizeSRV = DirectXCommon::GetInsTance()->GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+	const uint32_t descriptorSizeRTV = DirectXCommon::GetInsTance()->GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
+	const uint32_t descriptorSizeDSV = DirectXCommon::GetInsTance()->GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_DSV);
 
 	// Textureを読んで転送する
 	DirectX::ScratchImage mipImages = LoadTexture("Resources/uvChecker.png");
 	const DirectX::TexMetadata& metadata = mipImages.GetMetadata();
-	textureResource = CreateTextureResource(dir_->GetDevice(), metadata);
+	textureResource = CreateTextureResource(DirectXCommon::GetInsTance()->GetDevice(), metadata);
 	UploadTextureData(textureResource.Get(), mipImages);
 
 	// 2枚目のTextureを読んで転送する
 	DirectX::ScratchImage mipImages2 = LoadTexture("Resources/moon.png");
 	const DirectX::TexMetadata& metadata2 = mipImages2.GetMetadata();
-	textureResource2 = CreateTextureResource(dir_->GetDevice(), metadata2);
+	textureResource2 = CreateTextureResource(DirectXCommon::GetInsTance()->GetDevice(), metadata2);
 	UploadTextureData(textureResource2.Get(), mipImages2);
 
 	// metaDataを基にSRVの設定
@@ -43,27 +43,27 @@ void Mesh::Initialize(DirectXCommon* dir_) {
 	srvDesc2.Texture2D.MipLevels = UINT(metadata2.mipLevels);
 
 	// SRVを作成するDescriptorHeapの場所を決める
-	textureSrvHandleCPU = dir_->GetSrvDescriptorHeap()->GetCPUDescriptorHandleForHeapStart();
-	textureSrvHandleGPU = dir_->GetSrvDescriptorHeap()->GetGPUDescriptorHandleForHeapStart();
+	textureSrvHandleCPU = DirectXCommon::GetInsTance()->GetSrvDescriptorHeap()->GetCPUDescriptorHandleForHeapStart();
+	textureSrvHandleGPU = DirectXCommon::GetInsTance()->GetSrvDescriptorHeap()->GetGPUDescriptorHandleForHeapStart();
 
 	// 先頭はImGuiが使っているのでその次を使う
-	textureSrvHandleCPU.ptr += dir_->GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-	textureSrvHandleGPU.ptr += dir_->GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+	textureSrvHandleCPU.ptr += DirectXCommon::GetInsTance()->GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+	textureSrvHandleGPU.ptr += DirectXCommon::GetInsTance()->GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 
 	// 2枚目のSRVを作成するDescriptorHeapの場所を決める
-	textureSrvHandleCPU2 = GetCPUDescriptorHandle(dir_->GetSrvDescriptorHeap(), descriptorSizeSRV, 2);
-	textureSrvHandleGPU2 = GetGPUDescriptorHandle(dir_->GetSrvDescriptorHeap(), descriptorSizeSRV, 2);
+	textureSrvHandleCPU2 = GetCPUDescriptorHandle(DirectXCommon::GetInsTance()->GetSrvDescriptorHeap(), descriptorSizeSRV, 2);
+	textureSrvHandleGPU2 = GetGPUDescriptorHandle(DirectXCommon::GetInsTance()->GetSrvDescriptorHeap(), descriptorSizeSRV, 2);
 
 	// SRVの生成
-	dir_->GetDevice()->CreateShaderResourceView(textureResource.Get(), &srvDesc, textureSrvHandleCPU);
-	dir_->GetDevice()->CreateShaderResourceView(textureResource2.Get(), &srvDesc2, textureSrvHandleCPU2);
+	DirectXCommon::GetInsTance()->GetDevice()->CreateShaderResourceView(textureResource.Get(), &srvDesc, textureSrvHandleCPU);
+	DirectXCommon::GetInsTance()->GetDevice()->CreateShaderResourceView(textureResource2.Get(), &srvDesc2, textureSrvHandleCPU2);
 
-	Mesh::CreatePso(dir_);
+	Mesh::CreatePso();
 	Mesh::Viewport();
 	Mesh::Scissor();
 }
 
-void Mesh::CreatePso(DirectXCommon* dir_){
+void Mesh::CreatePso(){
 
 	// RootSignature作成
 	D3D12_ROOT_SIGNATURE_DESC descriptionRootSignature{};
@@ -118,7 +118,7 @@ void Mesh::CreatePso(DirectXCommon* dir_){
 	}
 	// バイナリを元に生成
 	
-	hr_ =dir_->GetDevice()->CreateRootSignature(0, signatureBlob->GetBufferPointer(), signatureBlob->GetBufferSize(), IID_PPV_ARGS(&rootSignature));
+	hr_ = DirectXCommon::GetInsTance()->GetDevice()->CreateRootSignature(0, signatureBlob->GetBufferPointer(), signatureBlob->GetBufferSize(), IID_PPV_ARGS(&rootSignature));
 	assert(SUCCEEDED(hr_));
 
 	// InputLayout
@@ -191,17 +191,17 @@ void Mesh::CreatePso(DirectXCommon* dir_){
 	
 	// 実際に生成
 	
-	hr_ = dir_->GetDevice()->CreateGraphicsPipelineState(&graphicsPipelineStateDesc, IID_PPV_ARGS(&graphicsPipelineState));
+	hr_ = DirectXCommon::GetInsTance()->GetDevice()->CreateGraphicsPipelineState(&graphicsPipelineStateDesc, IID_PPV_ARGS(&graphicsPipelineState));
 	assert(SUCCEEDED(hr_));
 }
 
-void Mesh::Update(DirectXCommon* dir_){
+void Mesh::Update(){
 	// コマンドを積む
-	dir_->GetCommandList()->RSSetViewports(1, &viewport);
-	dir_->GetCommandList()->RSSetScissorRects(1, &scissorRect);
-	// RootSignatureを設定。PSOに設定しているけど別途設定が必要
-	dir_->GetCommandList()->SetGraphicsRootSignature(rootSignature.Get());
-	dir_->GetCommandList()->SetPipelineState(graphicsPipelineState.Get());
+	DirectXCommon::GetInsTance()->GetCommandList()->RSSetViewports(1, &viewport);
+	DirectXCommon::GetInsTance()->GetCommandList()->RSSetScissorRects(1, &scissorRect);
+	// DirectXCommon::GetInsTance()を設定。PSOに設定しているけど別途設定が必要
+	DirectXCommon::GetInsTance()->GetCommandList()->SetGraphicsRootSignature(rootSignature.Get());
+	DirectXCommon::GetInsTance()->GetCommandList()->SetPipelineState(graphicsPipelineState.Get());
 }
 
 void Mesh::Viewport(){

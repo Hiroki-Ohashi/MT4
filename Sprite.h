@@ -14,7 +14,7 @@ class Mesh;
 
 class Sprite {
 public:
-	void Initialize(DirectXCommon* dir, Mesh* mesh);
+	void Initialize(Mesh* mesh);
 
 	void Update();
 
@@ -29,9 +29,6 @@ public:
 	Material* GetMaterialDataSprite() { return materialDataSprite; }
 
 private:
-
-	WinApp* winapp_;
-	DirectXCommon* dir_;
 	Mesh* mesh_;
 
 	Microsoft::WRL::ComPtr<ID3D12Resource> vertexResourceSprite;

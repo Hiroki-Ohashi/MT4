@@ -21,6 +21,10 @@
 class DirectXCommon {
 public:
 
+	static DirectXCommon* GetInsTance();
+
+	~DirectXCommon();
+
 	// Default Methods
 	void Initialize();
 	void Update();
@@ -43,8 +47,6 @@ public:
 	ID3D12DescriptorHeap* GetSrvDescriptorHeap() { return srvDescriptorHeap_.Get(); }
 
 private:
-
-	static WinApp* winapp_;
 	Microsoft::WRL::ComPtr<IDXGIFactory7> dxgiFactory_ = nullptr;
 	Microsoft::WRL::ComPtr<ID3D12Device> device_ = nullptr;
 	Microsoft::WRL::ComPtr<IDXGIAdapter4> useAdapter_ = nullptr;

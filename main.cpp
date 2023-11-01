@@ -56,8 +56,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	// 右下2
 	pos[1][2] = { 0.5f, -0.25f, -0.5f, 1.0f };
 
-	WinApp* winapp = new WinApp(L"CG2");
-	DirectXCommon* directX = new DirectXCommon();
+	WinApp* winapp = WinApp::GetInsTance();
+	DirectXCommon* directX = DirectXCommon::GetInsTance();
 	Mesh* mesh = new Mesh();
 	Triangle* triangle[Max];
 	Sprite* sprite = new Sprite();
@@ -66,17 +66,18 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	ImGuiManeger* imgui = new ImGuiManeger();
 	Camera* camera = new Camera();
 	
+	winapp->Initialize(L"CG2");
 	directX->Initialize();
-	mesh->Initialize(directX);
-	sprite->Initialize(directX, mesh);
-	sphere->Initialize(directX, mesh);
-	model->Initialize(directX, mesh);
+	mesh->Initialize();
+	sprite->Initialize(mesh);
+	sphere->Initialize(mesh);
+	model->Initialize(mesh);
 	camera->Initialize();
-	imgui->Initialize(winapp, directX);
+	imgui->Initialize();
 
 	for (int i = 0; i < Max; i++) {
 		triangle[i] = new Triangle();
-		triangle[i]->Initialize(directX, mesh, pos[i]);
+		triangle[i]->Initialize(mesh, pos[i]);
 	}
 
 	MSG msg{};
@@ -95,7 +96,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			// 更新処理
 			imgui->Update();
 			directX->Update();
-			mesh->Update(directX);
+			mesh->Update();
 			sprite->Update();
 			camera->Update();
 			sphere->Update(*camera->transformationMatrixData);
@@ -129,7 +130,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			ImGui::End();
 
 
-			imgui->Draw(directX);
+			imgui->Draw();
 
 			directX->Close();
 		}
@@ -150,7 +151,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	delete model;
 	delete camera;
 	delete imgui;
-	delete directX;
 
 	return 0;
 }

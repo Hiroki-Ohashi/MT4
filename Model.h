@@ -26,7 +26,7 @@ struct ModelData {
 
 class Model {
 public:
-	void Initialize(DirectXCommon* dir, Mesh* mesh);
+	void Initialize(Mesh* mesh);
 
 	void Update(const Matrix4x4& transformationMatrixData);
 
@@ -44,7 +44,6 @@ public:
 private:
 
 	WinApp* winapp_;
-	DirectXCommon* dir_;
 	Mesh* mesh_;
 
 	ModelData modelData;
