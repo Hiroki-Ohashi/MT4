@@ -134,8 +134,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 			directX->Close();
 		}
-		CoUninitialize();
 	}
+
+	CoUninitialize();
 
 	mesh->Release();
 	imgui->Release();

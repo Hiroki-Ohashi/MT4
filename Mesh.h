@@ -13,6 +13,7 @@
 #include "WinApp.h"
 #include "Function.h"
 #include "DirectXCommon.h"
+#include "textureManager.h"
 
 class Mesh {
 public:

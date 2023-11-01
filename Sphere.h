@@ -9,6 +9,7 @@
 #include "Function.h"
 #include "MathFunction.h"
 #include "DirectXCommon.h"
+#include "textureManager.h"
 
 class Mesh;
 
@@ -26,6 +27,8 @@ public:
 	void CreateMaterialResourceSphere();
 	void CreateTransformationMatrixResourceSphere();
 	void CreateDirectionalResource();
+	Microsoft::WRL::ComPtr<ID3D12Resource> CreateBufferResource(Microsoft::WRL::ComPtr<ID3D12Device> device, size_t sizeInbytes);
+
 
 	Material* GetMaterialDataSphere() { return materialDataSphere; }
 	DirectionalLight* GetDirectionalLightData(){return directionalLightData;}

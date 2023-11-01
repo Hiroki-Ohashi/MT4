@@ -9,6 +9,7 @@
 #include "Function.h"
 #include "MathFunction.h"
 #include "DirectXCommon.h"
+#include "textureManager.h"
 
 class Mesh;
 
@@ -27,6 +28,7 @@ public:
 	void CreateVertexResource(Vector4* pos);
 	void CreateMaterialResource();
 	void CreateWVPResource();
+	Microsoft::WRL::ComPtr<ID3D12Resource> CreateBufferResource(Microsoft::WRL::ComPtr<ID3D12Device> device, size_t sizeInbytes);
 
 	Material* GetMaterialData() { return materialData; }
 
