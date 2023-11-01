@@ -26,24 +26,26 @@ struct ModelData {
 
 class Model {
 public:
-	void Initialize(DirectXCommon* dir_, Mesh* mesh_);
+	void Initialize(DirectXCommon* dir, Mesh* mesh);
 
 	void Update(const Matrix4x4& transformationMatrixData);
 
-	void Draw(DirectXCommon* dir_, Mesh* mesh_);
+	void Draw();
 
 	void Release();
 
-	void CreateVertexResource(DirectXCommon* dir_, Mesh* mesh_);
-	void CreateMaterialResource(DirectXCommon* dir_, Mesh* mesh_);
-	void CreateWVPResource(DirectXCommon* dir_, Mesh* mesh_);
+	void CreateVertexResource();
+	void CreateMaterialResource();
+	void CreateWVPResource();
 
 	ModelData LoadObjFile(const std::string& directoryPath, const std::string& filename);
 	MaterialData LoadMaterialTemplateFile(const std::string& directoryPath, const std::string& filename);
 
 private:
 
-	static WinApp* winapp_;
+	WinApp* winapp_;
+	DirectXCommon* dir_;
+	Mesh* mesh_;
 
 	ModelData modelData;
 

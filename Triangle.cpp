@@ -1,10 +1,13 @@
 #include "Triangle.h"
 
-void Triangle::Initialize(DirectXCommon* dir_, Mesh* mesh_, Vector4* pos){
+void Triangle::Initialize(DirectXCommon* dir, Mesh* mesh, Vector4* pos){
 
-	Triangle::CreateVertexResource(dir_, mesh_, pos);
-	Triangle::CreateMaterialResource(dir_, mesh_);
-	Triangle::CreateWVPResource(dir_, mesh_);
+	dir_ = dir;
+	mesh_ = mesh;
+
+	Triangle::CreateVertexResource(pos);
+	Triangle::CreateMaterialResource();
+	Triangle::CreateWVPResource();
 
 	transform = { {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f} };
 }
@@ -17,7 +20,7 @@ void Triangle::Update(const Matrix4x4& transformationMatrixData){
 	wvpData->WVP = wvpData->World;
 }
 
-void Triangle::Draw(DirectXCommon* dir_, Mesh* mesh_){
+void Triangle::Draw(){
 	dir_->GetCommandList()->IASetVertexBuffers(0, 1, &vertexBufferView);
 	// 形状を設定。PSOに設定しているものとはまた別。同じものを設定すると考えておけば良い
 	dir_->GetCommandList()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
@@ -28,13 +31,13 @@ void Triangle::Draw(DirectXCommon* dir_, Mesh* mesh_){
 	// SRVのDescriptorTableの先頭を設定。2はrootParameter[2]である。
 	dir_->GetCommandList()->SetGraphicsRootDescriptorTable(2, mesh_->GetTextureSRVHandleGPU());
 	// 描画(DrawCall/ドローコール)。3頂点で1つのインスタンス。
-	//dir_->GetCommandList()->DrawInstanced(6, 1, 0, 0);
+	dir_->GetCommandList()->DrawInstanced(6, 1, 0, 0);
 }
 
 void Triangle::Release(){
 }
 
-void Triangle::CreateVertexResource(DirectXCommon* dir_, Mesh* mesh_, Vector4* pos){
+void Triangle::CreateVertexResource(Vector4* pos){
 	// 頂点用のリソースを作る。今回はcolor1つ分のサイズを用意する
 	vertexResource = mesh_->CreateBufferResource(dir_->GetDevice(), sizeof(VertexData) * 6);
 
@@ -106,7 +109,7 @@ void Triangle::CreateVertexResource(DirectXCommon* dir_, Mesh* mesh_, Vector4* p
 
 }
 
-void Triangle::CreateMaterialResource(DirectXCommon* dir_, Mesh* mesh_){
+void Triangle::CreateMaterialResource(){
 	// マテリアル用のリソースを作る。今回はcolor1つ分のサイズを用意する
 	materialResource = mesh_->Mesh::CreateBufferResource(dir_->GetDevice(), sizeof(Material));
 	// マテリアルにデータを書き込む
@@ -120,7 +123,7 @@ void Triangle::CreateMaterialResource(DirectXCommon* dir_, Mesh* mesh_){
 	materialData->uvTransform = MakeIndentity4x4();
 }
 
-void Triangle::CreateWVPResource(DirectXCommon* dir_, Mesh* mesh_){
+void Triangle::CreateWVPResource(){
 	// WVP用のリソースを作る。Matrix4x4 1つ分のサイズを用意する
 	wvpResource = mesh_->CreateBufferResource(dir_->GetDevice(), sizeof(TransformationMatrix));
 	// 書き込むためのアドレスを取得

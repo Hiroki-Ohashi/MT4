@@ -4,33 +4,35 @@
 #include <dxgi1_6.h>
 #include <cassert>
 #include <cstdint>
+
 #include "WinApp.h"
 #include "Function.h"
 #include "MathFunction.h"
 #include "DirectXCommon.h"
-#include "Triangle.h"
 
 class Mesh;
 
 class Sprite {
 public:
-	void Initialize(DirectXCommon* dir_, Mesh* mesh_);
+	void Initialize(DirectXCommon* dir, Mesh* mesh);
 
 	void Update();
 
-	void Draw(DirectXCommon* dir_, Mesh* mesh_);
+	void Draw();
 
 	void Release();
 
-	void CreateVertexResourceSprite(DirectXCommon* dir_, Mesh* mesh_);
-	void CreateMaterialResourceSprite(DirectXCommon* dir_, Mesh* mesh_);
-	void CreateTransformationMatrixResourceSprite(DirectXCommon* dir_, Mesh* mesh_);
+	void CreateVertexResourceSprite();
+	void CreateMaterialResourceSprite();
+	void CreateTransformationMatrixResourceSprite();
 
 	Material* GetMaterialDataSprite() { return materialDataSprite; }
 
 private:
 
-	static WinApp* winapp_;
+	WinApp* winapp_;
+	DirectXCommon* dir_;
+	Mesh* mesh_;
 
 	Microsoft::WRL::ComPtr<ID3D12Resource> vertexResourceSprite;
 	Microsoft::WRL::ComPtr<ID3D12Resource> materialResourceSprite;

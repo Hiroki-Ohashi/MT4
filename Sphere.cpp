@@ -3,12 +3,15 @@
 #include "math.h"
 #include "externals/imgui/imgui.h"
 
-void Sphere::Initialize(DirectXCommon* dir_, Mesh* mesh_){
+void Sphere::Initialize(DirectXCommon* dir, Mesh* mesh){
 
-	Sphere::CreateVertexResourceSphere(dir_, mesh_);
-	Sphere::CreateMaterialResourceSphere(dir_, mesh_);
-	Sphere::CreateTransformationMatrixResourceSphere(dir_, mesh_);
-	Sphere::CreateDirectionalResource(dir_, mesh_);
+	dir_ = dir;
+	mesh_ = mesh;
+
+	Sphere::CreateVertexResourceSphere();
+	Sphere::CreateMaterialResourceSphere();
+	Sphere::CreateTransformationMatrixResourceSphere();
+	Sphere::CreateDirectionalResource();
 
 	transformSphere = { {0.5f,0.5f,0.5f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
 	uvTransformSphere = { {1.0f, 1.0f, 1.0f},{0.0f, 0.0f, 0.0f},{0.0f, 0.0f, 0.0f}, };
@@ -31,7 +34,7 @@ void Sphere::Update(const Matrix4x4& transformationMatrixData){
 	materialDataSphere->uvTransform = uvtransformMatrix;
 }
 
-void Sphere::Draw(DirectXCommon* dir_, Mesh* mesh_){
+void Sphere::Draw(){
 	// Spriteの描画。変更が必要なものだけ変更する
 	dir_->GetCommandList()->IASetVertexBuffers(0, 1, &vertexBufferViewSphere); // VBVを設定
 	// マテリアルCBufferの場所を設定
@@ -67,7 +70,7 @@ void Sphere::Draw(DirectXCommon* dir_, Mesh* mesh_){
 void Sphere::Release() {
 }
 
-void Sphere::CreateVertexResourceSphere(DirectXCommon* dir_, Mesh* mesh_){
+void Sphere::CreateVertexResourceSphere(){
 
 	// 頂点リソースを作る
 	vertexResourceSphere = mesh_->CreateBufferResource(dir_->GetDevice(), sizeof(VertexData) * vertexIndex);
@@ -173,7 +176,7 @@ void Sphere::CreateVertexResourceSphere(DirectXCommon* dir_, Mesh* mesh_){
 	}
 }
 
-void Sphere::CreateMaterialResourceSphere(DirectXCommon* dir_, Mesh* mesh_){
+void Sphere::CreateMaterialResourceSphere(){
 	// マテリアル用のリソースを作る。今回はcolor1つ分のサイズを用意する
 	materialResourceSphere = mesh_->Mesh::CreateBufferResource(dir_->GetDevice(), sizeof(Material));
 	// マテリアルにデータを書き込む
@@ -188,7 +191,7 @@ void Sphere::CreateMaterialResourceSphere(DirectXCommon* dir_, Mesh* mesh_){
 	materialDataSphere->uvTransform = MakeIndentity4x4();
 }
 
-void Sphere::CreateTransformationMatrixResourceSphere(DirectXCommon* dir_, Mesh* mesh_){
+void Sphere::CreateTransformationMatrixResourceSphere(){
 	// Sprite用のTransformationMatrix用のリソースを作る。Matrix4x4 1つ分のサイズを用意する
 	wvpResourceSphere = mesh_->CreateBufferResource(dir_->GetDevice(), sizeof(TransformationMatrix));
 
@@ -200,7 +203,7 @@ void Sphere::CreateTransformationMatrixResourceSphere(DirectXCommon* dir_, Mesh*
 	wvpResourceDataSphere->World = MakeIndentity4x4();
 }
 
-void Sphere::CreateDirectionalResource(DirectXCommon* dir_, Mesh* mesh_){
+void Sphere::CreateDirectionalResource(){
 	directionalLightResource = mesh_->CreateBufferResource(dir_->GetDevice(), sizeof(DirectionalLight));
 	directionalLightResource->Map(0, nullptr, reinterpret_cast<void**>(&directionalLightData));
 }

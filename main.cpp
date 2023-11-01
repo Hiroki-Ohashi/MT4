@@ -92,7 +92,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			// ゲームの処理
 
 
-
+			// 更新処理
 			imgui->Update();
 			directX->Update();
 			mesh->Update(directX);
@@ -105,16 +105,18 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 				triangle[i]->Update(*camera->transformationMatrixData);
 			}
 
+
+			// 描画処理
 			for (int i = 2; i < Max; i++) {
-				triangle[i]->Draw(directX, mesh);
+				triangle[i]->Draw();
 			}
 
-			triangle[0]->Draw(directX, mesh);
-			triangle[1]->Draw(directX, mesh);
+			triangle[0]->Draw();
+			triangle[1]->Draw();
 
-			sphere->Draw(directX, mesh);
-			sprite->Draw(directX, mesh);
-			model->Draw(directX, mesh);
+			sphere->Draw();
+			sprite->Draw();
+			model->Draw();
 
 
 			ImGui::Begin("Mesh Color");

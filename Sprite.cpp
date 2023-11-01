@@ -2,11 +2,14 @@
 #include "externals/imgui/imgui.h"
 
 
-void Sprite::Initialize(DirectXCommon* dir_, Mesh* mesh_){
+void Sprite::Initialize(DirectXCommon* dir, Mesh* mesh){
 
-	Sprite::CreateVertexResourceSprite(dir_, mesh_);
-	Sprite::CreateMaterialResourceSprite(dir_, mesh_);
-	Sprite::CreateTransformationMatrixResourceSprite(dir_, mesh_);
+	dir_ = dir;
+	mesh_ = mesh;
+
+	Sprite::CreateVertexResourceSprite();
+	Sprite::CreateMaterialResourceSprite();
+	Sprite::CreateTransformationMatrixResourceSprite();
 
 	transformSprite = { {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
 	uvTransformSprite = {{1.0f, 1.0f, 1.0f},{0.0f, 0.0f, 0.0f},{0.0f, 0.0f, 0.0f},};
@@ -28,7 +31,7 @@ void Sprite::Update(){
 	materialDataSprite->uvTransform = uvtransformMatrix;
 }
 
-void Sprite::Draw(DirectXCommon* dir_, Mesh* mesh_){
+void Sprite::Draw(){
 	// コマンドを積む
     dir_->GetCommandList()->IASetVertexBuffers(0, 1, &vertexBufferViewSprite); // VBVを設定
 	// Spriteの描画。変更が必要なものだけ変更する
@@ -58,7 +61,7 @@ void Sprite::Draw(DirectXCommon* dir_, Mesh* mesh_){
 void Sprite::Release(){
 }
 
-void Sprite::CreateVertexResourceSprite(DirectXCommon* dir_, Mesh* mesh_){
+void Sprite::CreateVertexResourceSprite(){
 	// Sprite用の頂点リソースを作る
 	vertexResourceSprite = mesh_->CreateBufferResource(dir_->GetDevice(), sizeof(VertexData) * 4);
 
@@ -109,7 +112,7 @@ void Sprite::CreateVertexResourceSprite(DirectXCommon* dir_, Mesh* mesh_){
 	indexDataSprite[5] = 2;
 }
 
-void Sprite::CreateMaterialResourceSprite(DirectXCommon* dir_, Mesh* mesh_){
+void Sprite::CreateMaterialResourceSprite(){
 	// マテリアル用のリソースを作る。今回はcolor1つ分のサイズを用意する
 	materialResourceSprite = mesh_->Mesh::CreateBufferResource(dir_->GetDevice(), sizeof(Material));
 	// マテリアルにデータを書き込む
@@ -123,7 +126,7 @@ void Sprite::CreateMaterialResourceSprite(DirectXCommon* dir_, Mesh* mesh_){
 }
 
 
-void Sprite::CreateTransformationMatrixResourceSprite(DirectXCommon* dir_, Mesh* mesh_){
+void Sprite::CreateTransformationMatrixResourceSprite(){
 	// Sprite用のTransformationMatrix用のリソースを作る。Matrix4x4 1つ分のサイズを用意する
 	transformationMatrixResourceSprite = mesh_->CreateBufferResource(dir_->GetDevice(), sizeof(TransformationMatrix));
 

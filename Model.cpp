@@ -1,14 +1,18 @@
 #include "Model.h"
 #include "externals/imgui/imgui.h"
 
-void Model::Initialize(DirectXCommon* dir_, Mesh* mesh_){
+void Model::Initialize(DirectXCommon* dir, Mesh* mesh){
+
+	dir_ = dir;
+	mesh_ = mesh;
+
 	// モデル読み込み
 	modelData = LoadObjFile("resources","axis.obj");
 	DirectX::ScratchImage mipImages2 = mesh_->LoadTexture(modelData.material.textureFilePath);
 
-	Model::CreateVertexResource(dir_, mesh_);
-	Model::CreateMaterialResource(dir_, mesh_);
-	Model::CreateWVPResource(dir_, mesh_);
+	Model::CreateVertexResource();
+	Model::CreateMaterialResource();
+	Model::CreateWVPResource();
 
 	transform = { { 0.5f,0.5f,0.5f},{0.0f,0.0f,0.0f},{0.0f,-0.5f,1.0f} };
 	uvTransform = { {1.0f, 1.0f, 1.0f},{0.0f, 0.0f, 0.0f},{0.0f, 0.0f, 0.0f}, };
@@ -28,7 +32,7 @@ void Model::Update(const Matrix4x4& transformationMatrixData){
 	materialData->uvTransform = uvtransformMatrix;
 }
 
-void Model::Draw(DirectXCommon* dir_, Mesh* mesh_){
+void Model::Draw(){
 	// コマンドを積む
 	dir_->GetCommandList()->IASetVertexBuffers(0, 1, &vertexBufferView); // VBVを設定
 	// マテリアルCBufferの場所を設定
@@ -58,7 +62,7 @@ void Model::Draw(DirectXCommon* dir_, Mesh* mesh_){
 void Model::Release(){
 }
 
-void Model::CreateVertexResource(DirectXCommon* dir_, Mesh* mesh_){
+void Model::CreateVertexResource(){
 	// 頂点用のリソースを作る。
 	vertexResource = mesh_->CreateBufferResource(dir_->GetDevice(), sizeof(VertexData) * modelData.vertices.size());
 
@@ -78,7 +82,7 @@ void Model::CreateVertexResource(DirectXCommon* dir_, Mesh* mesh_){
 	std::memcpy(vertexData, modelData.vertices.data(), sizeof(VertexData) * modelData.vertices.size());
 }
 
-void Model::CreateMaterialResource(DirectXCommon* dir_, Mesh* mesh_){
+void Model::CreateMaterialResource(){
 	// マテリアル用のリソースを作る。今回はcolor1つ分のサイズを用意する
 	materialResource = mesh_->Mesh::CreateBufferResource(dir_->GetDevice(), sizeof(Material));
 	// マテリアルにデータを書き込む
@@ -91,7 +95,7 @@ void Model::CreateMaterialResource(DirectXCommon* dir_, Mesh* mesh_){
 	materialData->uvTransform = MakeIndentity4x4();
 }
 
-void Model::CreateWVPResource(DirectXCommon* dir_, Mesh* mesh_){
+void Model::CreateWVPResource(){
 	// WVP用のリソースを作る。Matrix4x4 1つ分のサイズを用意する
 	wvpResource = mesh_->CreateBufferResource(dir_->GetDevice(), sizeof(TransformationMatrix));
 

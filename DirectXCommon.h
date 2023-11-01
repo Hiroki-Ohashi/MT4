@@ -20,6 +20,7 @@
 
 class DirectXCommon {
 public:
+
 	// Default Methods
 	void Initialize();
 	void Update();

@@ -4,33 +4,37 @@
 #include <dxgi1_6.h>
 #include <cassert>
 #include <cstdint>
+
 #include "WinApp.h"
 #include "Function.h"
 #include "MathFunction.h"
 #include "DirectXCommon.h"
-#include "Triangle.h"
 
 class Mesh;
 
 class Sphere {
 public:
-	void Initialize(DirectXCommon* dir_, Mesh* mesh_);
+	void Initialize(DirectXCommon* dir, Mesh* mesh);
 
 	void Update(const Matrix4x4& transformationMatrixData);
 
-	void Draw(DirectXCommon* dir_, Mesh* mesh_);
+	void Draw();
 
 	void Release();
 
-	void CreateVertexResourceSphere(DirectXCommon* dir_, Mesh* mesh_);
-	void CreateMaterialResourceSphere(DirectXCommon* dir_, Mesh* mesh_);
-	void CreateTransformationMatrixResourceSphere(DirectXCommon* dir_, Mesh* mesh_);
-	void CreateDirectionalResource(DirectXCommon* dir_, Mesh* mesh_);
+	void CreateVertexResourceSphere();
+	void CreateMaterialResourceSphere();
+	void CreateTransformationMatrixResourceSphere();
+	void CreateDirectionalResource();
 
 	Material* GetMaterialDataSphere() { return materialDataSphere; }
 	DirectionalLight* GetDirectionalLightData(){return directionalLightData;}
 
 private:
+
+	DirectXCommon* dir_;
+	Mesh* mesh_;
+
 	Microsoft::WRL::ComPtr<ID3D12Resource> vertexResourceSphere;
 	Microsoft::WRL::ComPtr<ID3D12Resource> materialResourceSphere;
 	Microsoft::WRL::ComPtr<ID3D12Resource> wvpResourceSphere;

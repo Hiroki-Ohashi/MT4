@@ -16,21 +16,24 @@ class Triangle {
 public:
 
 	// 初期化
-	void Initialize(DirectXCommon* dir_, Mesh* mesh_, Vector4* pos);
+	void Initialize(DirectXCommon* dir, Mesh* mesh, Vector4* pos);
 	// 読み込み
 	void Update(const Matrix4x4& transformationMatrixData);
 	// 描画
-	void Draw(DirectXCommon* dir_, Mesh* mesh_);
+	void Draw();
 	// 解放
 	void Release();
 
-	void CreateVertexResource(DirectXCommon* dir_, Mesh* mesh_, Vector4* pos);
-	void CreateMaterialResource(DirectXCommon* dir_, Mesh* mesh_);
-	void CreateWVPResource(DirectXCommon* dir_, Mesh* mesh_);
+	void CreateVertexResource(Vector4* pos);
+	void CreateMaterialResource();
+	void CreateWVPResource();
 
 	Material* GetMaterialData() { return materialData; }
 
 private:
+
+	DirectXCommon* dir_;
+	Mesh* mesh_;
 
 	D3D12_VERTEX_BUFFER_VIEW vertexBufferView{};
 

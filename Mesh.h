@@ -9,6 +9,7 @@
 #include <cassert>
 #include <dxgidebug.h>
 #include <dxcapi.h>
+
 #include "WinApp.h"
 #include "Function.h"
 #include "DirectXCommon.h"
