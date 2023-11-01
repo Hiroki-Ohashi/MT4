@@ -40,7 +40,7 @@ void Sphere::Draw(DirectXCommon* dir_, Mesh* mesh_){
 	dir_->GetCommandList()->SetGraphicsRootConstantBufferView(1, wvpResourceSphere->GetGPUVirtualAddress());
 	dir_->GetCommandList()->SetGraphicsRootConstantBufferView(3, directionalLightResource->GetGPUVirtualAddress());
 	// SRVのDescriptorTableの先頭を設定。2はrootParameter[2]である。
-	dir_->GetCommandList()->SetGraphicsRootDescriptorTable(2, useMoon ? mesh_->textureSrvHandleGPU2 : mesh_->textureSrvHandleGPU);
+	dir_->GetCommandList()->SetGraphicsRootDescriptorTable(2, useMoon ? mesh_->GetTextureSRVHandleGPU2() : mesh_->GetTextureSRVHandleGPU());
 	if (isSphere == true) {
 		// 描画(DrawCall/ドローコール)
 		dir_->GetCommandList()->DrawInstanced(vertexIndex, 1, 0, 0);
@@ -50,6 +50,8 @@ void Sphere::Draw(DirectXCommon* dir_, Mesh* mesh_){
 	ImGui::Checkbox("IsSphere", &isSphere);
 	ImGui::Checkbox("useMoon", &useMoon);
 
+	ImGui::DragFloat3("Scale", &transformSphere.scale.x, 0.01f, -10.0f, 10.0f);
+	ImGui::DragFloat3("Rotate", &transformSphere.rotate.x, 0.01f, -10.0f, 10.0f);
 	ImGui::DragFloat3("Transform", &transformSphere.translate.x, 0.01f, -10.0f, 10.0f);
 
 	ImGui::SliderFloat3("Light Direction", &directionalLightData->direction.x, -1.0f, 1.0f);

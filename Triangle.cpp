@@ -26,7 +26,7 @@ void Triangle::Draw(DirectXCommon* dir_, Mesh* mesh_){
 	// wvp用のCBufferの場所を設定
 	dir_->GetCommandList()->SetGraphicsRootConstantBufferView(1, wvpResource->GetGPUVirtualAddress());
 	// SRVのDescriptorTableの先頭を設定。2はrootParameter[2]である。
-	dir_->GetCommandList()->SetGraphicsRootDescriptorTable(2, mesh_->textureSrvHandleGPU);
+	dir_->GetCommandList()->SetGraphicsRootDescriptorTable(2, mesh_->GetTextureSRVHandleGPU());
 	// 描画(DrawCall/ドローコール)。3頂点で1つのインスタンス。
 	//dir_->GetCommandList()->DrawInstanced(6, 1, 0, 0);
 }

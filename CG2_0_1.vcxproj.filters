@@ -77,11 +77,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="Object3d.VS.hlsl" />
-    <FxCompile Include="Object3d.PS.hlsl" />
-    <FxCompile Include="Object3d.hlsli" />
-  </ItemGroup>
-  <ItemGroup>
     <ClInclude Include="WinApp.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
@@ -144,5 +139,12 @@
     <Text Include="externals\imgui\LICENSE.txt">
       <Filter>imgui</Filter>
     </Text>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="resources\Shaders\Object3d.hlsli" />
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="resources\Shaders\Object3d.PS.hlsl" />
+    <FxCompile Include="resources\Shaders\Object3d.VS.hlsl" />
   </ItemGroup>
 </Project>

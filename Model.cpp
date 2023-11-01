@@ -36,7 +36,7 @@ void Model::Draw(DirectXCommon* dir_, Mesh* mesh_){
 	// TransformationMatrixCBufferの場所を設定
 	dir_->GetCommandList()->SetGraphicsRootConstantBufferView(1, wvpResource->GetGPUVirtualAddress());
 	// SRVのDescriptorTableの先頭を設定。2はrootParameter[2]である。
-	dir_->GetCommandList()->SetGraphicsRootDescriptorTable(2, mesh_->textureSrvHandleGPU);
+	dir_->GetCommandList()->SetGraphicsRootDescriptorTable(2, mesh_->GetTextureSRVHandleGPU());
 	if (isModel == true) {
 		// 描画(DrawCall/ドローコール)
 		dir_->GetCommandList()->DrawInstanced(UINT(modelData.vertices.size()), 1, 0, 0);

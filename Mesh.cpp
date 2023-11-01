@@ -18,13 +18,13 @@ void Mesh::Initialize(DirectXCommon* dir_) {
 	const uint32_t descriptorSizeDSV = dir_->GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_DSV);
 
 	// Textureを読んで転送する
-	DirectX::ScratchImage mipImages = LoadTexture("resources/uvChecker.png");
+	DirectX::ScratchImage mipImages = LoadTexture("Resources/uvChecker.png");
 	const DirectX::TexMetadata& metadata = mipImages.GetMetadata();
 	textureResource = CreateTextureResource(dir_->GetDevice(), metadata);
 	UploadTextureData(textureResource.Get(), mipImages);
 
 	// 2枚目のTextureを読んで転送する
-	DirectX::ScratchImage mipImages2 = LoadTexture("resources/moon.png");
+	DirectX::ScratchImage mipImages2 = LoadTexture("Resources/moon.png");
 	const DirectX::TexMetadata& metadata2 = mipImages2.GetMetadata();
 	textureResource2 = CreateTextureResource(dir_->GetDevice(), metadata2);
 	UploadTextureData(textureResource2.Get(), mipImages2);
@@ -154,10 +154,10 @@ void Mesh::CreatePso(DirectXCommon* dir_){
 	rasterizerDesc.FillMode = D3D12_FILL_MODE_SOLID;
 
 	// Shaderをコンパイルする
-	vertexShaderBlob = Convert::CompileShader(L"Object3d.VS.hlsl", L"vs_6_0", dxcUtils, dxcCompiler, includeHandler);
+	vertexShaderBlob = Convert::CompileShader(L"Resources/Shaders/Object3d.VS.hlsl", L"vs_6_0", dxcUtils, dxcCompiler, includeHandler);
 	assert(vertexShaderBlob != nullptr);
 
-	pixelShaderBlob = Convert::CompileShader(L"Object3d.PS.hlsl", L"ps_6_0", dxcUtils, dxcCompiler, includeHandler);
+	pixelShaderBlob = Convert::CompileShader(L"Resources/Shaders/Object3d.PS.hlsl", L"ps_6_0", dxcUtils, dxcCompiler, includeHandler);
 	assert(pixelShaderBlob != nullptr);
 
 	// DepthStencilStateの設定
@@ -229,7 +229,7 @@ void Mesh::Release(){
 	pixelShaderBlob->Release();
 }
 
-Microsoft::WRL::ComPtr<ID3D12Resource> Mesh::CreateBufferResource(ID3D12Device* device, size_t sizeInbytes) {
+Microsoft::WRL::ComPtr<ID3D12Resource> Mesh::CreateBufferResource(Microsoft::WRL::ComPtr<ID3D12Device> device, size_t sizeInbytes) {
 	ID3D12Resource* Resource = nullptr;
 
 	D3D12_HEAP_PROPERTIES uploadHeapProperties{};
@@ -263,7 +263,7 @@ Microsoft::WRL::ComPtr<ID3D12Resource> Mesh::CreateBufferResource(ID3D12Device* 
 }
 
 // textureResource
-Microsoft::WRL::ComPtr<ID3D12Resource> Mesh::CreateTextureResource(ID3D12Device* device, const DirectX::TexMetadata& metadata)
+Microsoft::WRL::ComPtr<ID3D12Resource> Mesh::CreateTextureResource(Microsoft::WRL::ComPtr<ID3D12Device> device, const DirectX::TexMetadata& metadata)
 {
 	// metadataを基にResourceの設定
 	D3D12_RESOURCE_DESC resourceDesc{};
@@ -334,13 +334,13 @@ void Mesh::UploadTextureData(ID3D12Resource* texture, const DirectX::ScratchImag
 	}
 }
 
-D3D12_CPU_DESCRIPTOR_HANDLE Mesh::GetCPUDescriptorHandle(ID3D12DescriptorHeap* descriptorHeap, uint32_t descriptorSize, uint32_t index) {
+D3D12_CPU_DESCRIPTOR_HANDLE Mesh::GetCPUDescriptorHandle(Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> descriptorHeap, uint32_t descriptorSize, uint32_t index) {
 	D3D12_CPU_DESCRIPTOR_HANDLE handleCPU = descriptorHeap->GetCPUDescriptorHandleForHeapStart();
 	handleCPU.ptr += (descriptorSize * index);
 	return handleCPU;
 }
 
-D3D12_GPU_DESCRIPTOR_HANDLE Mesh::GetGPUDescriptorHandle(ID3D12DescriptorHeap* descriptorHeap, uint32_t descriptorSize, uint32_t index) {
+D3D12_GPU_DESCRIPTOR_HANDLE Mesh::GetGPUDescriptorHandle(Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> descriptorHeap, uint32_t descriptorSize, uint32_t index) {
 	D3D12_GPU_DESCRIPTOR_HANDLE handleGPU = descriptorHeap->GetGPUDescriptorHandleForHeapStart();
 	handleGPU.ptr += (descriptorSize * index);
 	return handleGPU;
