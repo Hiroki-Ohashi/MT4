@@ -69,8 +69,6 @@ void Mesh::CreatePso(){
 	D3D12_ROOT_SIGNATURE_DESC descriptionRootSignature{};
 	descriptionRootSignature.Flags = D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
 
-	// RootParameter作成。複数設定できるので配列。今回は結果1つだけなので長さ1の配列
-
 	//DescriptorRange
 	descriptorRange[0].BaseShaderRegister = 0;//0から始まる
 	descriptorRange[0].NumDescriptors = 1;//数は1つ
@@ -190,7 +188,6 @@ void Mesh::CreatePso(){
 
 	
 	// 実際に生成
-	
 	hr_ = DirectXCommon::GetInsTance()->GetDevice()->CreateGraphicsPipelineState(&graphicsPipelineStateDesc, IID_PPV_ARGS(&graphicsPipelineState));
 	assert(SUCCEEDED(hr_));
 }

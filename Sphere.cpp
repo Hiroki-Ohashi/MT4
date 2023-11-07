@@ -58,6 +58,7 @@ void Sphere::Draw(){
 
 	ImGui::SliderFloat3("Light Direction", &directionalLightData->direction.x, -1.0f, 1.0f);
 	directionalLightData->direction = Normalize(directionalLightData->direction);
+
 	ImGui::SliderFloat("Intensity", &directionalLightData->intensity, 0.0f, 1.0f);
 
 	ImGui::DragFloat2("UVTransform", &uvTransformSphere.translate.x, 0.01f, -10.0f, 10.0f);
