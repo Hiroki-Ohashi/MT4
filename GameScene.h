@@ -15,6 +15,7 @@
 #include "Camera.h"
 #include "Sphere.h"
 #include "Model.h"
+#include "Input.h"
 #include "externals/imgui/imgui.h"
 
 #pragma comment(lib, "d3d12.lib")
@@ -44,6 +45,7 @@ private:
 
 	WinApp* winapp = nullptr;
 	DirectXCommon* directX = nullptr;
+	Input* input = nullptr;
 	Mesh* mesh = nullptr;
 	Triangle* triangle[Max];
 	Sprite* sprite = nullptr;

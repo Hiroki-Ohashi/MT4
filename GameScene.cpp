@@ -14,6 +14,7 @@ GameScene::~GameScene(){
 	delete model;
 	delete camera;
 	delete imgui;
+	delete input;
 }
 
 void GameScene::Initialize(){
@@ -42,24 +43,33 @@ void GameScene::Initialize(){
 	// 右下2
 	pos[1][2] = { 0.5f, -0.25f, -0.5f, 1.0f };
 
+
 	winapp = WinApp::GetInsTance();
-	directX = DirectXCommon::GetInsTance();
-	mesh = new Mesh();
-	triangle[Max];
-	sprite = new Sprite();
-	sphere = new Sphere();
-	model = new Model();
-	imgui = new ImGuiManeger();
-	camera = new Camera();
-	
 	winapp->Initialize(L"CG2");
+
+	directX = DirectXCommon::GetInsTance();
 	directX->Initialize();
+
+	input = new Input();
+	input->Initialize();
+
+	mesh = new Mesh();
 	mesh->Initialize();
+
+	sprite = new Sprite();
 	sprite->Initialize(mesh);
+
+	sphere = new Sphere();
 	sphere->Initialize(mesh);
+
+	model = new Model();
 	model->Initialize(mesh);
-	camera->Initialize();
+
+	imgui = new ImGuiManeger();
 	imgui->Initialize();
+
+	camera = new Camera();
+	camera->Initialize();
 
 	for (int i = 0; i < Max; i++) {
 		triangle[i] = new Triangle();
@@ -70,6 +80,7 @@ void GameScene::Initialize(){
 void GameScene::Update(){
 	imgui->Update();
 	directX->Update();
+	input->Update();
 	mesh->Update();
 	sprite->Update();
 	camera->Update();
@@ -92,7 +103,6 @@ void GameScene::Draw(){
 	sphere->Draw();
 	sprite->Draw();
 	model->Draw();
-
 
 	ImGui::Begin("Mesh Color");
 
