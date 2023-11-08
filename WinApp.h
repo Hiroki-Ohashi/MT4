@@ -13,6 +13,12 @@ public:
 
 	void Initialize(const wchar_t* title);
 
+	static HWND GetHwnd() { return hwnd; }
+	static const int32_t GetKClientWidth() { return kClientWidth; }
+	static const int32_t GetKClientHeight() { return kClientHeight; }
+	static inline ID3D12Debug1* GetDebugController() { return debugController; }
+
+private:
 	WNDCLASS wc{};
 
 	// クライアント領域のサイズ

@@ -12,7 +12,7 @@ void ImGuiManeger::Initialize(){
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
 	ImGui::StyleColorsDark();
-	ImGui_ImplWin32_Init(WinApp::GetInsTance()->hwnd);
+	ImGui_ImplWin32_Init(WinApp::GetInsTance()->GetHwnd());
 	ImGui_ImplDX12_Init(DirectXCommon::GetInsTance()->GetDevice(),
 		DirectXCommon::GetInsTance()->GetSwapChainDesc().BufferCount,
 		DirectXCommon::GetInsTance()->GetRtvDesc().Format,

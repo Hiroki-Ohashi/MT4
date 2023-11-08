@@ -7,8 +7,7 @@ void Mesh::Initialize() {
 	assert(SUCCEEDED(hr_));
 	hr_ = DxcCreateInstance(CLSID_DxcCompiler, IID_PPV_ARGS(&dxcCompiler));
 	assert(SUCCEEDED(hr_));
-
-	// 現時点でincludeしないが、includeに対応するための設定を行っておく
+ 	// 現時点でincludeしないが、includeに対応するための設定を行っておく
 	hr_ = dxcUtils->CreateDefaultIncludeHandler(&includeHandler);
 	assert(SUCCEEDED(hr_));
 
@@ -204,8 +203,8 @@ void Mesh::Update(){
 void Mesh::Viewport(){
 	// ビューポート
 	// クライアント領域のサイズと一緒にして画面全体に表示
-	viewport.Width = window_->kClientWidth;
-	viewport.Height = window_->kClientHeight;
+	viewport.Width = (float)window_->GetKClientWidth();
+	viewport.Height = (float)window_->GetKClientHeight();
 	viewport.TopLeftX = 0;
 	viewport.TopLeftY = 0;
 	viewport.MinDepth = 0.0f;
@@ -216,9 +215,9 @@ void Mesh::Scissor(){
 	// シザー矩形
 	// 基本的にビューポートと同じ矩形が構成されるようにする
 	scissorRect.left = 0;
-	scissorRect.right = window_->kClientWidth;
+	scissorRect.right = window_->GetKClientWidth();
 	scissorRect.top = 0;
-	scissorRect.bottom = window_->kClientHeight;
+	scissorRect.bottom = window_->GetKClientHeight();
 }
 
 void Mesh::Release(){

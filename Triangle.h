@@ -9,7 +9,6 @@
 #include "Function.h"
 #include "MathFunction.h"
 #include "DirectXCommon.h"
-#include "textureManager.h"
 
 class Mesh;
 
