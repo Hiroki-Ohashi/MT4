@@ -9,8 +9,7 @@
 #include "Function.h"
 #include "MathFunction.h"
 #include "DirectXCommon.h"
-
-class Mesh;
+#include "Mesh.h"
 
 class Sphere {
 public:

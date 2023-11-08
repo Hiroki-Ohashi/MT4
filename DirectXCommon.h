@@ -9,10 +9,9 @@
 #include <cstdint>
 #include <wrl.h>
 #include <Windows.h>
+#include <chrono>
 #include "WinApp.h"
 #include "Function.h"
-#include "Mesh.h"
-#include "Triangle.h"
 
 #pragma comment(lib, "d3d12.lib")
 #pragma comment(lib, "dxgi.lib")
@@ -47,6 +46,12 @@ public:
 	ID3D12DescriptorHeap* GetSrvDescriptorHeap() { return srvDescriptorHeap_.Get(); }
 
 private:
+
+	// FPS固定初期化
+	void InitializeFixFPS();
+	// FPS固定更新
+	void UpdateFixFPS();
+
 	Microsoft::WRL::ComPtr<IDXGIFactory7> dxgiFactory_ = nullptr;
 	Microsoft::WRL::ComPtr<ID3D12Device> device_ = nullptr;
 	Microsoft::WRL::ComPtr<IDXGIAdapter4> useAdapter_ = nullptr;
@@ -71,6 +76,8 @@ private:
 	Microsoft::WRL::ComPtr<ID3D12Fence> fence = nullptr;
 	uint64_t fenceValue = 0;
 	HANDLE fenceEvent = 0;
+
+	std::chrono::steady_clock::time_point reference_;
 
 	static inline HRESULT hr_;
 

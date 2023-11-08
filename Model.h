@@ -12,8 +12,7 @@
 #include "MathFunction.h"
 #include "DirectXCommon.h"
 #include "Sphere.h"
-
-class Mesh;
+#include "Mesh.h"
 
 struct MaterialData {
 	std::string textureFilePath;
