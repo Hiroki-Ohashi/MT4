@@ -29,8 +29,10 @@ void Triangle::Draw(){
 	DirectXCommon::GetInsTance()->GetCommandList()->SetGraphicsRootConstantBufferView(1, wvpResource->GetGPUVirtualAddress());
 	// SRVのDescriptorTableの先頭を設定。2はrootParameter[2]である。
 	DirectXCommon::GetInsTance()->GetCommandList()->SetGraphicsRootDescriptorTable(2, mesh_->GetTextureSRVHandleGPU());
-	// 描画(DrawCall/ドローコール)。3頂点で1つのインスタンス。
-	DirectXCommon::GetInsTance()->GetCommandList()->DrawInstanced(6, 1, 0, 0);
+	if (isTriangle == true) {
+		// 描画(DrawCall/ドローコール)。3頂点で1つのインスタンス。
+		DirectXCommon::GetInsTance()->GetCommandList()->DrawInstanced(6, 1, 0, 0);
+	}
 }
 
 void Triangle::Release(){

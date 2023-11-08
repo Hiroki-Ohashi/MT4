@@ -1,4 +1,6 @@
 #include "Camera.h"
+#include "externals/imgui/imgui.h"
+
 
 void Camera::Initialize(){
 	cameraTransform = { {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, -10.0f} };
@@ -11,6 +13,10 @@ void Camera::Update(){
 	projectionMatrix = MakePerspectiveMatrix(0.45f, float(winapp_->GetKClientWidth()) / float(winapp_->GetKClientHeight()), 0.1f, 100.0f);
 	worldViewProjectionMatrix = Multiply(worldMatrix, Multiply(viewMatrix, projectionMatrix));
 	transformationMatrixData = &worldViewProjectionMatrix;
+
+	ImGui::Begin("Camera");
+	ImGui::DragFloat3("Camera Transform", &cameraTransform.translate.x, 0.01f, -50.0f, 50.0f);
+	ImGui::End();
 }
 
 void Camera::Draw(){}

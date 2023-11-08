@@ -53,4 +53,6 @@ private:
 	Model* model = nullptr;
 	ImGuiManeger* imgui = nullptr;
 	Camera* camera = nullptr;
+
+	bool isAlive = false;
 };

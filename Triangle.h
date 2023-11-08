@@ -29,6 +29,8 @@ public:
 	Microsoft::WRL::ComPtr<ID3D12Resource> CreateBufferResource(Microsoft::WRL::ComPtr<ID3D12Device> device, size_t sizeInbytes);
 
 	Material* GetMaterialData() { return materialData; }
+	bool GetTriangle() { return isTriangle; }
+	void SetIsTriangle(bool isTriangle_) { isTriangle_ = isTriangle; }
 
 private:
 	Mesh* mesh_;
@@ -46,6 +48,8 @@ private:
 	Transform transform;
 
 	Matrix4x4 worldMatrix;
+
+	bool isTriangle = false;
 
 	static inline HRESULT hr_;
 };

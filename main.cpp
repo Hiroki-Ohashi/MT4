@@ -1,5 +1,7 @@
 #include "GameScene.h"
 
+
+
 // WIndowsアプリでのエントリーポイント(main関数)
 int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
