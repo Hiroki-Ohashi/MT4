@@ -14,10 +14,27 @@ GameScene::~GameScene(){
 	delete model;
 	delete camera;
 	delete imgui;
-	delete input;
 }
 
 void GameScene::Initialize(){
+
+	mesh = new Mesh();
+	mesh->Initialize();
+
+	sprite = new Sprite();
+	sprite->Initialize(mesh);
+
+	sphere = new Sphere();
+	sphere->Initialize(mesh);
+
+	model = new Model();
+	model->Initialize(mesh);
+
+	imgui = new ImGuiManeger();
+	imgui->Initialize();
+
+	camera = new Camera();
+	camera->Initialize();
 
 	Vector4 pos[Max][3];
 	for (int i = 2; i < Max; i++) {
@@ -43,34 +60,6 @@ void GameScene::Initialize(){
 	// 右下2
 	pos[1][2] = { 0.5f, -0.25f, -0.5f, 1.0f };
 
-
-	winapp = WinApp::GetInsTance();
-	winapp->Initialize(L"CG2");
-
-	directX = DirectXCommon::GetInsTance();
-	directX->Initialize();
-
-	input = new Input();
-	input->Initialize();
-
-	mesh = new Mesh();
-	mesh->Initialize();
-
-	sprite = new Sprite();
-	sprite->Initialize(mesh);
-
-	sphere = new Sphere();
-	sphere->Initialize(mesh);
-
-	model = new Model();
-	model->Initialize(mesh);
-
-	imgui = new ImGuiManeger();
-	imgui->Initialize();
-
-	camera = new Camera();
-	camera->Initialize();
-
 	for (int i = 0; i < Max; i++) {
 		triangle[i] = new Triangle();
 		triangle[i]->Initialize(mesh, pos[i]);
@@ -79,8 +68,6 @@ void GameScene::Initialize(){
 
 void GameScene::Update(){
 	imgui->Update();
-	directX->Update();
-	input->Update();
 	mesh->Update();
 	sprite->Update();
 	camera->Update();
@@ -116,11 +103,9 @@ void GameScene::Draw(){
 
 	imgui->Draw();
 
-	directX->Close();
 }
 
 void GameScene::Release(){
 	mesh->Release();
 	imgui->Release();
-	directX->Release();
 }

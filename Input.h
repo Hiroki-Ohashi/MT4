@@ -12,6 +12,9 @@
 
 class Input {
 public:
+
+	static Input* GetInsTance();
+
 	// 初期化
 	void Initialize();
 	// 読み込み

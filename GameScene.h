@@ -4,9 +4,7 @@
 #include <string>
 #include <format>
 
-#include "WinApp.h"
 #include "Function.h"
-#include "DirectXCommon.h"
 #include "Mesh.h"
 #include "Triangle.h"
 #include "Sprite.h"
@@ -15,7 +13,6 @@
 #include "Camera.h"
 #include "Sphere.h"
 #include "Model.h"
-#include "Input.h"
 #include "externals/imgui/imgui.h"
 
 #pragma comment(lib, "d3d12.lib")
@@ -43,9 +40,6 @@ private:
 	// 三角形の数
 	static const int Max = 26;
 
-	WinApp* winapp = nullptr;
-	DirectXCommon* directX = nullptr;
-	Input* input = nullptr;
 	Mesh* mesh = nullptr;
 	Triangle* triangle[Max];
 	Sprite* sprite = nullptr;

@@ -1,5 +1,11 @@
 #include "Input.h"
 
+Input* Input::GetInsTance()
+{
+	static Input instance;
+	return &instance;
+}
+
 void Input::Initialize(){
 	HRESULT result;
 	// DirectInputのインスタンスを生成
