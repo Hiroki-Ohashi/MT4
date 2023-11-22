@@ -56,6 +56,7 @@ void Model::Draw(uint32_t index, const Matrix4x4& transformationMatrixData){
 		ImGui::DragFloat2("UVTransform", &uvTransform.translate.x, 0.01f, -10.0f, 10.0f);
 		ImGui::DragFloat2("UVScale", &uvTransform.scale.x, 0.01f, -10.0f, 10.0f);
 		ImGui::SliderAngle("UVRotate", &uvTransform.rotate.z);
+		ImGui::TreePop();
 	}
 }
 

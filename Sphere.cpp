@@ -50,24 +50,21 @@ void Sphere::Draw(uint32_t index, const Matrix4x4& transformationMatrixData){
 	// 描画(DrawCall/ドローコール)
 	DirectXCommon::GetInsTance()->GetCommandList()->DrawInstanced(vertexIndex, 1, 0, 0);
 	
+	if (ImGui::TreeNode("Sphere")) {
+		ImGui::DragFloat3("Scale", &transformSphere.scale.x, 0.01f, -10.0f, 10.0f);
+		ImGui::DragFloat3("Rotate", &transformSphere.rotate.x, 0.01f, -10.0f, 10.0f);
+		ImGui::DragFloat3("Transform", &transformSphere.translate.x, 0.01f, -10.0f, 10.0f);
 
-	ImGui::Begin("Sphere");
-	ImGui::Checkbox("IsSphere", &isSphere);
-	ImGui::Checkbox("useMoon", &useMoon);
+		ImGui::SliderFloat3("Light Direction", &directionalLightData->direction.x, -1.0f, 1.0f);
+			directionalLightData->direction = Normalize(directionalLightData->direction);
+		ImGui::SliderFloat4("light color", &directionalLightData->color.x, 0.0f, 1.0f);
+		ImGui::SliderFloat("Intensity", &directionalLightData->intensity, 0.0f, 1.0f);
 
-	ImGui::DragFloat3("Scale", &transformSphere.scale.x, 0.01f, -10.0f, 10.0f);
-	ImGui::DragFloat3("Rotate", &transformSphere.rotate.x, 0.01f, -10.0f, 10.0f);
-	ImGui::DragFloat3("Transform", &transformSphere.translate.x, 0.01f, -10.0f, 10.0f);
-
-	ImGui::SliderFloat3("Light Direction", &directionalLightData->direction.x, -1.0f, 1.0f);
-	directionalLightData->direction = Normalize(directionalLightData->direction);
-	ImGui::SliderFloat4("light color", &directionalLightData->color.x, 0.0f, 1.0f);
-	ImGui::SliderFloat("Intensity", &directionalLightData->intensity, 0.0f, 1.0f);
-
-	ImGui::DragFloat2("UVTransform", &uvTransformSphere.translate.x, 0.01f, -10.0f, 10.0f);
-	ImGui::DragFloat2("UVScale", &uvTransformSphere.scale.x, 0.01f, -10.0f, 10.0f);
-	ImGui::SliderAngle("UVRotate", &uvTransformSphere.rotate.z);
-	ImGui::End();
+		ImGui::DragFloat2("UVTransform", &uvTransformSphere.translate.x, 0.01f, -10.0f, 10.0f);
+		ImGui::DragFloat2("UVScale", &uvTransformSphere.scale.x, 0.01f, -10.0f, 10.0f);
+		ImGui::SliderAngle("UVRotate", &uvTransformSphere.rotate.z);
+		ImGui::TreePop();
+	}
 }
 
 void Sphere::Release() {
