@@ -16,6 +16,8 @@
 
 class Mesh {
 public:
+	static Mesh* GetInsTance();
+
 	void Initialize();
 
 	void CreatePso();
@@ -27,19 +29,9 @@ public:
 
 	void Release();
 
-	D3D12_GPU_DESCRIPTOR_HANDLE GetTextureSRVHandleGPU() { return textureSrvHandleGPU; }
-	D3D12_GPU_DESCRIPTOR_HANDLE GetTextureSRVHandleGPU2() { return textureSrvHandleGPU2; }
-
-	Microsoft::WRL::ComPtr<ID3D12Resource> CreateTextureResource(Microsoft::WRL::ComPtr<ID3D12Device> device, const DirectX::TexMetadata& metadata);
-	Microsoft::WRL::ComPtr<ID3D12Resource> CreateBufferResource(Microsoft::WRL::ComPtr<ID3D12Device> device, size_t sizeInbytes);
-	DirectX::ScratchImage LoadTexture(const std::string& filePath);
-
-	void UploadTextureData(ID3D12Resource* texture, const DirectX::ScratchImage& mipImages);
-
-	D3D12_CPU_DESCRIPTOR_HANDLE GetCPUDescriptorHandle(Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> descriptorHeap, uint32_t descriptorSize, uint32_t index);
-	D3D12_GPU_DESCRIPTOR_HANDLE GetGPUDescriptorHandle(Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> descriptorHeap, uint32_t descriptorSize, uint32_t index);
-
 private:
+	DirectXCommon* dir_ = DirectXCommon::GetInsTance();
+
 	IDxcUtils* dxcUtils = nullptr;
 	IDxcCompiler3* dxcCompiler = nullptr;
 	IDxcIncludeHandler* includeHandler = nullptr;
@@ -70,13 +62,11 @@ private:
 
 	static WinApp* window_;
 
-	Microsoft::WRL::ComPtr<ID3D12Resource> textureResource;
-	Microsoft::WRL::ComPtr<ID3D12Resource> textureResource2;
+	static const int kMaxTexture = 100;
+	bool IsusedTexture[kMaxTexture];
 
-	D3D12_CPU_DESCRIPTOR_HANDLE textureSrvHandleCPU;
-	D3D12_GPU_DESCRIPTOR_HANDLE textureSrvHandleGPU;
+	Microsoft::WRL::ComPtr<ID3D12Resource> textureResource[kMaxTexture];
 
-	D3D12_CPU_DESCRIPTOR_HANDLE textureSrvHandleCPU2;
-	D3D12_GPU_DESCRIPTOR_HANDLE textureSrvHandleGPU2;
-
+	D3D12_CPU_DESCRIPTOR_HANDLE textureSrvHandleCPU[kMaxTexture];
+	D3D12_GPU_DESCRIPTOR_HANDLE textureSrvHandleGPU[kMaxTexture];
 };

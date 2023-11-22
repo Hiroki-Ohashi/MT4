@@ -9,15 +9,16 @@
 #include "Function.h"
 #include "MathFunction.h"
 #include "DirectXCommon.h"
+#include "TextureManager.h"
 #include "Mesh.h"
 
 class Sphere {
 public:
-	void Initialize(Mesh* mesh);
+	void Initialize(TextureManager* texture_);
 
-	void Update(const Matrix4x4& transformationMatrixData);
+	void Update();
 
-	void Draw();
+	void Draw(uint32_t index, const Matrix4x4& transformationMatrixData);
 
 	void Release();
 
@@ -32,7 +33,7 @@ public:
 	DirectionalLight* GetDirectionalLightData(){return directionalLightData;}
 
 private:
-	Mesh* mesh_;
+	TextureManager* texture_;
 
 	Microsoft::WRL::ComPtr<ID3D12Resource> vertexResourceSphere;
 	Microsoft::WRL::ComPtr<ID3D12Resource> materialResourceSphere;

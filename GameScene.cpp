@@ -10,31 +10,31 @@ GameScene::~GameScene(){
 	}
 	delete sprite;
 	delete sphere;
-	delete mesh;
 	delete model;
 	delete camera;
 	delete imgui;
+	delete textureManager;
 }
 
 void GameScene::Initialize(){
 
-	mesh = new Mesh();
-	mesh->Initialize();
-
-	sprite = new Sprite();
-	sprite->Initialize(mesh);
-
-	sphere = new Sphere();
-	sphere->Initialize(mesh);
-
-	model = new Model();
-	model->Initialize(mesh);
-
-	imgui = new ImGuiManeger();
-	imgui->Initialize();
+	textureManager = new TextureManager();
+	textureManager->Initialize();
 
 	camera = new Camera();
 	camera->Initialize();
+
+	sprite = new Sprite(); 
+	sprite->Initialize(textureManager);
+
+	sphere = new Sphere();
+	sphere->Initialize(textureManager);
+
+	model = new Model();
+	model->Initialize(textureManager);
+
+	imgui = new ImGuiManeger();
+	imgui->Initialize();
 
 	Vector4 pos[Max][3];
 	for (int i = 2; i < Max; i++) {
@@ -62,50 +62,37 @@ void GameScene::Initialize(){
 
 	for (int i = 0; i < Max; i++) {
 		triangle[i] = new Triangle();
-		triangle[i]->Initialize(mesh, pos[i]);
+		triangle[i]->Initialize(textureManager, pos[i]);
 	}
+
+	texture = textureManager->SetTexture("Resources/uvChecker.png", texture);
+	//moonTexture = mesh->SetTexture("Resources/moon.png", moonTexture);
 }
 
 void GameScene::Update(){
 	imgui->Update();
-	mesh->Update();
-	sprite->Update();
 	camera->Update();
-	sphere->Update(*camera->transformationMatrixData);
-	model->Update(*camera->transformationMatrixData);
-
-	for (int i = 0; i < 2; i++) {
-		triangle[i]->Update(*camera->transformationMatrixData);
-	}
 }
 
 void GameScene::Draw(){
+
 	for (int i = 2; i < Max; i++) {
-		triangle[i]->Draw();
+		triangle[i]->Draw(texture, *camera->transformationMatrixData);
 	}
 
-	triangle[0]->Draw();
-	triangle[1]->Draw();
+	triangle[0]->Draw(texture, *camera->transformationMatrixData);
+	triangle[1]->Draw(texture, *camera->transformationMatrixData);
 
-	sphere->Draw();
-	sprite->Draw();
-	model->Draw();
+	sphere->Draw(texture, *camera->transformationMatrixData);
+	
+	sprite->Draw(texture);
 
-	ImGui::Begin("Mesh Color");
-
-	ImGui::ColorEdit3("Triangle[0] Color", &triangle[0]->GetMaterialData()->color.x);
-	ImGui::ColorEdit3("Triangle[1] Color", &triangle[1]->GetMaterialData()->color.x);
-	ImGui::ColorEdit3("Sprite Color", &sprite->GetMaterialDataSprite()->color.x);
-	ImGui::ColorEdit3("Sphere Color", &sphere->GetMaterialDataSphere()->color.x);
-
-	ImGui::End();
-
+	model->Draw(texture, *camera->transformationMatrixData);
 
 	imgui->Draw();
 
 }
 
 void GameScene::Release(){
-	mesh->Release();
 	imgui->Release();
 }

@@ -66,30 +66,6 @@
     <ClCompile Include="GameScene.cpp">
       <Filter>scene</Filter>
     </ClCompile>
-    <ClCompile Include="DirectXCommon.cpp">
-      <Filter>base</Filter>
-    </ClCompile>
-    <ClCompile Include="WinApp.cpp">
-      <Filter>base</Filter>
-    </ClCompile>
-    <ClCompile Include="Mesh.cpp">
-      <Filter>base</Filter>
-    </ClCompile>
-    <ClCompile Include="Model.cpp">
-      <Filter>3d</Filter>
-    </ClCompile>
-    <ClCompile Include="Sphere.cpp">
-      <Filter>3d</Filter>
-    </ClCompile>
-    <ClCompile Include="Sprite.cpp">
-      <Filter>2d</Filter>
-    </ClCompile>
-    <ClCompile Include="Triangle.cpp">
-      <Filter>2d</Filter>
-    </ClCompile>
-    <ClCompile Include="Input.cpp">
-      <Filter>input</Filter>
-    </ClCompile>
     <ClCompile Include="Function.cpp">
       <Filter>utility</Filter>
     </ClCompile>
@@ -101,6 +77,33 @@
     </ClCompile>
     <ClCompile Include="Camera.cpp">
       <Filter>utility</Filter>
+    </ClCompile>
+    <ClCompile Include="Sprite.cpp">
+      <Filter>2d</Filter>
+    </ClCompile>
+    <ClCompile Include="Triangle.cpp">
+      <Filter>2d</Filter>
+    </ClCompile>
+    <ClCompile Include="Model.cpp">
+      <Filter>3d</Filter>
+    </ClCompile>
+    <ClCompile Include="Sphere.cpp">
+      <Filter>3d</Filter>
+    </ClCompile>
+    <ClCompile Include="DirectXCommon.cpp">
+      <Filter>base</Filter>
+    </ClCompile>
+    <ClCompile Include="Mesh.cpp">
+      <Filter>base</Filter>
+    </ClCompile>
+    <ClCompile Include="WinApp.cpp">
+      <Filter>base</Filter>
+    </ClCompile>
+    <ClCompile Include="Input.cpp">
+      <Filter>input</Filter>
+    </ClCompile>
+    <ClCompile Include="TextureManager.cpp">
+      <Filter>ソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -169,6 +172,9 @@
     </ClInclude>
     <ClInclude Include="Camera.h">
       <Filter>utility</Filter>
+    </ClInclude>
+    <ClInclude Include="TextureManager.h">
+      <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

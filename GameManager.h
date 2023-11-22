@@ -16,5 +16,6 @@ public:
 private:
 	WinApp* winapp = nullptr;
 	DirectXCommon* directX = nullptr;
+	Mesh* mesh = nullptr;
 	Input* input = nullptr;
 };

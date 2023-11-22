@@ -3,9 +3,9 @@
 #include "math.h"
 #include "externals/imgui/imgui.h"
 
-void Sphere::Initialize(Mesh* mesh){
+void Sphere::Initialize(TextureManager* texture){
 
-	mesh_ = mesh;
+	texture_ = texture;
 
 	Sphere::CreateVertexResourceSphere();
 	Sphere::CreateMaterialResourceSphere();
@@ -20,7 +20,11 @@ void Sphere::Initialize(Mesh* mesh){
 	directionalLightData->intensity = 1.0f;
 }
 
-void Sphere::Update(const Matrix4x4& transformationMatrixData){
+void Sphere::Update(){
+}
+
+void Sphere::Draw(uint32_t index, const Matrix4x4& transformationMatrixData){
+
 	transformSphere.rotate.y += 0.02f;
 
 	wvpResourceDataSphere->World = MakeAffineMatrix(transformSphere.scale, transformSphere.rotate, transformSphere.translate);
@@ -31,22 +35,21 @@ void Sphere::Update(const Matrix4x4& transformationMatrixData){
 	uvtransformMatrix = Multiply(uvtransformMatrix, MakeRotateZMatrix(uvTransformSphere.rotate.z));
 	uvtransformMatrix = Multiply(uvtransformMatrix, MakeTranslateMatrix(uvTransformSphere.translate));
 	materialDataSphere->uvTransform = uvtransformMatrix;
-}
 
-void Sphere::Draw(){
 	// Spriteの描画。変更が必要なものだけ変更する
 	DirectXCommon::GetInsTance()->GetCommandList()->IASetVertexBuffers(0, 1, &vertexBufferViewSphere); // VBVを設定
+	// 形状を設定。PSOに設定しているものとはまた別。同じものを設定すると考えておけば良い
+	DirectXCommon::GetInsTance()->GetCommandList()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	// マテリアルCBufferの場所を設定
 	DirectXCommon::GetInsTance()->GetCommandList()->SetGraphicsRootConstantBufferView(0, materialResourceSphere->GetGPUVirtualAddress());
 	// TransformationMatrixCBufferの場所を設定
 	DirectXCommon::GetInsTance()->GetCommandList()->SetGraphicsRootConstantBufferView(1, wvpResourceSphere->GetGPUVirtualAddress());
 	DirectXCommon::GetInsTance()->GetCommandList()->SetGraphicsRootConstantBufferView(3, directionalLightResource->GetGPUVirtualAddress());
 	// SRVのDescriptorTableの先頭を設定。2はrootParameter[2]である。
-	DirectXCommon::GetInsTance()->GetCommandList()->SetGraphicsRootDescriptorTable(2, useMoon ? mesh_->GetTextureSRVHandleGPU2() : mesh_->GetTextureSRVHandleGPU());
-	if (isSphere == true) {
-		// 描画(DrawCall/ドローコール)
-		DirectXCommon::GetInsTance()->GetCommandList()->DrawInstanced(vertexIndex, 1, 0, 0);
-	}
+	DirectXCommon::GetInsTance()->GetCommandList()->SetGraphicsRootDescriptorTable(2, texture_->GetTextureSRVHandleGPU(index));
+	// 描画(DrawCall/ドローコール)
+	DirectXCommon::GetInsTance()->GetCommandList()->DrawInstanced(vertexIndex, 1, 0, 0);
+	
 
 	ImGui::Begin("Sphere");
 	ImGui::Checkbox("IsSphere", &isSphere);
@@ -58,7 +61,7 @@ void Sphere::Draw(){
 
 	ImGui::SliderFloat3("Light Direction", &directionalLightData->direction.x, -1.0f, 1.0f);
 	directionalLightData->direction = Normalize(directionalLightData->direction);
-
+	ImGui::SliderFloat4("light color", &directionalLightData->color.x, 0.0f, 1.0f);
 	ImGui::SliderFloat("Intensity", &directionalLightData->intensity, 0.0f, 1.0f);
 
 	ImGui::DragFloat2("UVTransform", &uvTransformSphere.translate.x, 0.01f, -10.0f, 10.0f);
@@ -73,7 +76,7 @@ void Sphere::Release() {
 void Sphere::CreateVertexResourceSphere(){
 
 	// 頂点リソースを作る
-	vertexResourceSphere = mesh_->CreateBufferResource(DirectXCommon::GetInsTance()->GetDevice(), sizeof(VertexData) * vertexIndex);
+	vertexResourceSphere = CreateBufferResource(DirectXCommon::GetInsTance()->GetDevice(), sizeof(VertexData) * vertexIndex);
 
 	// リソースの先頭のアドレスから使う
 	vertexBufferViewSphere.BufferLocation = vertexResourceSphere->GetGPUVirtualAddress();

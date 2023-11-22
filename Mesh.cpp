@@ -1,6 +1,12 @@
 #include "Mesh.h"
 
 
+Mesh* Mesh::GetInsTance()
+{
+	static Mesh instance;
+	return &instance;
+}
+
 void Mesh::Initialize() {
 	// dxcCompilerを初期化
 	hr_ = DxcCreateInstance(CLSID_DxcUtils, IID_PPV_ARGS(&dxcUtils));
@@ -11,55 +17,7 @@ void Mesh::Initialize() {
 	hr_ = dxcUtils->CreateDefaultIncludeHandler(&includeHandler);
 	assert(SUCCEEDED(hr_));
 
-	// DescriptorSizeを取得しておく
-	const uint32_t descriptorSizeSRV = DirectXCommon::GetInsTance()->GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-	const uint32_t descriptorSizeRTV = DirectXCommon::GetInsTance()->GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
-	const uint32_t descriptorSizeDSV = DirectXCommon::GetInsTance()->GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_DSV);
-
-	// Textureを読んで転送する
-	DirectX::ScratchImage mipImages = LoadTexture("Resources/uvChecker.png");
-	const DirectX::TexMetadata& metadata = mipImages.GetMetadata();
-	textureResource = CreateTextureResource(DirectXCommon::GetInsTance()->GetDevice(), metadata);
-	UploadTextureData(textureResource.Get(), mipImages);
-
-	// 2枚目のTextureを読んで転送する
-	DirectX::ScratchImage mipImages2 = LoadTexture("Resources/moon.png");
-	const DirectX::TexMetadata& metadata2 = mipImages2.GetMetadata();
-	textureResource2 = CreateTextureResource(DirectXCommon::GetInsTance()->GetDevice(), metadata2);
-	UploadTextureData(textureResource2.Get(), mipImages2);
-
-	// metaDataを基にSRVの設定
-	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc{};
-	srvDesc.Format = metadata.format;
-	srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
-	srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D; // 2Dテクスチャ
-	srvDesc.Texture2D.MipLevels = UINT(metadata.mipLevels);
-
-	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc2{};
-	srvDesc2.Format = metadata2.format;
-	srvDesc2.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
-	srvDesc2.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D; // 2Dテクスチャ
-	srvDesc2.Texture2D.MipLevels = UINT(metadata2.mipLevels);
-
-	// SRVを作成するDescriptorHeapの場所を決める
-	textureSrvHandleCPU = DirectXCommon::GetInsTance()->GetSrvDescriptorHeap()->GetCPUDescriptorHandleForHeapStart();
-	textureSrvHandleGPU = DirectXCommon::GetInsTance()->GetSrvDescriptorHeap()->GetGPUDescriptorHandleForHeapStart();
-
-	// 先頭はImGuiが使っているのでその次を使う
-	textureSrvHandleCPU.ptr += DirectXCommon::GetInsTance()->GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-	textureSrvHandleGPU.ptr += DirectXCommon::GetInsTance()->GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-
-	// 2枚目のSRVを作成するDescriptorHeapの場所を決める
-	textureSrvHandleCPU2 = GetCPUDescriptorHandle(DirectXCommon::GetInsTance()->GetSrvDescriptorHeap(), descriptorSizeSRV, 2);
-	textureSrvHandleGPU2 = GetGPUDescriptorHandle(DirectXCommon::GetInsTance()->GetSrvDescriptorHeap(), descriptorSizeSRV, 2);
-
-	// SRVの生成
-	DirectXCommon::GetInsTance()->GetDevice()->CreateShaderResourceView(textureResource.Get(), &srvDesc, textureSrvHandleCPU);
-	DirectXCommon::GetInsTance()->GetDevice()->CreateShaderResourceView(textureResource2.Get(), &srvDesc2, textureSrvHandleCPU2);
-
 	Mesh::CreatePso();
-	Mesh::Viewport();
-	Mesh::Scissor();
 }
 
 void Mesh::CreatePso(){
@@ -115,7 +73,7 @@ void Mesh::CreatePso(){
 	}
 	// バイナリを元に生成
 	
-	hr_ = DirectXCommon::GetInsTance()->GetDevice()->CreateRootSignature(0, signatureBlob->GetBufferPointer(), signatureBlob->GetBufferSize(), IID_PPV_ARGS(&rootSignature));
+	hr_ = dir_->GetDevice()->CreateRootSignature(0, signatureBlob->GetBufferPointer(), signatureBlob->GetBufferSize(), IID_PPV_ARGS(&rootSignature));
 	assert(SUCCEEDED(hr_));
 
 	// InputLayout
@@ -187,17 +145,20 @@ void Mesh::CreatePso(){
 
 	
 	// 実際に生成
-	hr_ = DirectXCommon::GetInsTance()->GetDevice()->CreateGraphicsPipelineState(&graphicsPipelineStateDesc, IID_PPV_ARGS(&graphicsPipelineState));
+	hr_ = dir_->GetDevice()->CreateGraphicsPipelineState(&graphicsPipelineStateDesc, IID_PPV_ARGS(&graphicsPipelineState));
 	assert(SUCCEEDED(hr_));
+
+	Mesh::Viewport();
+	Mesh::Scissor();
 }
 
 void Mesh::Update(){
 	// コマンドを積む
-	DirectXCommon::GetInsTance()->GetCommandList()->RSSetViewports(1, &viewport);
-	DirectXCommon::GetInsTance()->GetCommandList()->RSSetScissorRects(1, &scissorRect);
+	dir_->GetCommandList()->RSSetViewports(1, &viewport);
+	dir_->GetCommandList()->RSSetScissorRects(1, &scissorRect);
 	// DirectXCommon::GetInsTance()を設定。PSOに設定しているけど別途設定が必要
-	DirectXCommon::GetInsTance()->GetCommandList()->SetGraphicsRootSignature(rootSignature.Get());
-	DirectXCommon::GetInsTance()->GetCommandList()->SetPipelineState(graphicsPipelineState.Get());
+	dir_->GetCommandList()->SetGraphicsRootSignature(rootSignature.Get());
+	dir_->GetCommandList()->SetPipelineState(graphicsPipelineState.Get());
 }
 
 void Mesh::Viewport(){
@@ -223,121 +184,4 @@ void Mesh::Scissor(){
 void Mesh::Release(){
 	vertexShaderBlob->Release();
 	pixelShaderBlob->Release();
-}
-
-Microsoft::WRL::ComPtr<ID3D12Resource> Mesh::CreateBufferResource(Microsoft::WRL::ComPtr<ID3D12Device> device, size_t sizeInbytes) {
-	ID3D12Resource* Resource = nullptr;
-
-	D3D12_HEAP_PROPERTIES uploadHeapProperties{};
-	// 頂点リソース用のヒープの設定
-	uploadHeapProperties.Type = D3D12_HEAP_TYPE_UPLOAD;// UploadHeapを使う
-
-	// 頂点リソースの設定
-	D3D12_RESOURCE_DESC ResourceDesc{};
-	// バッファリソース。テクスチャの場合はまた別の設定をする
-	ResourceDesc.Dimension = D3D12_RESOURCE_DIMENSION_BUFFER;
-	ResourceDesc.Width = sizeInbytes;
-	// バッファの場合はこれらは1にする決まり
-	ResourceDesc.Height = 1;
-	ResourceDesc.DepthOrArraySize = 1;
-	ResourceDesc.MipLevels = 1;
-	ResourceDesc.SampleDesc.Count = 1;
-	// バッファの場合はこれにする決まり
-	ResourceDesc.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
-	// 実際に頂点リソースを作る
-	hr_ = device->CreateCommittedResource(
-		&uploadHeapProperties,
-		D3D12_HEAP_FLAG_NONE,
-		&ResourceDesc,
-		D3D12_RESOURCE_STATE_GENERIC_READ,
-		nullptr,
-		IID_PPV_ARGS(&Resource));
-
-	assert(SUCCEEDED(hr_));
-
-	return Resource;
-}
-
-// textureResource
-Microsoft::WRL::ComPtr<ID3D12Resource> Mesh::CreateTextureResource(Microsoft::WRL::ComPtr<ID3D12Device> device, const DirectX::TexMetadata& metadata)
-{
-	// metadataを基にResourceの設定
-	D3D12_RESOURCE_DESC resourceDesc{};
-	resourceDesc.Width = UINT(metadata.width); // textureの幅
-	resourceDesc.Height = UINT(metadata.height); // textureの高さ
-	resourceDesc.MipLevels = UINT16(metadata.mipLevels); // mipmapの数
-	resourceDesc.DepthOrArraySize = UINT16(metadata.arraySize); // 奥行 or 配列textureの配列数
-	resourceDesc.Format = metadata.format; // textureのformat
-	resourceDesc.SampleDesc.Count = 1; // サンプリングカウント。1固定。
-	resourceDesc.Dimension = D3D12_RESOURCE_DIMENSION(metadata.dimension); // textureの次元数。普段使っているのは2次元
-
-	// 利用するHeapの設定。非常に特殊な運用。02_04exで一般的なケース番がある
-	D3D12_HEAP_PROPERTIES heapProperties{};
-	heapProperties.Type = D3D12_HEAP_TYPE_CUSTOM;
-	heapProperties.CPUPageProperty = D3D12_CPU_PAGE_PROPERTY_WRITE_BACK;
-	heapProperties.MemoryPoolPreference = D3D12_MEMORY_POOL_L0;
-
-	// Resourceの生成
-	ID3D12Resource* resource = nullptr;
-
-	hr_ = device->CreateCommittedResource(
-		&heapProperties, // Heapの設定
-		D3D12_HEAP_FLAG_NONE, // Heapの特殊な設定。特になし
-		&resourceDesc, // Resourceの設定
-		D3D12_RESOURCE_STATE_GENERIC_READ, // 初回のResourceState。Textureは基本読むだけ
-		nullptr, // Clear最適値。使わないのでnullptr
-		IID_PPV_ARGS(&resource)); // 作成するResourceポインタへのポインタ
-
-	assert(SUCCEEDED(hr_));
-
-	return resource;
-}
-
-DirectX::ScratchImage Mesh::LoadTexture(const std::string& filePath) {
-
-	// テクスチャファイルを読んでプログラムで扱えるようにする
-	DirectX::ScratchImage image{};
-	std::wstring filePathW = Convert::ConvertString(filePath);;
-	HRESULT hr = DirectX::LoadFromWICFile(filePathW.c_str(), DirectX::WIC_FLAGS_FORCE_SRGB, nullptr, image);
-	assert(SUCCEEDED(hr));
-
-	// ミップマップの作成
-	DirectX::ScratchImage mipImages{};
-	hr = DirectX::GenerateMipMaps(image.GetImages(), image.GetImageCount(), image.GetMetadata(), DirectX::TEX_FILTER_SRGB, 0, mipImages);
-	assert(SUCCEEDED(hr));
-
-	return mipImages;
-}
-
-void Mesh::UploadTextureData(ID3D12Resource* texture, const DirectX::ScratchImage& mipImages)
-{
-	// meta情報を取得
-	const DirectX::TexMetadata& metadata = mipImages.GetMetadata();
-	// Mipmapについて
-	for (size_t mipLevel = 0; mipLevel < metadata.mipLevels; ++mipLevel) {
-		// MipMapLevelを指示して各Imageを取得
-		const DirectX::Image* img = mipImages.GetImage(mipLevel, 0, 0);
-		// Textureに転送
-		HRESULT hr = texture->WriteToSubresource(
-			UINT(mipLevel),
-			nullptr,
-			img->pixels,
-			UINT(img->rowPitch),
-			UINT(img->slicePitch)
-		);
-
-		assert(SUCCEEDED(hr));
-	}
-}
-
-D3D12_CPU_DESCRIPTOR_HANDLE Mesh::GetCPUDescriptorHandle(Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> descriptorHeap, uint32_t descriptorSize, uint32_t index) {
-	D3D12_CPU_DESCRIPTOR_HANDLE handleCPU = descriptorHeap->GetCPUDescriptorHandleForHeapStart();
-	handleCPU.ptr += (descriptorSize * index);
-	return handleCPU;
-}
-
-D3D12_GPU_DESCRIPTOR_HANDLE Mesh::GetGPUDescriptorHandle(Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> descriptorHeap, uint32_t descriptorSize, uint32_t index) {
-	D3D12_GPU_DESCRIPTOR_HANDLE handleGPU = descriptorHeap->GetGPUDescriptorHandleForHeapStart();
-	handleGPU.ptr += (descriptorSize * index);
-	return handleGPU;
 }

@@ -11,7 +11,7 @@
 #include "Function.h"
 #include "MathFunction.h"
 #include "DirectXCommon.h"
-#include "Sphere.h"
+#include "TextureManager.h"
 #include "Mesh.h"
 
 struct MaterialData {
@@ -25,11 +25,11 @@ struct ModelData {
 
 class Model {
 public:
-	void Initialize(Mesh* mesh);
+	void Initialize(TextureManager* texture);
 
-	void Update(const Matrix4x4& transformationMatrixData);
+	void Update();
 
-	void Draw();
+	void Draw(uint32_t index, const Matrix4x4& transformationMatrixData);
 
 	void Release();
 
@@ -45,7 +45,7 @@ public:
 private:
 
 	WinApp* winapp_;
-	Mesh* mesh_;
+	TextureManager* texture_;
 
 	ModelData modelData;
 

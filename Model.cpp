@@ -1,13 +1,13 @@
 #include "Model.h"
 #include "externals/imgui/imgui.h"
 
-void Model::Initialize(Mesh* mesh){
+void Model::Initialize(TextureManager* texture){
 
-	mesh_ = mesh;
+	texture_ = texture;
 
 	// モデル読み込み
-	modelData = LoadObjFile("resources","axis.obj");
-	DirectX::ScratchImage mipImages2 = mesh_->LoadTexture(modelData.material.textureFilePath);
+	modelData = LoadObjFile("resources","multiMaterial.obj");
+	DirectX::ScratchImage mipImages2 = texture_->LoadTexture(modelData.material.textureFilePath);
 
 	Model::CreateVertexResource();
 	Model::CreateMaterialResource();
@@ -20,7 +20,12 @@ void Model::Initialize(Mesh* mesh){
 	materialData->enableLighting = true;
 }
 
-void Model::Update(const Matrix4x4& transformationMatrixData){
+void Model::Update(){
+	
+}
+
+void Model::Draw(uint32_t index, const Matrix4x4& transformationMatrixData){
+
 	wvpData->World = MakeAffineMatrix(transform.scale, transform.rotate, transform.translate);
 	wvpData->World = Multiply(wvpData->World, transformationMatrixData);
 	wvpData->WVP = wvpData->World;
@@ -29,33 +34,29 @@ void Model::Update(const Matrix4x4& transformationMatrixData){
 	uvtransformMatrix = Multiply(uvtransformMatrix, MakeRotateZMatrix(uvTransform.rotate.z));
 	uvtransformMatrix = Multiply(uvtransformMatrix, MakeTranslateMatrix(uvTransform.translate));
 	materialData->uvTransform = uvtransformMatrix;
-}
 
-void Model::Draw(){
 	// コマンドを積む
 	DirectXCommon::GetInsTance()->GetCommandList()->IASetVertexBuffers(0, 1, &vertexBufferView); // VBVを設定
+	// 形状を設定。PSOに設定しているものとはまた別。同じものを設定すると考えておけば良い
+	DirectXCommon::GetInsTance()->GetCommandList()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	// マテリアルCBufferの場所を設定
 	DirectXCommon::GetInsTance()->GetCommandList()->SetGraphicsRootConstantBufferView(0, materialResource->GetGPUVirtualAddress());
 	// TransformationMatrixCBufferの場所を設定
 	DirectXCommon::GetInsTance()->GetCommandList()->SetGraphicsRootConstantBufferView(1, wvpResource->GetGPUVirtualAddress());
 	// SRVのDescriptorTableの先頭を設定。2はrootParameter[2]である。
-	DirectXCommon::GetInsTance()->GetCommandList()->SetGraphicsRootDescriptorTable(2, mesh_->GetTextureSRVHandleGPU());
-	if (isModel == true) {
-		// 描画(DrawCall/ドローコール)
-		DirectXCommon::GetInsTance()->GetCommandList()->DrawInstanced(UINT(modelData.vertices.size()), 1, 0, 0);
+	DirectXCommon::GetInsTance()->GetCommandList()->SetGraphicsRootDescriptorTable(2, texture_->GetTextureSRVHandleGPU(index));
+	// 描画(DrawCall/ドローコール)
+	DirectXCommon::GetInsTance()->GetCommandList()->DrawInstanced(UINT(modelData.vertices.size()), 1, 0, 0);
+	
+
+	if (ImGui::TreeNode("Model")) {
+		ImGui::SliderAngle("Rotate.y ", &transform.rotate.y);
+		ImGui::DragFloat3("Transform", &transform.translate.x, 0.01f, -10.0f, 10.0f);
+
+		ImGui::DragFloat2("UVTransform", &uvTransform.translate.x, 0.01f, -10.0f, 10.0f);
+		ImGui::DragFloat2("UVScale", &uvTransform.scale.x, 0.01f, -10.0f, 10.0f);
+		ImGui::SliderAngle("UVRotate", &uvTransform.rotate.z);
 	}
-
-	ImGui::Begin("Model");
-
-	ImGui::Checkbox("IsModel", &isModel);
-
-	ImGui::SliderAngle("Rotate.y ", &transform.rotate.y);
-	ImGui::DragFloat3("Transform", &transform.translate.x, 0.01f, -10.0f, 10.0f);
-
-	ImGui::DragFloat2("UVTransform", &uvTransform.translate.x, 0.01f, -10.0f, 10.0f);
-	ImGui::DragFloat2("UVScale", &uvTransform.scale.x, 0.01f, -10.0f, 10.0f);
-	ImGui::SliderAngle("UVRotate", &uvTransform.rotate.z);
-	ImGui::End();
 }
 
 void Model::Release(){

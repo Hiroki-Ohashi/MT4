@@ -2,8 +2,9 @@
 #include "externals/imgui/imgui.h"
 
 
-void Sprite::Initialize(Mesh* mesh){
-	mesh_ = mesh;
+void Sprite::Initialize(TextureManager* texture){
+
+	texture_ = texture;
 
 	Sprite::CreateVertexResourceSprite();
 	Sprite::CreateMaterialResourceSprite();
@@ -17,6 +18,9 @@ void Sprite::Initialize(Mesh* mesh){
 }
 
 void Sprite::Update(){
+}
+
+void Sprite::Draw(uint32_t index){
 	transformationMatrixDataSprite->World = MakeAffineMatrix(transformSprite.scale, transformSprite.rotate, transformSprite.translate);
 	Matrix4x4 viewMatrixSprite = MakeIndentity4x4();
 	Matrix4x4 projectionMatrixSprite = MakeOrthographicMatrix(0.0f, 0.0f, float(WinApp::GetInsTance()->GetKClientWidth()), float(WinApp::GetInsTance()->GetKClientHeight()), 0.0f, 100.0f);
@@ -27,11 +31,11 @@ void Sprite::Update(){
 	uvtransformMatrix = Multiply(uvtransformMatrix, MakeRotateZMatrix(uvTransformSprite.rotate.z));
 	uvtransformMatrix = Multiply(uvtransformMatrix, MakeTranslateMatrix(uvTransformSprite.translate));
 	materialDataSprite->uvTransform = uvtransformMatrix;
-}
 
-void Sprite::Draw(){
 	// コマンドを積む
 	DirectXCommon::GetInsTance()->GetCommandList()->IASetVertexBuffers(0, 1, &vertexBufferViewSprite); // VBVを設定
+	// 形状を設定。PSOに設定しているものとはまた別。同じものを設定すると考えておけば良い
+	DirectXCommon::GetInsTance()->GetCommandList()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	// Spriteの描画。変更が必要なものだけ変更する
 	DirectXCommon::GetInsTance()->GetCommandList()->IASetIndexBuffer(&indexBufferViewSprite);
 	// マテリアルCBufferの場所を設定
@@ -39,13 +43,12 @@ void Sprite::Draw(){
 	// TransformationMatrixCBufferの場所を設定
 	DirectXCommon::GetInsTance()->GetCommandList()->SetGraphicsRootConstantBufferView(1, transformationMatrixResourceSprite->GetGPUVirtualAddress());
 	// SRVのDescriptorTableの先頭を設定。2はrootParameter[2]である。
-	DirectXCommon::GetInsTance()->GetCommandList()->SetGraphicsRootDescriptorTable(2, mesh_->GetTextureSRVHandleGPU());
-	if (isSprite == true) {
-		// 描画(DrawCall/ドローコール)
-		DirectXCommon::GetInsTance()->GetCommandList()->DrawIndexedInstanced(6, 1, 0, 0, 0);
-	}
+	DirectXCommon::GetInsTance()->GetCommandList()->SetGraphicsRootDescriptorTable(2, texture_->GetTextureSRVHandleGPU(index));
+	// 描画(DrawCall/ドローコール)
+	DirectXCommon::GetInsTance()->GetCommandList()->DrawIndexedInstanced(6, 1, 0, 0, 0);
+	
 
-	ImGui::Begin("Sprite");
+	/*ImGui::Begin("Sprite");
 	ImGui::Checkbox("IsSprite", &isSprite);
 
 	ImGui::DragFloat2("Transform", &transformSprite.translate.x, 0.1f, -1000.0f, 1000.0f);
@@ -53,7 +56,7 @@ void Sprite::Draw(){
 	ImGui::DragFloat2("UVTransform", &uvTransformSprite.translate.x, 0.01f, -10.0f, 10.0f);
 	ImGui::DragFloat2("UVScale", &uvTransformSprite.scale.x, 0.01f, -10.0f, 10.0f);
 	ImGui::SliderAngle("UVRotate", &uvTransformSprite.rotate.z);
-	ImGui::End();
+	ImGui::End();*/
 }
 
 void Sprite::Release(){

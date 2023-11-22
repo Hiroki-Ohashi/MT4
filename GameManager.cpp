@@ -8,6 +8,9 @@ GameManager::GameManager()
 	directX = DirectXCommon::GetInsTance();
 	directX->Initialize();
 
+	mesh = Mesh::GetInsTance();
+	mesh->Initialize();
+
 	input = Input::GetInsTance();
 	input->Initialize();
 }
@@ -47,6 +50,7 @@ void GameManager::Run()
 
 			directX->Update();
 			input->Update();
+			mesh->Update();
 			gameScene->Update();
 
 			// 描画処理
@@ -59,5 +63,6 @@ void GameManager::Run()
 	CoUninitialize();
 
 	gameScene->Release();
+	mesh->Release();
 	directX->Release();
 }

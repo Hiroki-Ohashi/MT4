@@ -1,8 +1,8 @@
 #include "Triangle.h"
 
-void Triangle::Initialize(Mesh* mesh, Vector4* pos){
+void Triangle::Initialize(TextureManager* texture, Vector4* pos){
 
-	mesh_ = mesh;
+	texture_ = texture;
 
 	Triangle::CreateVertexResource(pos);
 	Triangle::CreateMaterialResource();
@@ -11,15 +11,17 @@ void Triangle::Initialize(Mesh* mesh, Vector4* pos){
 	transform = { {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f} };
 }
 
-void Triangle::Update(const Matrix4x4& transformationMatrixData){
+void Triangle::Update(){
+}
+
+void Triangle::Draw(uint32_t index, const Matrix4x4& transformationMatrixData){
+
 	transform.rotate.y += 0.03f;
 
 	wvpData->World = MakeAffineMatrix(transform.scale, transform.rotate, transform.translate);
 	wvpData->World = Multiply(wvpData->World, transformationMatrixData);
 	wvpData->WVP = wvpData->World;
-}
 
-void Triangle::Draw(){
 	DirectXCommon::GetInsTance()->GetCommandList()->IASetVertexBuffers(0, 1, &vertexBufferView);
 	// 形状を設定。PSOに設定しているものとはまた別。同じものを設定すると考えておけば良い
 	DirectXCommon::GetInsTance()->GetCommandList()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
@@ -28,11 +30,9 @@ void Triangle::Draw(){
 	// wvp用のCBufferの場所を設定
 	DirectXCommon::GetInsTance()->GetCommandList()->SetGraphicsRootConstantBufferView(1, wvpResource->GetGPUVirtualAddress());
 	// SRVのDescriptorTableの先頭を設定。2はrootParameter[2]である。
-	DirectXCommon::GetInsTance()->GetCommandList()->SetGraphicsRootDescriptorTable(2, mesh_->GetTextureSRVHandleGPU());
-	if (isTriangle == true) {
-		// 描画(DrawCall/ドローコール)。3頂点で1つのインスタンス。
-		DirectXCommon::GetInsTance()->GetCommandList()->DrawInstanced(6, 1, 0, 0);
-	}
+	DirectXCommon::GetInsTance()->GetCommandList()->SetGraphicsRootDescriptorTable(2, texture_->GetTextureSRVHandleGPU(index));
+	// 描画(DrawCall/ドローコール)。3頂点で1つのインスタンス。
+	DirectXCommon::GetInsTance()->GetCommandList()->DrawInstanced(6, 1, 0, 0);
 }
 
 void Triangle::Release(){

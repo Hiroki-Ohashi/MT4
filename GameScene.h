@@ -5,7 +5,6 @@
 #include <format>
 
 #include "Function.h"
-#include "Mesh.h"
 #include "Triangle.h"
 #include "Sprite.h"
 #include "ImGuiManeger.h"
@@ -13,6 +12,7 @@
 #include "Camera.h"
 #include "Sphere.h"
 #include "Model.h"
+#include "TextureManager.h"
 #include "externals/imgui/imgui.h"
 
 #pragma comment(lib, "d3d12.lib")
@@ -40,7 +40,7 @@ private:
 	// 三角形の数
 	static const int Max = 26;
 
-	Mesh* mesh = nullptr;
+	TextureManager* textureManager = nullptr;
 	Triangle* triangle[Max];
 	Sprite* sprite = nullptr;
 	Sphere* sphere = nullptr;
@@ -48,5 +48,11 @@ private:
 	ImGuiManeger* imgui = nullptr;
 	Camera* camera = nullptr;
 
-	bool isAlive = false;
+	uint32_t texture = 0;
+	uint32_t moonTexture = 1;
+
+	bool isTriangle = false;
+	bool isModel = false;
+	bool isSphere = false;
+	bool isSprite = false;
 };

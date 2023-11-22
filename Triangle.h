@@ -10,22 +10,24 @@
 #include "MathFunction.h"
 #include "DirectXCommon.h"
 #include "Mesh.h"
+#include "TextureManager.h"
 
 class Triangle {
 public:
 
 	// 初期化
-	void Initialize(Mesh* mesh, Vector4* pos);
+	void Initialize(TextureManager* texture_, Vector4* pos);
 	// 読み込み
-	void Update(const Matrix4x4& transformationMatrixData);
+	void Update();
 	// 描画
-	void Draw();
+	void Draw(uint32_t index, const Matrix4x4& transformationMatrixData);
 	// 解放
 	void Release();
 
 	void CreateVertexResource(Vector4* pos);
 	void CreateMaterialResource();
 	void CreateWVPResource();
+
 	Microsoft::WRL::ComPtr<ID3D12Resource> CreateBufferResource(Microsoft::WRL::ComPtr<ID3D12Device> device, size_t sizeInbytes);
 
 	Material* GetMaterialData() { return materialData; }
@@ -33,7 +35,7 @@ public:
 	void SetIsTriangle(bool isTriangle_) { isTriangle_ = isTriangle; }
 
 private:
-	Mesh* mesh_;
+	TextureManager* texture_;
 
 	D3D12_VERTEX_BUFFER_VIEW vertexBufferView{};
 

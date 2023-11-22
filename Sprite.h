@@ -9,15 +9,16 @@
 #include "Function.h"
 #include "MathFunction.h"
 #include "DirectXCommon.h"
+#include "TextureManager.h"
 #include "Mesh.h"
 
 class Sprite {
 public:
-	void Initialize(Mesh* mesh);
+	void Initialize(TextureManager* texture);
 
 	void Update();
 
-	void Draw();
+	void Draw(uint32_t index);
 
 	void Release();
 
@@ -30,7 +31,7 @@ public:
 	Material* GetMaterialDataSprite() { return materialDataSprite; }
 
 private:
-	Mesh* mesh_;
+	TextureManager* texture_;
 
 	Microsoft::WRL::ComPtr<ID3D12Resource> vertexResourceSprite;
 	Microsoft::WRL::ComPtr<ID3D12Resource> materialResourceSprite;
