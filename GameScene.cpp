@@ -76,7 +76,7 @@ void GameScene::Update(){
 
 void GameScene::Draw(){
 
-	for (int i = 2; i < Max; i++) {
+	/*for (int i = 2; i < Max; i++) {
 		triangle[i]->Draw(texture, *camera->transformationMatrixData);
 	}
 
@@ -87,7 +87,15 @@ void GameScene::Draw(){
 	
 	sprite->Draw(texture);
 
-	model->Draw(texture, *camera->transformationMatrixData);
+	model->Draw(texture, *camera->transformationMatrixData);*/
+
+	Vector3 axis = Normalize({ 1.0f, 1.0f, 1.0f });
+	float angle = 0.44f;
+	Matrix4x4 rotateMatrix = MakeRotateAxisAngle(axis, angle);
+
+	ImGui::Begin("rotateMatrix");
+	ImGui::DragFloat("Matrix[0][0]",rotateMatrix.m[0]);
+	ImGui::End();
 
 	imgui->Draw();
 

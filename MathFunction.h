@@ -74,3 +74,5 @@ Vector3 Normalize(const Vector3& v1);
 
 Matrix4x4 MakeScaleMatrix(const Vector3& scale);
 Matrix4x4 MakeTranslateMatrix(const Vector3& translate);
+
+Matrix4x4 MakeRotateAxisAngle(const Vector3& axis, float angle);
