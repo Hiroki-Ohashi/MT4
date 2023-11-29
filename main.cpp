@@ -6,15 +6,6 @@
 
 const char kWindowTitle[] = "MT4";
 
-Vector3 Normalize(const Vector3& v1) {
-	Vector3 Result = v1;
-	float length = sqrt(v1.x * v1.x + v1.y * v1.y + v1.z * v1.z);
-	Result.x /= length;
-	Result.y /= length;
-	Result.z /= length;
-	return Result;
-}
-
 float Dot(const Vector3& v1, const Vector3& v2)
 {
 	float result;
@@ -30,11 +21,24 @@ float Length(const Vector3& v)
 	return sqrtf(result);
 };
 
+Vector3 Normalize(const Vector3& v1) {
+	Vector3 Result = v1;
+	float length = sqrt(v1.x * v1.x + v1.y * v1.y + v1.z * v1.z);
+	assert(length != 0);
+	Result.x /= length;
+	Result.y /= length;
+	Result.z /= length;
+	return Result;
+}
+
+
 Vector3 Cross(const Vector3& v1, const Vector3& v2)
 {
-	Vector3 result;
-	result = { v1.y * v2.z - v1.z * v2.y, v1.z * v2.x - v1.x * v2.z, v1.x * v2.y - v1.y * v2.x };
-	return result;
+	Vector3 Cross;
+	Cross.x = v1.y * v2.z - v1.z * v2.y;
+	Cross.y = v1.z * v2.x - v1.x * v2.z;
+	Cross.z = v1.x * v2.y - v1.y * v2.x;
+	return Cross;
 }
 
 Matrix4x4 MakeRotateAxisAngle(const Vector3& axis, float angle)
@@ -66,26 +70,40 @@ Matrix4x4 MakeRotateAxisAngle(const Vector3& axis, float angle)
 
 Matrix4x4 DirectionToDirection(const Vector3& from, const Vector3& to) {
 	Matrix4x4 result;
-
+	Vector3 n{};
 	Vector3 cross = Cross(from, to);
-	Vector3 n = Normalize(cross);
+
+	if (from.x == -to.x && from.y == -to.y && from.z == -to.z) {
+
+		if (from.x != 0.0f || from.y != 0.0f) {
+			n = Normalize({ from.y, -from.x, 0.0f });
+		}
+
+		else if (from.x != 0.0f || from.z != 0.0f) {
+			n = Normalize({ from.z, 0.0f, -from.x });
+		}
+	}
+	else {
+		
+		n = Normalize(cross);
+	}
 
 	float dot = Dot(from, to);
 	float len = Length(cross);
 
-	result.m[0][0] = (n.x * n.x) * (1 - std::cosf(dot)) + std::cosf(dot);
-	result.m[0][1] = (n.x * n.y) * (1 - std::cosf(dot)) + (n.z * std::sinf(len));
-	result.m[0][2] = (n.x * n.z) * (1 - std::cosf(dot)) - (n.y * std::sinf(len));
+	result.m[0][0] = (n.x * n.x) * (1 - dot) + dot;
+	result.m[0][1] = (n.x * n.y) * (1 - dot) + (n.z * len);
+	result.m[0][2] = (n.x * n.z) * (1 - dot) - (n.y * len);
 	result.m[0][3] = 0.0f;
 
-	result.m[1][0] = (n.x * n.y) * (1 - std::cosf(dot)) - (n.z * std::sinf(len));
-	result.m[1][1] = (n.y * n.y) * (1 - std::cosf(dot)) + std::cosf(dot);
-	result.m[1][2] = (n.y * n.z) * (1 - std::cosf(dot)) + (n.x * std::sinf(len));
+	result.m[1][0] = (n.x * n.y) * (1 - dot) - (n.z * len);
+	result.m[1][1] = (n.y * n.y) * (1 - dot) + dot;
+	result.m[1][2] = (n.y * n.z) * (1 - dot) + (n.x * len);
 	result.m[1][3] = 0.0f;
 
-	result.m[2][0] = (n.x * n.z) * (1 - std::cosf(dot)) + (n.y * std::sinf(len));
-	result.m[2][1] = (n.y * n.z) * (1 - std::cosf(dot)) - (n.x * std::sinf(len));
-	result.m[2][2] = (n.z * n.z) * (1 - std::cosf(dot)) + std::cosf(dot);
+	result.m[2][0] = (n.x * n.z) * (1 - dot) + (n.y * len);
+	result.m[2][1] = (n.y * n.z) * (1 - dot) - (n.x * len);
+	result.m[2][2] = (n.z * n.z) * (1 - dot) + dot;
 	result.m[2][3] = 0.0f;
 
 	result.m[3][0] = 0.0f;
@@ -149,8 +167,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		///
 
 		MatrixScreenPrintf(0, 0, rotateMatrix0, "rotateMarix0");
-		MatrixScreenPrintf(0, kRowHeight + 100, rotateMatrix1, "rotateMarix1");
-		MatrixScreenPrintf(0, kRowHeight + 200, rotateMatrix2, "rotateMarix2");
+		MatrixScreenPrintf(0, kRowHeight * 5, rotateMatrix1, "rotateMarix1");
+		MatrixScreenPrintf(0, kRowHeight * 10, rotateMatrix2, "rotateMarix2");
 
 		///
 		/// ↑描画処理ここまで
