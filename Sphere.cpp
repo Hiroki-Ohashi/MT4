@@ -3,9 +3,9 @@
 #include "math.h"
 #include "externals/imgui/imgui.h"
 
-void Sphere::Initialize(TextureManager* texture){
+void Sphere::Initialize(const std::string& filePath){
 
-	texture_ = texture;
+	texture = texture_->Load(filePath);
 
 	Sphere::CreateVertexResourceSphere();
 	Sphere::CreateMaterialResourceSphere();
@@ -23,7 +23,7 @@ void Sphere::Initialize(TextureManager* texture){
 void Sphere::Update(){
 }
 
-void Sphere::Draw(uint32_t index, const Matrix4x4& transformationMatrixData){
+void Sphere::Draw(const Matrix4x4& transformationMatrixData){
 
 	transformSphere.rotate.y += 0.02f;
 
@@ -41,12 +41,12 @@ void Sphere::Draw(uint32_t index, const Matrix4x4& transformationMatrixData){
 	// 形状を設定。PSOに設定しているものとはまた別。同じものを設定すると考えておけば良い
 	DirectXCommon::GetInsTance()->GetCommandList()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	// マテリアルCBufferの場所を設定
-	DirectXCommon::GetInsTance()->GetCommandList()->SetGraphicsRootConstantBufferView(0, materialResourceSphere->GetGPUVirtualAddress());
+	DirectXCommon::GetInsTance()->GetCommandList()->SetGraphicsRootConstantBufferView(0, materialResourceSphere.Get()->GetGPUVirtualAddress());
 	// TransformationMatrixCBufferの場所を設定
 	DirectXCommon::GetInsTance()->GetCommandList()->SetGraphicsRootConstantBufferView(1, wvpResourceSphere->GetGPUVirtualAddress());
 	DirectXCommon::GetInsTance()->GetCommandList()->SetGraphicsRootConstantBufferView(3, directionalLightResource->GetGPUVirtualAddress());
 	// SRVのDescriptorTableの先頭を設定。2はrootParameter[2]である。
-	DirectXCommon::GetInsTance()->GetCommandList()->SetGraphicsRootDescriptorTable(2, texture_->GetTextureSRVHandleGPU(index));
+	DirectXCommon::GetInsTance()->GetCommandList()->SetGraphicsRootDescriptorTable(2, texture_->GetTextureSRVHandleGPU(texture));
 	// 描画(DrawCall/ドローコール)
 	DirectXCommon::GetInsTance()->GetCommandList()->DrawInstanced(vertexIndex, 1, 0, 0);
 	

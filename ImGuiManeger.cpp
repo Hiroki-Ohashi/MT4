@@ -8,6 +8,12 @@
 #include "externals/imgui/imgui_impl_dx12.h"
 #include "externals/imgui/imgui_impl_win32.h"
 
+ImGuiManeger* ImGuiManeger::GetInstance()
+{
+	static ImGuiManeger instance;
+	return &instance;
+}
+
 void ImGuiManeger::Initialize(){
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
@@ -16,7 +22,7 @@ void ImGuiManeger::Initialize(){
 	ImGui_ImplDX12_Init(DirectXCommon::GetInsTance()->GetDevice(),
 		DirectXCommon::GetInsTance()->GetSwapChainDesc().BufferCount,
 		DirectXCommon::GetInsTance()->GetRtvDesc().Format,
-		DirectXCommon::GetInsTance()->GetSrvDescriptorHeap(),
+		DirectXCommon::GetInsTance()->GetSrvDescriptorHeap().Get(),
 		DirectXCommon::GetInsTance()->GetSrvDescriptorHeap()->GetCPUDescriptorHandleForHeapStart(),
 		DirectXCommon::GetInsTance()->GetSrvDescriptorHeap()->GetGPUDescriptorHandleForHeapStart()
 	);

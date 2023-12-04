@@ -16,8 +16,6 @@
 
 class Mesh {
 public:
-	static Mesh* GetInsTance();
-
 	void Initialize();
 
 	void CreatePso();
@@ -61,12 +59,4 @@ private:
 	static inline HRESULT hr_;
 
 	static WinApp* window_;
-
-	static const int kMaxTexture = 100;
-	bool IsusedTexture[kMaxTexture];
-
-	Microsoft::WRL::ComPtr<ID3D12Resource> textureResource[kMaxTexture];
-
-	D3D12_CPU_DESCRIPTOR_HANDLE textureSrvHandleCPU[kMaxTexture];
-	D3D12_GPU_DESCRIPTOR_HANDLE textureSrvHandleGPU[kMaxTexture];
 };

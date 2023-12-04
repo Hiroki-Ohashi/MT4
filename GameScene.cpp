@@ -12,29 +12,21 @@ GameScene::~GameScene(){
 	delete sphere;
 	delete model;
 	delete camera;
-	delete imgui;
-	delete textureManager;
 }
 
 void GameScene::Initialize(){
-
-	textureManager = new TextureManager();
-	textureManager->Initialize();
 
 	camera = new Camera();
 	camera->Initialize();
 
 	sprite = new Sprite(); 
-	sprite->Initialize(textureManager);
+	sprite->Initialize("Resources/uvChecker.png");
 
 	sphere = new Sphere();
-	sphere->Initialize(textureManager);
+	sphere->Initialize("Resources/moon.png");
 
 	model = new Model();
-	model->Initialize(textureManager);
-
-	imgui = new ImGuiManeger();
-	imgui->Initialize();
+	model->Initialize("Resources/uvChecker.png");
 
 	Vector4 pos[Max][3];
 	for (int i = 2; i < Max; i++) {
@@ -62,45 +54,29 @@ void GameScene::Initialize(){
 
 	for (int i = 0; i < Max; i++) {
 		triangle[i] = new Triangle();
-		triangle[i]->Initialize(textureManager, pos[i]);
+		triangle[i]->Initialize("Resources/uvChecker.png", pos[i]);
 	}
-
-	texture = textureManager->SetTexture("Resources/uvChecker.png", texture);
-	//moonTexture = mesh->SetTexture("Resources/moon.png", moonTexture);
 }
 
 void GameScene::Update(){
-	imgui->Update();
 	camera->Update();
 }
 
 void GameScene::Draw(){
 
-	/*for (int i = 2; i < Max; i++) {
-		triangle[i]->Draw(texture, *camera->transformationMatrixData);
+	for (int i = 2; i < Max; i++) {
+		triangle[i]->Draw(*camera->transformationMatrixData);
 	}
 
-	triangle[0]->Draw(texture, *camera->transformationMatrixData);
-	triangle[1]->Draw(texture, *camera->transformationMatrixData);
+	triangle[0]->Draw(*camera->transformationMatrixData);
+	triangle[1]->Draw(*camera->transformationMatrixData);
 
-	sphere->Draw(texture, *camera->transformationMatrixData);
+	sphere->Draw(*camera->transformationMatrixData);
 	
-	sprite->Draw(texture);
+	sprite->Draw();
 
-	model->Draw(texture, *camera->transformationMatrixData);*/
-
-	Vector3 axis = Normalize({ 1.0f, 1.0f, 1.0f });
-	float angle = 0.44f;
-	Matrix4x4 rotateMatrix = MakeRotateAxisAngle(axis, angle);
-
-	ImGui::Begin("rotateMatrix");
-	ImGui::DragFloat("Matrix[0][0]",rotateMatrix.m[0]);
-	ImGui::End();
-
-	imgui->Draw();
-
+	model->Draw(*camera->transformationMatrixData);
 }
 
 void GameScene::Release(){
-	imgui->Release();
 }

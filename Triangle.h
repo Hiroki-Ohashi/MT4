@@ -16,11 +16,11 @@ class Triangle {
 public:
 
 	// 初期化
-	void Initialize(TextureManager* texture_, Vector4* pos);
+	void Initialize(const std::string& filePath, Vector4* pos);
 	// 読み込み
 	void Update();
 	// 描画
-	void Draw(uint32_t index, const Matrix4x4& transformationMatrixData);
+	void Draw(const Matrix4x4& transformationMatrixData);
 	// 解放
 	void Release();
 
@@ -35,7 +35,7 @@ public:
 	void SetIsTriangle(bool isTriangle_) { isTriangle_ = isTriangle; }
 
 private:
-	TextureManager* texture_;
+	TextureManager* texture_ = TextureManager::GetInstance();
 
 	D3D12_VERTEX_BUFFER_VIEW vertexBufferView{};
 
@@ -54,4 +54,6 @@ private:
 	bool isTriangle = false;
 
 	static inline HRESULT hr_;
+
+	uint32_t texture;
 };

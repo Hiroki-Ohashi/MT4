@@ -7,6 +7,8 @@ class WinApp;
 
 class ImGuiManeger {
 public:
+	static ImGuiManeger* GetInstance();
+
 	void Initialize();
 
 	void Update();

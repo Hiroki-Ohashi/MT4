@@ -45,14 +45,5 @@ private:
 	Sprite* sprite = nullptr;
 	Sphere* sphere = nullptr;
 	Model* model = nullptr;
-	ImGuiManeger* imgui = nullptr;
 	Camera* camera = nullptr;
-
-	uint32_t texture = 0;
-	uint32_t moonTexture = 1;
-
-	bool isTriangle = false;
-	bool isModel = false;
-	bool isSphere = false;
-	bool isSprite = false;
 };

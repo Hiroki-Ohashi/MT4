@@ -25,11 +25,11 @@ struct ModelData {
 
 class Model {
 public:
-	void Initialize(TextureManager* texture);
+	void Initialize(const std::string& filePath);
 
 	void Update();
 
-	void Draw(uint32_t index, const Matrix4x4& transformationMatrixData);
+	void Draw(const Matrix4x4& transformationMatrixData);
 
 	void Release();
 
@@ -44,8 +44,8 @@ public:
 
 private:
 
-	WinApp* winapp_;
-	TextureManager* texture_;
+	WinApp* winapp_ = WinApp::GetInsTance();
+	TextureManager* texture_ = TextureManager::GetInstance();
 
 	ModelData modelData;
 
@@ -61,6 +61,8 @@ private:
 
 	Transform transform;
 	Transform uvTransform;
+
+	uint32_t texture;
 
 	bool isModel;
 };

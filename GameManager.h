@@ -3,6 +3,9 @@
 #include "DirectXCommon.h"
 #include "Input.h"
 #include "GameScene.h"
+#include "ImGuiManeger.h"
+#include "externals/imgui/imgui.h"
+
 
 class GameManager {
 public:
@@ -18,4 +21,5 @@ private:
 	DirectXCommon* directX = nullptr;
 	Mesh* mesh = nullptr;
 	Input* input = nullptr;
+	ImGuiManeger* imgui = nullptr;
 };

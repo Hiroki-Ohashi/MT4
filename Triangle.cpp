@@ -1,8 +1,8 @@
 #include "Triangle.h"
 
-void Triangle::Initialize(TextureManager* texture, Vector4* pos){
+void Triangle::Initialize(const std::string& filePath, Vector4* pos){
 
-	texture_ = texture;
+	texture = texture_->Load(filePath);
 
 	Triangle::CreateVertexResource(pos);
 	Triangle::CreateMaterialResource();
@@ -14,7 +14,7 @@ void Triangle::Initialize(TextureManager* texture, Vector4* pos){
 void Triangle::Update(){
 }
 
-void Triangle::Draw(uint32_t index, const Matrix4x4& transformationMatrixData){
+void Triangle::Draw(const Matrix4x4& transformationMatrixData){
 
 	transform.rotate.y += 0.03f;
 
@@ -30,7 +30,7 @@ void Triangle::Draw(uint32_t index, const Matrix4x4& transformationMatrixData){
 	// wvp用のCBufferの場所を設定
 	DirectXCommon::GetInsTance()->GetCommandList()->SetGraphicsRootConstantBufferView(1, wvpResource->GetGPUVirtualAddress());
 	// SRVのDescriptorTableの先頭を設定。2はrootParameter[2]である。
-	DirectXCommon::GetInsTance()->GetCommandList()->SetGraphicsRootDescriptorTable(2, texture_->GetTextureSRVHandleGPU(index));
+	DirectXCommon::GetInsTance()->GetCommandList()->SetGraphicsRootDescriptorTable(2, texture_->GetTextureSRVHandleGPU(texture));
 	// 描画(DrawCall/ドローコール)。3頂点で1つのインスタンス。
 	DirectXCommon::GetInsTance()->GetCommandList()->DrawInstanced(6, 1, 0, 0);
 }

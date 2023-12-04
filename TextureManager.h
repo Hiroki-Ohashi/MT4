@@ -3,41 +3,47 @@
 #include <cstdint>
 #include <string>
 #include <format>
-#include <d3d12.h>
-#include <dxgi1_6.h>
 #include <cassert>
-#include <dxgidebug.h>
-#include <dxcapi.h>
+#include <vector>
 
-#include "WinApp.h"
 #include "Function.h"
 #include "DirectXCommon.h"
+#include "externals/DirectXTex/d3dx12.h"
 
 class TextureManager {
 public:
+
+	static TextureManager* GetInstance();
+
 	void Initialize();
 
-	uint32_t SetTexture(const std::string& filePath, uint32_t index);
+	uint32_t Load(const std::string& filePath);
 
-	Microsoft::WRL::ComPtr<ID3D12Resource> CreateTextureResource(Microsoft::WRL::ComPtr<ID3D12Device> device, const DirectX::TexMetadata& metadata);
+	void SetTexture(const std::string& filePath, uint32_t index);
+	
 	DirectX::ScratchImage LoadTexture(const std::string& filePath);
-
-	void UploadTextureData(ID3D12Resource* texture, const DirectX::ScratchImage& mipImages);
 
 	D3D12_GPU_DESCRIPTOR_HANDLE GetTextureSRVHandleGPU(uint32_t index) { return textureSrvHandleGPU[index]; }
 
 	D3D12_CPU_DESCRIPTOR_HANDLE GetCPUDescriptorHandle(Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> descriptorHeap, uint32_t descriptorSize, uint32_t index);
 	D3D12_GPU_DESCRIPTOR_HANDLE GetGPUDescriptorHandle(Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> descriptorHeap, uint32_t descriptorSize, uint32_t index);
+	
+	Microsoft::WRL::ComPtr<ID3D12Resource> CreateTextureResource(Microsoft::WRL::ComPtr<ID3D12Device> device, const DirectX::TexMetadata& metadata);
+	Microsoft::WRL::ComPtr<ID3D12Resource> CreateBufferResource(Microsoft::WRL::ComPtr<ID3D12Device> device, size_t sizeInbytes);
+
+	[[nodiscard]]
+	Microsoft::WRL::ComPtr<ID3D12Resource> UploadTextureData(ID3D12Resource* texture, const DirectX::ScratchImage& mipImages);
 
 private:
+	DirectXCommon* dir_ = DirectXCommon::GetInsTance();
 
 	static const int kMaxTexture = 100;
+	uint32_t textureIndex_;
 
 	// DescriptorSizeを取得しておく
 	uint32_t descriptorSizeSRV;
 
-	DirectXCommon* dir_ = DirectXCommon::GetInsTance();
-
+	Microsoft::WRL::ComPtr< ID3D12Resource> intermediateResource[kMaxTexture];
 	Microsoft::WRL::ComPtr<ID3D12Resource> textureResource[kMaxTexture];
 
 	D3D12_CPU_DESCRIPTOR_HANDLE textureSrvHandleCPU[kMaxTexture];

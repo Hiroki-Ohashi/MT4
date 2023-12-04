@@ -14,11 +14,11 @@
 
 class Sprite {
 public:
-	void Initialize(TextureManager* texture);
+	void Initialize(const std::string& filePath);
 
 	void Update();
 
-	void Draw(uint32_t index);
+	void Draw();
 
 	void Release();
 
@@ -31,7 +31,8 @@ public:
 	Material* GetMaterialDataSprite() { return materialDataSprite; }
 
 private:
-	TextureManager* texture_;
+	DirectXCommon* dir_ = DirectXCommon::GetInsTance();
+	TextureManager* texture_ = TextureManager::GetInstance();
 
 	Microsoft::WRL::ComPtr<ID3D12Resource> vertexResourceSprite;
 	Microsoft::WRL::ComPtr<ID3D12Resource> materialResourceSprite;
@@ -48,6 +49,8 @@ private:
 
 	Transform transformSprite;
 	Transform uvTransformSprite;
+
+	uint32_t texture;
 
 	bool isSprite = false;
 };

@@ -8,15 +8,19 @@ GameManager::GameManager()
 	directX = DirectXCommon::GetInsTance();
 	directX->Initialize();
 
-	mesh = Mesh::GetInsTance();
+	mesh = new Mesh;
 	mesh->Initialize();
 
 	input = Input::GetInsTance();
 	input->Initialize();
+
+	imgui =ImGuiManeger::GetInstance();
+	imgui->Initialize();
 }
 
 GameManager::~GameManager()
 {
+	delete mesh;
 }
 
 GameManager* GameManager::GetInsTance()
@@ -47,22 +51,21 @@ void GameManager::Run()
 
 
 			// 更新処理
-
+			imgui->Update();
 			directX->Update();
-			input->Update();
 			mesh->Update();
+			input->Update();
 			gameScene->Update();
 
 			// 描画処理
-
 			gameScene->Draw();
+			imgui->Draw();
 			directX->Close();
 		}
 	}
 
 	CoUninitialize();
 
-	gameScene->Release();
 	mesh->Release();
 	directX->Release();
 }
