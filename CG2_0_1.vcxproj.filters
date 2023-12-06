@@ -66,13 +66,13 @@
     <ClCompile Include="scene\GameScene.cpp">
       <Filter>scene</Filter>
     </ClCompile>
-    <ClCompile Include="utillity\Function.cpp">
+    <ClCompile Include="utility\Function.cpp">
       <Filter>utility</Filter>
     </ClCompile>
-    <ClCompile Include="utillity\MathFunction.cpp">
+    <ClCompile Include="utility\MathFunction.cpp">
       <Filter>utility</Filter>
     </ClCompile>
-    <ClCompile Include="utillity\Camera.cpp">
+    <ClCompile Include="utility\Camera.cpp">
       <Filter>utility</Filter>
     </ClCompile>
     <ClCompile Include="2d\Sprite.cpp">
@@ -158,13 +158,13 @@
     <ClInclude Include="input\Input.h">
       <Filter>input</Filter>
     </ClInclude>
-    <ClInclude Include="utillity\Function.h">
+    <ClInclude Include="utility\Function.h">
       <Filter>utility</Filter>
     </ClInclude>
-    <ClInclude Include="utillity\MathFunction.h">
+    <ClInclude Include="utility\MathFunction.h">
       <Filter>utility</Filter>
     </ClInclude>
-    <ClInclude Include="utillity\Camera.h">
+    <ClInclude Include="utility\Camera.h">
       <Filter>utility</Filter>
     </ClInclude>
     <ClInclude Include="3d\Triangle.h">

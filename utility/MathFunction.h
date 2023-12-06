@@ -3,6 +3,14 @@
 #include<cmath>
 #include<cassert>
 
+struct Quaternion {
+	float x;
+	float y;
+	float z;
+	float w;
+
+};
+
 struct Vector2 final {
 	float x;
 	float y;
@@ -55,6 +63,11 @@ struct DirectionalLight {
 	float intensity;
 };
 
+float Dot(const Vector3& v1, const Vector3& v2);
+float Length(const Vector3& v);
+Vector3 Normalize(const Vector3& v1);
+Vector3 Cross(const Vector3& v1, const Vector3& v2);
+
 // 単位行列の作成
 Matrix4x4 MakeIndentity4x4();
 
@@ -70,9 +83,16 @@ Matrix4x4 MakeOrthographicMatrix(float left, float right, float top, float botto
 
 Matrix4x4 Inverse(const Matrix4x4& m);
 
-Vector3 Normalize(const Vector3& v1);
-
 Matrix4x4 MakeScaleMatrix(const Vector3& scale);
 Matrix4x4 MakeTranslateMatrix(const Vector3& translate);
 
 Matrix4x4 MakeRotateAxisAngle(const Vector3& axis, float angle);
+
+Matrix4x4 DirectionToDirection(const Vector3& from, const Vector3& to);
+
+Quaternion Multiply(const Quaternion& lhs, const Quaternion& rhs);
+Quaternion IdentityQuaternion();
+Quaternion Conjugate(const  Quaternion& quaternion);
+float Norm(const  Quaternion& quaternion);
+Quaternion Normalize(const  Quaternion& quaternion);
+Quaternion Inverse(const  Quaternion& quaternion);

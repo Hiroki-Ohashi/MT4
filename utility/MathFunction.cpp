@@ -1,5 +1,29 @@
 #include "MathFunction.h"
 
+float Dot(const Vector3& v1, const Vector3& v2)
+{
+	float result;
+	result = v1.x * v2.x + v1.y * v2.y + v1.z * v2.z;
+	return result;
+}
+
+float Length(const Vector3& v)
+{
+	float result;
+	result = powf(v.x, 2.0) + powf(v.y, 2.0) + powf(v.z, 2.0);
+
+	return sqrtf(result);
+};
+
+Vector3 Cross(const Vector3& v1, const Vector3& v2)
+{
+	Vector3 Cross;
+	Cross.x = v1.y * v2.z - v1.z * v2.y;
+	Cross.y = v1.z * v2.x - v1.x * v2.z;
+	Cross.z = v1.x * v2.y - v1.y * v2.x;
+	return Cross;
+}
+
 Matrix4x4 MakeIndentity4x4()
 {
 	Matrix4x4 MakeIndentity4x4;
@@ -278,6 +302,7 @@ Matrix4x4 MakeOrthographicMatrix(float left, float top, float right, float botto
 Vector3 Normalize(const Vector3& v1) {
 	Vector3 Result = v1;
 	float length = sqrt(v1.x * v1.x + v1.y * v1.y + v1.z * v1.z);
+	assert(length != 0);
 	Result.x /= length;
 	Result.y /= length;
 	Result.z /= length;
@@ -355,6 +380,123 @@ Matrix4x4 MakeRotateAxisAngle(const Vector3& axis, float angle)
 	result.m[3][1] = 0.0f;
 	result.m[3][2] = 0.0f;
 	result.m[3][3] = 1.0f;
+
+	return result;
+}
+
+Matrix4x4 DirectionToDirection(const Vector3& from, const Vector3& to) {
+	Matrix4x4 result;
+	Vector3 n;
+	Vector3 cross = Cross(from, to);
+
+	if (from.x == -to.x && from.y == -to.y && from.z == -to.z) {
+
+		if (from.x != 0.0f || from.y != 0.0f) {
+			n = Normalize(Vector3{ from.y, -from.x, 0.0f });
+		}
+
+		else if (from.x != 0.0f || from.z != 0.0f) {
+			n = Normalize(Vector3{ from.z, 0.0f, -from.x });
+		}
+	}
+	else {
+
+		n = Normalize(cross);
+	}
+
+	float dot = Dot(from, to);
+	float len = Length(cross);
+
+	result.m[0][0] = (n.x * n.x) * (1 - dot) + dot;
+	result.m[0][1] = (n.x * n.y) * (1 - dot) + (n.z * len);
+	result.m[0][2] = (n.x * n.z) * (1 - dot) - (n.y * len);
+	result.m[0][3] = 0.0f;
+
+	result.m[1][0] = (n.x * n.y) * (1 - dot) - (n.z * len);
+	result.m[1][1] = (n.y * n.y) * (1 - dot) + dot;
+	result.m[1][2] = (n.y * n.z) * (1 - dot) + (n.x * len);
+	result.m[1][3] = 0.0f;
+
+	result.m[2][0] = (n.x * n.z) * (1 - dot) + (n.y * len);
+	result.m[2][1] = (n.y * n.z) * (1 - dot) - (n.x * len);
+	result.m[2][2] = (n.z * n.z) * (1 - dot) + dot;
+	result.m[2][3] = 0.0f;
+
+	result.m[3][0] = 0.0f;
+	result.m[3][1] = 0.0f;
+	result.m[3][2] = 0.0f;
+	result.m[3][3] = 1.0f;
+
+	return result;
+}
+
+Quaternion Multiply(const Quaternion& lhs, const Quaternion& rhs)
+{
+	Quaternion result;
+
+	result.x = lhs.y * rhs.z - lhs.z * rhs.y + rhs.w * lhs.x + lhs.w + rhs.x;
+	result.y = lhs.z * rhs.x - lhs.x * rhs.z + rhs.w * lhs.y + lhs.w + rhs.y;
+	result.z = lhs.x * rhs.y - lhs.y * rhs.x + rhs.w * lhs.z + lhs.w + rhs.z;
+	result.w = lhs.w * rhs.w - Dot({ lhs.x, lhs.y, lhs.z }, { rhs.x, rhs.y, rhs.z });
+
+	return result;
+}
+
+Quaternion IdentityQuaternion()
+{
+	Quaternion result;
+	result.x = 0.0f;
+	result.y = 0.0f;
+	result.z = 0.0f;
+	result.w = 1.0f;
+	return result;
+}
+
+Quaternion Conjugate(const Quaternion& quaternion)
+{
+	Quaternion result;
+
+	result.x *= -1;
+	result.y *= -1;
+	result.z *= -1;
+	result.w *= -1;
+
+	return result;
+}
+
+float Norm(const Quaternion& quaternion)
+{
+	float result;
+
+	result = sqrtf((quaternion.w * quaternion.w) * (quaternion.x * quaternion.x) * (quaternion.y * quaternion.y) * (quaternion.z * quaternion.z));
+
+	return result;
+}
+
+Quaternion Normalize(const Quaternion& quaternion)
+{
+	Quaternion result;
+	float len = sqrt(quaternion.w * quaternion.w + quaternion.x * quaternion.x + quaternion.y * quaternion.y + quaternion.z * quaternion.z);
+
+	result.x /= len;
+	result.y /= len;
+	result.z /= len;
+	result.w /= len;
+
+	return result;
+}
+
+Quaternion Inverse(const Quaternion& quaternion)
+{
+	Quaternion result;
+
+	Quaternion result2 = Conjugate(quaternion);
+
+
+	result.x = result2.x / (Norm(quaternion) * Norm(quaternion));
+	result.y = result2.y / (Norm(quaternion) * Norm(quaternion));
+	result.z = result2.z / (Norm(quaternion) * Norm(quaternion));
+	result.w = result2.w / (Norm(quaternion) * Norm(quaternion));
 
 	return result;
 }

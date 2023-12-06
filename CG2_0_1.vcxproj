@@ -58,7 +58,7 @@
       <LanguageStandard>stdcpp20</LanguageStandard>
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <AdditionalIncludeDirectories>C:\Users\Ohashi\source\repos\CG2\CG2_0_1\2d;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\3d;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\base;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\input;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Manager;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\scene;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\utillity;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Resources;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\externals\DirectXTex;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\externals\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\Ohashi\source\repos\CG2\CG2_0_1\2d;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\3d;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\base;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\input;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Manager;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\scene;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\utility;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Resources;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\externals\DirectXTex;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\externals\imgui;C:\Users\Ohashi\source\repos\MT4\utility;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -82,7 +82,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
       <LanguageStandard>stdcpp20</LanguageStandard>
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <AdditionalIncludeDirectories>C:\Users\Ohashi\source\repos\CG2\CG2_0_1\2d;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\3d;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\base;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\input;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Manager;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\scene;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\utillity;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Resources;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\externals\DirectXTex;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\externals\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\Ohashi\source\repos\CG2\CG2_0_1\2d;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\3d;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\base;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\input;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Manager;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\scene;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\utility;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Resources;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\externals\DirectXTex;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\externals\imgui;C:\Users\Ohashi\source\repos\MT4\utility;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -97,7 +97,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="utillity\Camera.cpp" />
+    <ClCompile Include="utility\Camera.cpp" />
     <ClCompile Include="base\DirectXCommon.cpp" />
     <ClCompile Include="externals\imgui\imgui.cpp" />
     <ClCompile Include="externals\imgui\imgui_demo.cpp" />
@@ -106,13 +106,13 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="externals\imgui\imgui_impl_win32.cpp" />
     <ClCompile Include="externals\imgui\imgui_tables.cpp" />
     <ClCompile Include="externals\imgui\imgui_widgets.cpp" />
-    <ClCompile Include="utillity\Function.cpp" />
+    <ClCompile Include="utility\Function.cpp" />
     <ClCompile Include="Manager\GameManager.cpp" />
     <ClCompile Include="scene\GameScene.cpp" />
     <ClCompile Include="Manager\ImGuiManeger.cpp" />
     <ClCompile Include="input\Input.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="utillity\MathFunction.cpp" />
+    <ClCompile Include="utility\MathFunction.cpp" />
     <ClCompile Include="base\Mesh.cpp" />
     <ClCompile Include="3d\Model.cpp" />
     <ClCompile Include="3d\Sphere.cpp" />
@@ -122,7 +122,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="base\WinApp.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="utillity\Camera.h" />
+    <ClInclude Include="utility\Camera.h" />
     <ClInclude Include="base\DirectXCommon.h" />
     <ClInclude Include="externals\imgui\imconfig.h" />
     <ClInclude Include="externals\imgui\imgui.h" />
@@ -132,12 +132,12 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="externals\imgui\imstb_rectpack.h" />
     <ClInclude Include="externals\imgui\imstb_textedit.h" />
     <ClInclude Include="externals\imgui\imstb_truetype.h" />
-    <ClInclude Include="utillity\Function.h" />
+    <ClInclude Include="utility\Function.h" />
     <ClInclude Include="Manager\GameManager.h" />
     <ClInclude Include="scene\GameScene.h" />
     <ClInclude Include="Manager\ImGuiManeger.h" />
     <ClInclude Include="input\Input.h" />
-    <ClInclude Include="utillity\MathFunction.h" />
+    <ClInclude Include="utility\MathFunction.h" />
     <ClInclude Include="base\Mesh.h" />
     <ClInclude Include="3d\Model.h" />
     <ClInclude Include="3d\Sphere.h" />

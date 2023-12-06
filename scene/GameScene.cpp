@@ -1,73 +1,56 @@
 #include "GameScene.h"
 
 GameScene::~GameScene(){
-	for (int i = 0; i < Max; i++) {
-		delete triangle_[i];
-	}
-	delete sprite_;
-	delete sphere_;
-	delete model_;
-	delete camera_;
+	
 }
 
 void GameScene::Initialize(){
 
-	textureManager_ = TextureManager::GetInstance();
-	textureManager_->Initialize();
-
-	camera_ = new Camera();
-	camera_->Initialize();
-
-	sprite_ = new Sprite(); 
-	sprite_->Initialize();
-
-	sphere_ = new Sphere();
-	sphere_->Initialize();
-
-	model_ = new Model();
-	model_->Initialize();
-
-	Vector4 pos[Max][3];
-
-	// 左下
-	pos[0][0] = { -0.5f, -0.25f, 0.0f, 1.0f };
-	// 上
-	pos[0][1] = { 0.0f, 0.5f, 0.0f, 1.0f };
-	// 右下
-	pos[0][2] = { 0.5f, -0.25f, 0.0f, 1.0f };
-
-	// 左下2
-	pos[1][0] = { -0.5f, -0.25f, 0.5f, 1.0f };
-	// 上2
-	pos[1][1] = { 0.0f, 0.0f, 0.0f, 1.0f };
-	// 右下2
-	pos[1][2] = { 0.5f, -0.25f, -0.5f, 1.0f };
-
-	for (int i = 0; i < Max; i++) {
-		triangle_[i] = new Triangle();
-		triangle_[i]->Initialize(pos[i]);
-	}
-
-	uv = textureManager_->Load("Resources/uvChecker.png");
-	moon = textureManager_->Load("Resources/moon.png");
-	monsterBall = textureManager_->Load("Resources/monsterball.png");
-	kusa = textureManager_->Load("Resources/kusa.png");
 }
 
 void GameScene::Update(){
-	camera_->Update();
+	Quaternion q1 = { 2.0f,3.0f,4.0f,1.0f };
+	Quaternion q2 = { 1.0f,3.0f,5.0f,2.0f };
+	Quaternion identity = IdentityQuaternion();
+	Quaternion conj = Conjugate(q1);
+	Quaternion inv = Inverse(q1);
+	Quaternion normal = Normalize(q1);
+	Quaternion mul1 = Multiply(q1, q2);
+	Quaternion mul2 = Multiply(q2, q1);
+	float norm = Norm(q1);
+
+	ImGui::Begin("IdentityQuaternion");
+	ImGui::Text("% 6.03f, % 6.03f, % 6.03f, % 6.03f", identity.x, identity.y, identity.z, identity.w);
+	ImGui::End();
+
+	ImGui::Begin("Conjugate");
+	ImGui::Text("% 6.03f, % 6.03f, % 6.03f, % 6.03f", conj.x, conj.y, conj.z, conj.w);
+	ImGui::End();
+
+	ImGui::Begin("Inverse");
+	ImGui::Text("% 6.03f, % 6.03f, % 6.03f, % 6.03f", inv.x, inv.y, inv.z, inv.w);
+	ImGui::End();
+
+	ImGui::Begin("Normalize");
+	ImGui::Text("% 6.03f, % 6.03f, % 6.03f, % 6.03f", normal.x, normal.y, normal.z, normal.w);
+	ImGui::End();
+
+	ImGui::Begin("Multiply(q1, q2)");
+	ImGui::Text("% 6.03f, % 6.03f, % 6.03f, % 6.03f", mul1.x, mul1.y, mul1.z, mul1.w);
+	ImGui::End();
+
+	ImGui::Begin("Multiply(q2, q1)");
+	ImGui::Text("% 6.03f, % 6.03f, % 6.03f, % 6.03f", mul2.x, mul2.y, mul2.z, mul2.w);
+	ImGui::End();
+
+	ImGui::Begin("Norm");
+	ImGui::Text("% 6.03f", norm);
+	ImGui::End();
 }
 
 void GameScene::Draw(){
 
-	sphere_->Draw(*camera_->GetTransformationMatrixData(), moon);
-
-	model_->Draw(*camera_->GetTransformationMatrixData(), kusa);
-
-	triangle_[0]->Draw(*camera_->GetTransformationMatrixData(), uv);
-	triangle_[1]->Draw(*camera_->GetTransformationMatrixData(), uv);
-
-	sprite_->Draw(monsterBall);
+	
 }
 
 void GameScene::Release(){

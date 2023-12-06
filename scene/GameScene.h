@@ -36,20 +36,4 @@ public:
 	void Release();
 
 private:
-
-	// 三角形の数
-	static const int Max = 2;
-
-	Input* input_ = nullptr;
-	TextureManager* textureManager_ = nullptr;
-	Triangle* triangle_[Max];
-	Sprite* sprite_ = nullptr;
-	Sphere* sphere_ = nullptr;
-	Model* model_ = nullptr;
-	Camera* camera_ = nullptr;
-
-	uint32_t monsterBall;
-	uint32_t moon;
-	uint32_t uv;
-	uint32_t kusa;
 };
