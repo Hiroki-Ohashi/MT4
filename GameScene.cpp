@@ -52,7 +52,10 @@ void GameScene::Initialize(){
 	// 右下2
 	pos[1][2] = { 0.5f, -0.25f, -0.5f, 1.0f };
 
-	for (int i = 0; i < Max; i++) {
+	triangle[0] = new Triangle();
+	triangle[0]->Initialize("Resources/monsterBall.png", pos[0]);
+
+	for (int i = 1; i < Max; i++) {
 		triangle[i] = new Triangle();
 		triangle[i]->Initialize("Resources/uvChecker.png", pos[i]);
 	}

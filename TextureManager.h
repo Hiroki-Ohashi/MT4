@@ -23,7 +23,7 @@ public:
 	
 	DirectX::ScratchImage LoadTexture(const std::string& filePath);
 
-	D3D12_GPU_DESCRIPTOR_HANDLE GetTextureSRVHandleGPU(uint32_t index) { return textureSrvHandleGPU[index]; }
+	const D3D12_GPU_DESCRIPTOR_HANDLE GetTextureSRVHandleGPU(uint32_t index) { return textureSrvHandleGPU[index]; }
 
 	D3D12_CPU_DESCRIPTOR_HANDLE GetCPUDescriptorHandle(Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> descriptorHeap, uint32_t descriptorSize, uint32_t index);
 	D3D12_GPU_DESCRIPTOR_HANDLE GetGPUDescriptorHandle(Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> descriptorHeap, uint32_t descriptorSize, uint32_t index);
@@ -41,6 +41,8 @@ private:
 	uint32_t textureIndex_;
 
 	// DescriptorSizeを取得しておく
+	uint32_t descriptorSizeRTV;
+	uint32_t descriptorSizeDSV;
 	uint32_t descriptorSizeSRV;
 
 	Microsoft::WRL::ComPtr< ID3D12Resource> intermediateResource[kMaxTexture];

@@ -8,7 +8,10 @@ TextureManager* TextureManager::GetInstance()
 
 void TextureManager::Initialize()
 {
+	descriptorSizeDSV = dir_->GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_DSV);
+	descriptorSizeRTV = dir_->GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
 	descriptorSizeSRV = dir_->GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+	textureIndex_ = -1;
 }
 
 uint32_t TextureManager::Load(const std::string& filePath)
@@ -38,8 +41,8 @@ void TextureManager::SetTexture(const std::string& filePath, uint32_t index)
 	textureSrvHandleGPU[index] = GetGPUDescriptorHandle(dir_->GetSrvDescriptorHeap(), descriptorSizeSRV, index);
 
 	// 先頭はImGuiが使っているのでその次を使う
-	textureSrvHandleCPU[index].ptr += dir_->GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-	textureSrvHandleGPU[index].ptr += dir_->GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+	textureSrvHandleCPU[index].ptr += dir_->GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV) * index;
+	textureSrvHandleGPU[index].ptr += dir_->GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV) * index;
 
 	// SRVの生成
 	dir_->GetDevice()->CreateShaderResourceView(textureResource[index].Get(), &srvDesc, textureSrvHandleCPU[index]);
