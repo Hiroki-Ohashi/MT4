@@ -2,9 +2,7 @@
 #include "externals/imgui/imgui.h"
 
 
-void Sprite::Initialize(const std::string& filePath){
-
-	texture = texture_->Load(filePath);
+void Sprite::Initialize(){
 
 	Sprite::CreateVertexResourceSprite();
 	Sprite::CreateMaterialResourceSprite();
@@ -20,7 +18,7 @@ void Sprite::Initialize(const std::string& filePath){
 void Sprite::Update(){
 }
 
-void Sprite::Draw(){
+void Sprite::Draw(uint32_t index){
 	transformationMatrixDataSprite->World = MakeAffineMatrix(transformSprite.scale, transformSprite.rotate, transformSprite.translate);
 	Matrix4x4 viewMatrixSprite = MakeIndentity4x4();
 	Matrix4x4 projectionMatrixSprite = MakeOrthographicMatrix(0.0f, 0.0f, float(WinApp::GetInsTance()->GetKClientWidth()), float(WinApp::GetInsTance()->GetKClientHeight()), 0.0f, 100.0f);
@@ -43,7 +41,7 @@ void Sprite::Draw(){
 	// TransformationMatrixCBufferの場所を設定
 	dir_->GetCommandList()->SetGraphicsRootConstantBufferView(1, transformationMatrixResourceSprite->GetGPUVirtualAddress());
 	// SRVのDescriptorTableの先頭を設定。2はrootParameter[2]である。
-	dir_->GetCommandList()->SetGraphicsRootDescriptorTable(2, texture_->GetTextureSRVHandleGPU(texture));
+	dir_->GetCommandList()->SetGraphicsRootDescriptorTable(2, texture_->GetTextureSRVHandleGPU(index));
 	// 描画(DrawCall/ドローコール)
 	dir_->GetCommandList()->DrawIndexedInstanced(6, 1, 0, 0, 0);
 	

@@ -81,9 +81,6 @@
     <ClCompile Include="Sprite.cpp">
       <Filter>2d</Filter>
     </ClCompile>
-    <ClCompile Include="Triangle.cpp">
-      <Filter>2d</Filter>
-    </ClCompile>
     <ClCompile Include="Model.cpp">
       <Filter>3d</Filter>
     </ClCompile>
@@ -105,8 +102,8 @@
     <ClCompile Include="TextureManager.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="SpriteCommon.cpp">
-      <Filter>ソース ファイル</Filter>
+    <ClCompile Include="Triangle.cpp">
+      <Filter>3d</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -158,9 +155,6 @@
     <ClInclude Include="Sprite.h">
       <Filter>2d</Filter>
     </ClInclude>
-    <ClInclude Include="Triangle.h">
-      <Filter>2d</Filter>
-    </ClInclude>
     <ClInclude Include="Input.h">
       <Filter>input</Filter>
     </ClInclude>
@@ -179,8 +173,8 @@
     <ClInclude Include="TextureManager.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="SpriteCommon.h">
-      <Filter>ヘッダー ファイル</Filter>
+    <ClInclude Include="Triangle.h">
+      <Filter>3d</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

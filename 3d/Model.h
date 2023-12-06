@@ -1,41 +1,55 @@
 #pragma once
+
 #include <Windows.h>
 #include <d3d12.h>
 #include <dxgi1_6.h>
 #include <cassert>
 #include <cstdint>
-
+#include <fstream>
+#include <sstream>
 #include "WinApp.h"
 #include "Function.h"
 #include "MathFunction.h"
 #include "DirectXCommon.h"
-#include "Mesh.h"
 #include "TextureManager.h"
+#include "Mesh.h"
+#include "Camera.h"
 
-class Triangle {
+struct MaterialData {
+	std::string textureFilePath;
+};
+
+struct ModelData {
+	std::vector<VertexData> vertices;
+	MaterialData material;
+};
+
+class Model {
 public:
+	void Initialize();
 
-	// 初期化
-	void Initialize(const std::string& filePath, Vector4* pos);
-	// 読み込み
 	void Update();
-	// 描画
-	void Draw(const Matrix4x4& transformationMatrixData);
-	// 解放
+
+	void Draw(const Matrix4x4& transformationMatrixData, uint32_t index);
+
 	void Release();
 
-	void CreateVertexResource(Vector4* pos);
+	void CreateVertexResource();
 	void CreateMaterialResource();
 	void CreateWVPResource();
-
 	Microsoft::WRL::ComPtr<ID3D12Resource> CreateBufferResource(Microsoft::WRL::ComPtr<ID3D12Device> device, size_t sizeInbytes);
 
-	Material* GetMaterialData() { return materialData; }
-	bool GetTriangle() { return isTriangle; }
-	void SetIsTriangle(bool isTriangle_) { isTriangle_ = isTriangle; }
+
+	ModelData LoadObjFile(const std::string& directoryPath, const std::string& filename);
+	MaterialData LoadMaterialTemplateFile(const std::string& directoryPath, const std::string& filename);
 
 private:
+
+	WinApp* winapp_ = WinApp::GetInsTance();
 	TextureManager* texture_ = TextureManager::GetInstance();
+	Camera* camera_ = Camera::GetInstance();
+
+	ModelData modelData;
 
 	D3D12_VERTEX_BUFFER_VIEW vertexBufferView{};
 
@@ -48,12 +62,7 @@ private:
 	TransformationMatrix* wvpData;
 
 	Transform transform;
+	Transform uvTransform;
 
-	Matrix4x4 worldMatrix;
-
-	bool isTriangle = false;
-
-	static inline HRESULT hr_;
-
-	uint32_t texture;
+	bool isModel;
 };

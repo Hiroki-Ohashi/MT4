@@ -5,12 +5,17 @@
 
 class Camera {
 public:
+
+	static Camera* GetInstance();
+
 	void Initialize();
 
 	void Update();
 
 	void Draw();
-public:
+
+	const Matrix4x4* GetTransformationMatrixData() { return transformationMatrixData; }
+private:
 
 	static WinApp* winapp_;
 

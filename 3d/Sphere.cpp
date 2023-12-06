@@ -3,9 +3,7 @@
 #include "math.h"
 #include "externals/imgui/imgui.h"
 
-void Sphere::Initialize(const std::string& filePath){
-
-	texture = texture_->Load(filePath);
+void Sphere::Initialize(){
 
 	Sphere::CreateVertexResourceSphere();
 	Sphere::CreateMaterialResourceSphere();
@@ -23,7 +21,7 @@ void Sphere::Initialize(const std::string& filePath){
 void Sphere::Update(){
 }
 
-void Sphere::Draw(const Matrix4x4& transformationMatrixData){
+void Sphere::Draw(const Matrix4x4& transformationMatrixData, uint32_t index){
 
 	transformSphere.rotate.y += 0.02f;
 
@@ -46,7 +44,7 @@ void Sphere::Draw(const Matrix4x4& transformationMatrixData){
 	DirectXCommon::GetInsTance()->GetCommandList()->SetGraphicsRootConstantBufferView(1, wvpResourceSphere->GetGPUVirtualAddress());
 	DirectXCommon::GetInsTance()->GetCommandList()->SetGraphicsRootConstantBufferView(3, directionalLightResource->GetGPUVirtualAddress());
 	// SRVのDescriptorTableの先頭を設定。2はrootParameter[2]である。
-	DirectXCommon::GetInsTance()->GetCommandList()->SetGraphicsRootDescriptorTable(2, texture_->GetTextureSRVHandleGPU(texture));
+	DirectXCommon::GetInsTance()->GetCommandList()->SetGraphicsRootDescriptorTable(2, texture_->GetTextureSRVHandleGPU(index));
 	// 描画(DrawCall/ドローコール)
 	DirectXCommon::GetInsTance()->GetCommandList()->DrawInstanced(vertexIndex, 1, 0, 0);
 	
@@ -55,14 +53,17 @@ void Sphere::Draw(const Matrix4x4& transformationMatrixData){
 		ImGui::DragFloat3("Rotate", &transformSphere.rotate.x, 0.01f, -10.0f, 10.0f);
 		ImGui::DragFloat3("Transform", &transformSphere.translate.x, 0.01f, -10.0f, 10.0f);
 
-		ImGui::SliderFloat3("Light Direction", &directionalLightData->direction.x, -1.0f, 1.0f);
-			directionalLightData->direction = Normalize(directionalLightData->direction);
-		ImGui::SliderFloat4("light color", &directionalLightData->color.x, 0.0f, 1.0f);
-		ImGui::SliderFloat("Intensity", &directionalLightData->intensity, 0.0f, 1.0f);
-
 		ImGui::DragFloat2("UVTransform", &uvTransformSphere.translate.x, 0.01f, -10.0f, 10.0f);
 		ImGui::DragFloat2("UVScale", &uvTransformSphere.scale.x, 0.01f, -10.0f, 10.0f);
 		ImGui::SliderAngle("UVRotate", &uvTransformSphere.rotate.z);
+		ImGui::TreePop();
+	}
+
+	if (ImGui::TreeNode("Light")) {
+		ImGui::SliderFloat3("Light Direction", &directionalLightData->direction.x, -1.0f, 1.0f);
+		directionalLightData->direction = Normalize(directionalLightData->direction);
+		ImGui::SliderFloat4("light color", &directionalLightData->color.x, 0.0f, 1.0f);
+		ImGui::SliderFloat("Intensity", &directionalLightData->intensity, 0.0f, 1.0f);
 		ImGui::TreePop();
 	}
 }

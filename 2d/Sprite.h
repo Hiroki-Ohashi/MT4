@@ -14,11 +14,11 @@
 
 class Sprite {
 public:
-	void Initialize(const std::string& filePath);
+	void Initialize();
 
 	void Update();
 
-	void Draw();
+	void Draw(uint32_t index);
 
 	void Release();
 
@@ -49,8 +49,6 @@ private:
 
 	Transform transformSprite;
 	Transform uvTransformSprite;
-
-	uint32_t texture;
 
 	bool isSprite = false;
 };

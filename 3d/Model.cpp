@@ -1,9 +1,7 @@
 #include "Model.h"
 #include "externals/imgui/imgui.h"
 
-void Model::Initialize(const std::string& filePath){
-
-	texture = texture_->Load(filePath);
+void Model::Initialize(){
 
 	// モデル読み込み
 	modelData = LoadObjFile("resources","multiMaterial.obj");
@@ -24,7 +22,7 @@ void Model::Update(){
 	
 }
 
-void Model::Draw(const Matrix4x4& transformationMatrixData){
+void Model::Draw(const Matrix4x4& transformationMatrixData, uint32_t index){
 
 	wvpData->World = MakeAffineMatrix(transform.scale, transform.rotate, transform.translate);
 	wvpData->World = Multiply(wvpData->World, transformationMatrixData);
@@ -44,7 +42,7 @@ void Model::Draw(const Matrix4x4& transformationMatrixData){
 	// TransformationMatrixCBufferの場所を設定
 	DirectXCommon::GetInsTance()->GetCommandList()->SetGraphicsRootConstantBufferView(1, wvpResource->GetGPUVirtualAddress());
 	// SRVのDescriptorTableの先頭を設定。2はrootParameter[2]である。
-	DirectXCommon::GetInsTance()->GetCommandList()->SetGraphicsRootDescriptorTable(2, texture_->GetTextureSRVHandleGPU(texture));
+	DirectXCommon::GetInsTance()->GetCommandList()->SetGraphicsRootDescriptorTable(2, texture_->GetTextureSRVHandleGPU(index));
 	// 描画(DrawCall/ドローコール)
 	DirectXCommon::GetInsTance()->GetCommandList()->DrawInstanced(UINT(modelData.vertices.size()), 1, 0, 0);
 	

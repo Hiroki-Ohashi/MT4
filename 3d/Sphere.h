@@ -10,15 +10,15 @@
 #include "MathFunction.h"
 #include "DirectXCommon.h"
 #include "TextureManager.h"
-#include "Mesh.h"
+#include "Camera.h"
 
 class Sphere {
 public:
-	void Initialize(const std::string& filePath);
+	void Initialize();
 
 	void Update();
 
-	void Draw(const Matrix4x4& transformationMatrixData);
+	void Draw(const Matrix4x4& transformationMatrixData, uint32_t index);
 
 	void Release();
 
@@ -35,6 +35,7 @@ public:
 private:
 
 	TextureManager* texture_ = TextureManager::GetInstance();
+	Camera* camera_ = Camera::GetInstance();
 
 	Microsoft::WRL::ComPtr<ID3D12Resource> vertexResourceSphere;
 	Microsoft::WRL::ComPtr<ID3D12Resource> materialResourceSphere;
@@ -51,13 +52,8 @@ private:
 	Transform uvTransformSphere;
 	TransformationMatrix* worldMatrixSphere;
 
-	const uint32_t kSubdivision = 64; //分割数
+	const uint32_t kSubdivision = 128; //分割数
 	uint32_t vertexIndex = (kSubdivision * kSubdivision) * 6;
-
-	bool isSphere = true;
-	bool useMoon = false;
-
-	uint32_t texture;
 
 	DirectionalLight* directionalLightData;
 };

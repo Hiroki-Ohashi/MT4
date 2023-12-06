@@ -13,6 +13,7 @@
 #include "Sphere.h"
 #include "Model.h"
 #include "TextureManager.h"
+#include "Input.h"
 #include "externals/imgui/imgui.h"
 
 #pragma comment(lib, "d3d12.lib")
@@ -23,7 +24,6 @@
 
 class GameScene {
 public:
-	GameScene();
 	~GameScene();
 
 	// 初期化
@@ -38,12 +38,18 @@ public:
 private:
 
 	// 三角形の数
-	static const int Max = 26;
+	static const int Max = 2;
 
-	TextureManager* textureManager = nullptr;
-	Triangle* triangle[Max];
-	Sprite* sprite = nullptr;
-	Sphere* sphere = nullptr;
-	Model* model = nullptr;
-	Camera* camera = nullptr;
+	Input* input_ = nullptr;
+	TextureManager* textureManager_ = nullptr;
+	Triangle* triangle_[Max];
+	Sprite* sprite_ = nullptr;
+	Sphere* sphere_ = nullptr;
+	Model* model_ = nullptr;
+	Camera* camera_ = nullptr;
+
+	uint32_t monsterBall;
+	uint32_t moon;
+	uint32_t uv;
+	uint32_t kusa;
 };

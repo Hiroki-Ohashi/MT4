@@ -2,6 +2,12 @@
 #include "externals/imgui/imgui.h"
 
 
+Camera* Camera::GetInstance()
+{
+	static Camera instance;
+	return &instance;
+}
+
 void Camera::Initialize(){
 	cameraTransform = { {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, -10.0f} };
 }
@@ -14,9 +20,10 @@ void Camera::Update(){
 	worldViewProjectionMatrix = Multiply(worldMatrix, Multiply(viewMatrix, projectionMatrix));
 	transformationMatrixData = &worldViewProjectionMatrix;
 
-	ImGui::Begin("Camera");
-	ImGui::DragFloat3("Camera Transform", &cameraTransform.translate.x, 0.01f, -50.0f, 50.0f);
-	ImGui::End();
+	if (ImGui::TreeNode("Camera")) {
+		ImGui::DragFloat3("Camera Transform", &cameraTransform.translate.x, 0.01f, -50.0f, 50.0f);
+		ImGui::TreePop();
+	}
 }
 
 void Camera::Draw(){}
