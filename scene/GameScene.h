@@ -14,7 +14,7 @@
 #include "Model.h"
 #include "TextureManager.h"
 #include "Input.h"
-#include "externals/imgui/imgui.h"
+#include "imgui.h"
 
 #pragma comment(lib, "d3d12.lib")
 #pragma comment(lib, "dxgi.lib")

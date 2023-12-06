@@ -1,5 +1,5 @@
 #include "Model.h"
-#include "externals/imgui/imgui.h"
+#include "imgui.h"
 
 void Model::Initialize(){
 

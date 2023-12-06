@@ -43,6 +43,12 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <IncludePath>C:\Users\Ohashi\source\repos\CG2\CG2_0_1\externals\imgui;$(IncludePath)</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <IncludePath>C:\Users\Ohashi\source\repos\CG2\CG2_0_1\externals\imgui;$(IncludePath)</IncludePath>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
@@ -52,6 +58,7 @@
       <LanguageStandard>stdcpp20</LanguageStandard>
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
       <TreatWarningAsError>true</TreatWarningAsError>
+      <AdditionalIncludeDirectories>C:\Users\Ohashi\source\repos\CG2\CG2_0_1\2d;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\3d;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\base;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\input;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Manager;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\scene;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\utillity;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Resources;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\externals\DirectXTex;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\externals\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -75,6 +82,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
       <LanguageStandard>stdcpp20</LanguageStandard>
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
       <TreatWarningAsError>true</TreatWarningAsError>
+      <AdditionalIncludeDirectories>C:\Users\Ohashi\source\repos\CG2\CG2_0_1\2d;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\3d;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\base;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\input;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Manager;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\scene;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\utillity;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Resources;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\externals\DirectXTex;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\externals\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -89,8 +97,8 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Camera.cpp" />
-    <ClCompile Include="DirectXCommon.cpp" />
+    <ClCompile Include="utillity\Camera.cpp" />
+    <ClCompile Include="base\DirectXCommon.cpp" />
     <ClCompile Include="externals\imgui\imgui.cpp" />
     <ClCompile Include="externals\imgui\imgui_demo.cpp" />
     <ClCompile Include="externals\imgui\imgui_draw.cpp" />
@@ -98,24 +106,24 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="externals\imgui\imgui_impl_win32.cpp" />
     <ClCompile Include="externals\imgui\imgui_tables.cpp" />
     <ClCompile Include="externals\imgui\imgui_widgets.cpp" />
-    <ClCompile Include="Function.cpp" />
-    <ClCompile Include="GameManager.cpp" />
-    <ClCompile Include="GameScene.cpp" />
-    <ClCompile Include="ImGuiManeger.cpp" />
-    <ClCompile Include="Input.cpp" />
+    <ClCompile Include="utillity\Function.cpp" />
+    <ClCompile Include="Manager\GameManager.cpp" />
+    <ClCompile Include="scene\GameScene.cpp" />
+    <ClCompile Include="Manager\ImGuiManeger.cpp" />
+    <ClCompile Include="input\Input.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="MathFunction.cpp" />
-    <ClCompile Include="Mesh.cpp" />
-    <ClCompile Include="Model.cpp" />
-    <ClCompile Include="Sphere.cpp" />
-    <ClCompile Include="Sprite.cpp" />
-    <ClCompile Include="TextureManager.cpp" />
-    <ClCompile Include="Triangle.cpp" />
-    <ClCompile Include="WinApp.cpp" />
+    <ClCompile Include="utillity\MathFunction.cpp" />
+    <ClCompile Include="base\Mesh.cpp" />
+    <ClCompile Include="3d\Model.cpp" />
+    <ClCompile Include="3d\Sphere.cpp" />
+    <ClCompile Include="2d\Sprite.cpp" />
+    <ClCompile Include="Manager\TextureManager.cpp" />
+    <ClCompile Include="3d\Triangle.cpp" />
+    <ClCompile Include="base\WinApp.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Camera.h" />
-    <ClInclude Include="DirectXCommon.h" />
+    <ClInclude Include="utillity\Camera.h" />
+    <ClInclude Include="base\DirectXCommon.h" />
     <ClInclude Include="externals\imgui\imconfig.h" />
     <ClInclude Include="externals\imgui\imgui.h" />
     <ClInclude Include="externals\imgui\imgui_impl_dx12.h" />
@@ -124,19 +132,19 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="externals\imgui\imstb_rectpack.h" />
     <ClInclude Include="externals\imgui\imstb_textedit.h" />
     <ClInclude Include="externals\imgui\imstb_truetype.h" />
-    <ClInclude Include="Function.h" />
-    <ClInclude Include="GameManager.h" />
-    <ClInclude Include="GameScene.h" />
-    <ClInclude Include="ImGuiManeger.h" />
-    <ClInclude Include="Input.h" />
-    <ClInclude Include="MathFunction.h" />
-    <ClInclude Include="Mesh.h" />
-    <ClInclude Include="Model.h" />
-    <ClInclude Include="Sphere.h" />
-    <ClInclude Include="Sprite.h" />
-    <ClInclude Include="TextureManager.h" />
-    <ClInclude Include="Triangle.h" />
-    <ClInclude Include="WinApp.h" />
+    <ClInclude Include="utillity\Function.h" />
+    <ClInclude Include="Manager\GameManager.h" />
+    <ClInclude Include="scene\GameScene.h" />
+    <ClInclude Include="Manager\ImGuiManeger.h" />
+    <ClInclude Include="input\Input.h" />
+    <ClInclude Include="utillity\MathFunction.h" />
+    <ClInclude Include="base\Mesh.h" />
+    <ClInclude Include="3d\Model.h" />
+    <ClInclude Include="3d\Sphere.h" />
+    <ClInclude Include="2d\Sprite.h" />
+    <ClInclude Include="Manager\TextureManager.h" />
+    <ClInclude Include="3d\Triangle.h" />
+    <ClInclude Include="base\WinApp.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="externals\imgui\LICENSE.txt" />

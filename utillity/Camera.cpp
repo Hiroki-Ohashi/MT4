@@ -1,5 +1,5 @@
 #include "Camera.h"
-#include "externals/imgui/imgui.h"
+#include "imgui.h"
 
 
 Camera* Camera::GetInstance()

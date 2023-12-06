@@ -8,7 +8,7 @@
 
 #include "Function.h"
 #include "DirectXCommon.h"
-#include "externals/DirectXTex/d3dx12.h"
+#include "d3dx12.h"
 
 class TextureManager {
 public:

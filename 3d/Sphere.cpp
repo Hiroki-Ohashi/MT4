@@ -1,7 +1,7 @@
 #include "Sphere.h"
 #define _USE_MATH_DEFINES
 #include "math.h"
-#include "externals/imgui/imgui.h"
+#include "imgui.h"
 
 void Sphere::Initialize(){
 

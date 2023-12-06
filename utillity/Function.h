@@ -8,7 +8,7 @@
 #include <cassert>
 #include <dxgidebug.h>
 #include <dxcapi.h>
-#include "externals/DirectXTex/DirectXTex.h"
+#include "DirectXTex.h"
 
 class Convert {
 public:

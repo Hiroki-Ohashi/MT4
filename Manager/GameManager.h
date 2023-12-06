@@ -4,7 +4,7 @@
 #include "Input.h"
 #include "GameScene.h"
 #include "ImGuiManeger.h"
-#include "externals/imgui/imgui.h"
+#include "imgui.h"
 
 
 class GameManager {

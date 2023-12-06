@@ -1,5 +1,5 @@
 #include "Sprite.h"
-#include "externals/imgui/imgui.h"
+#include "imgui.h"
 
 
 void Sprite::Initialize(){
