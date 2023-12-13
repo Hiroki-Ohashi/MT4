@@ -434,10 +434,10 @@ Quaternion Multiply(const Quaternion& lhs, const Quaternion& rhs)
 {
 	Quaternion result;
 
-	result.x = lhs.y * rhs.z - lhs.z * rhs.y + rhs.w * lhs.x + lhs.w + rhs.x;
-	result.y = lhs.z * rhs.x - lhs.x * rhs.z + rhs.w * lhs.y + lhs.w + rhs.y;
-	result.z = lhs.x * rhs.y - lhs.y * rhs.x + rhs.w * lhs.z + lhs.w + rhs.z;
-	result.w = lhs.w * rhs.w - Dot({ lhs.x, lhs.y, lhs.z }, { rhs.x, rhs.y, rhs.z });
+	result.x = lhs.y * rhs.z - lhs.z * rhs.y + rhs.w * lhs.x + lhs.w * rhs.x;
+	result.y = lhs.z * rhs.x - lhs.x * rhs.z + rhs.w * lhs.y + lhs.w * rhs.y;
+	result.z = lhs.x * rhs.y - lhs.y * rhs.x + rhs.w * lhs.z + lhs.w * rhs.z;
+	result.w = lhs.w * rhs.w - Dot({ lhs.x,lhs.y ,lhs.z }, { rhs.x,rhs.y ,rhs.z });
 
 	return result;
 }
@@ -445,30 +445,28 @@ Quaternion Multiply(const Quaternion& lhs, const Quaternion& rhs)
 Quaternion IdentityQuaternion()
 {
 	Quaternion result;
-	result.x = 0.0f;
-	result.y = 0.0f;
-	result.z = 0.0f;
-	result.w = 1.0f;
+	result.x *= 0.0f;
+	result.y *= 0.0f;
+	result.z *= 0.0f;
+	result.w *= 1.0f;
 	return result;
 }
 
 Quaternion Conjugate(const Quaternion& quaternion)
 {
-	Quaternion result;
+	Quaternion result = quaternion;
 
-	result.x *= -1;
-	result.y *= -1;
-	result.z *= -1;
-	result.w *= -1;
+	result.x *= -1.0f;
+	result.y *= -1.0f;
+	result.z *= -1.0f;
+	result.w *= 1.0f;
 
 	return result;
 }
 
 float Norm(const Quaternion& quaternion)
 {
-	float result;
-
-	result = sqrtf((quaternion.w * quaternion.w) * (quaternion.x * quaternion.x) * (quaternion.y * quaternion.y) * (quaternion.z * quaternion.z));
+	float result = sqrt(quaternion.x * quaternion.x + quaternion.y * quaternion.y + quaternion.z * quaternion.z + quaternion.w * quaternion.w);
 
 	return result;
 }
@@ -476,13 +474,8 @@ float Norm(const Quaternion& quaternion)
 Quaternion Normalize(const Quaternion& quaternion)
 {
 	Quaternion result;
-	float len = sqrt(quaternion.w * quaternion.w + quaternion.x * quaternion.x + quaternion.y * quaternion.y + quaternion.z * quaternion.z);
-
-	result.x /= len;
-	result.y /= len;
-	result.z /= len;
-	result.w /= len;
-
+	float len = 1 / sqrtf(quaternion.x * quaternion.x + quaternion.y * quaternion.y + quaternion.z * quaternion.z + quaternion.w * quaternion.w);
+	result = { quaternion.x * len,quaternion.y * len,quaternion.z * len,quaternion.w * len };
 	return result;
 }
 
@@ -490,13 +483,14 @@ Quaternion Inverse(const Quaternion& quaternion)
 {
 	Quaternion result;
 
+	float n = Norm(quaternion) * Norm(quaternion);
 	Quaternion result2 = Conjugate(quaternion);
 
 
-	result.x = result2.x / (Norm(quaternion) * Norm(quaternion));
-	result.y = result2.y / (Norm(quaternion) * Norm(quaternion));
-	result.z = result2.z / (Norm(quaternion) * Norm(quaternion));
-	result.w = result2.w / (Norm(quaternion) * Norm(quaternion));
+	result.x = result2.x / n;
+	result.y = result2.y / n;
+	result.z = result2.z / n;
+	result.w = result2.w / n;
 
 	return result;
 }
