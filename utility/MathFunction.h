@@ -67,6 +67,7 @@ float Dot(const Vector3& v1, const Vector3& v2);
 float Length(const Vector3& v);
 Vector3 Normalize(const Vector3& v1);
 Vector3 Cross(const Vector3& v1, const Vector3& v2);
+Vector3 Transforme(const Vector3& vector, const Matrix4x4& matrix);
 
 // 単位行列の作成
 Matrix4x4 MakeIndentity4x4();
@@ -96,3 +97,10 @@ Quaternion Conjugate(const  Quaternion& quaternion);
 float Norm(const  Quaternion& quaternion);
 Quaternion Normalize(const  Quaternion& quaternion);
 Quaternion Inverse(const  Quaternion& quaternion);
+
+//任意軸回転
+Quaternion MakeRotateAxisAngleQuaternion(const Vector3& axis, float angle);
+// ベクトルをquaternion回転
+Vector3 RotateVector(const Vector3& vector, const Quaternion& quaternion);
+// Quaternionから回転行列を求める
+Matrix4x4 MakeRotateMatrix(const Quaternion quaternion);
