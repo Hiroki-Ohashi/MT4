@@ -529,7 +529,7 @@ Vector3 RotateVector(const Vector3& vector, const Quaternion& quaternion)
 	n.x = vector.x;
 	n.y = vector.y;
 	n.z = vector.z;
-	n.w = Length(vector);
+	n.w = 0.0f;
 
 	Quaternion a = Multiply(Multiply(quaternion, n), Conjugate(quaternion));
 
