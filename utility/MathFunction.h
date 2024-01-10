@@ -92,11 +92,14 @@ Matrix4x4 MakeRotateAxisAngle(const Vector3& axis, float angle);
 Matrix4x4 DirectionToDirection(const Vector3& from, const Vector3& to);
 
 Quaternion Multiply(const Quaternion& lhs, const Quaternion& rhs);
+float Dot(const  Quaternion& q0, const  Quaternion& q1);
 Quaternion IdentityQuaternion();
 Quaternion Conjugate(const  Quaternion& quaternion);
 float Norm(const  Quaternion& quaternion);
 Quaternion Normalize(const  Quaternion& quaternion);
 Quaternion Inverse(const  Quaternion& quaternion);
+
+Quaternion mainasu(const  Quaternion& quaternion);
 
 //任意軸回転
 Quaternion MakeRotateAxisAngleQuaternion(const Vector3& axis, float angle);
@@ -104,3 +107,5 @@ Quaternion MakeRotateAxisAngleQuaternion(const Vector3& axis, float angle);
 Vector3 RotateVector(const Vector3& vector, const Quaternion& quaternion);
 // Quaternionから回転行列を求める
 Matrix4x4 MakeRotateMatrix(const Quaternion quaternion);
+
+Quaternion Slerp(const Quaternion& q0, const Quaternion& q1, float t);

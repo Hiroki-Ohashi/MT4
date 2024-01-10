@@ -452,7 +452,16 @@ Quaternion Multiply(const Quaternion& lhs, const Quaternion& rhs)
 	result.x = lhs.y * rhs.z - lhs.z * rhs.y + rhs.w * lhs.x + lhs.w * rhs.x;
 	result.y = lhs.z * rhs.x - lhs.x * rhs.z + rhs.w * lhs.y + lhs.w * rhs.y;
 	result.z = lhs.x * rhs.y - lhs.y * rhs.x + rhs.w * lhs.z + lhs.w * rhs.z;
-	result.w = lhs.w * rhs.w - Dot({ lhs.x,lhs.y ,lhs.z }, { rhs.x,rhs.y ,rhs.z });
+	result.w = lhs.w * rhs.w - Dot(Vector3{ lhs.x,lhs.y ,lhs.z }, { rhs.x,rhs.y ,rhs.z });
+
+	return result;
+}
+
+float Dot(const Quaternion& q0, const Quaternion& q1)
+{
+	float result;
+
+	result = q0.x * q1.x + q0.y * q1.y + q0.z * q1.z + q0.w * q1.w;
 
 	return result;
 }
@@ -510,6 +519,18 @@ Quaternion Inverse(const Quaternion& quaternion)
 	return result;
 }
 
+Quaternion mainasu(const Quaternion& quaternion)
+{
+	Quaternion result = quaternion;
+
+	result.x *= -1.0f;
+	result.y *= -1.0f;
+	result.z *= -1.0f;
+	result.w *= -1.0f;
+
+	return result;
+}
+
 Quaternion MakeRotateAxisAngleQuaternion(const Vector3& axis, float angle)
 {
 	Quaternion result;
@@ -563,6 +584,29 @@ Matrix4x4 MakeRotateMatrix(const Quaternion quaternion)
 	result.m[3][1] = 0.0f;
 	result.m[3][2] = 0.0f;
 	result.m[3][3] = 1.0f;
+
+	return result;
+}
+
+Quaternion Slerp(const Quaternion& q0, const Quaternion& q1, float t)
+{
+	Quaternion result;
+
+	float dot = Dot(q0, q1);
+	if (dot < 0) {
+		mainasu(q0);
+		dot = -dot;
+	}
+
+	float theta = std::acos(dot);
+
+	float scale0 = std::sin((1 - t) * theta) / std::sin(theta);
+	float scale1 = std::sin(t * theta) / std::sin(theta);
+
+	result.x = scale0 * q0.x + scale1 * q1.x;
+	result.y = scale0 * q0.y + scale1 * q1.y;
+	result.z = scale0 * q0.z + scale1 * q1.z;
+	result.w = scale0 * q0.w + scale1 * q1.w;
 
 	return result;
 }
